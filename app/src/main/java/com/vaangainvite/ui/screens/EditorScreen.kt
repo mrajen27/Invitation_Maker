@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -48,6 +49,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,6 +124,8 @@ fun EditorScreen(
 
             EditorFields(
                 details = state.details,
+                selectedLanguage = state.selectedLanguage,
+                onLanguageSelected = viewModel::selectLanguage,
                 onNameChanged = viewModel::updateName,
                 onDateChanged = viewModel::updateDate,
                 onTimeChanged = viewModel::updateTime,
@@ -182,7 +186,7 @@ fun EditorScreen(
                             val openedWhatsApp = InvitationShare.shareToWhatsApp(
                                 context = context,
                                 imageUri = imageUri,
-                                message = "Invitation from Vaanga Invite"
+                                message = state.selectedLanguage.shareMessage
                             )
                             val message = if (openedWhatsApp) {
                                 "Opening WhatsApp"
@@ -207,6 +211,8 @@ fun EditorScreen(
 @Composable
 private fun EditorFields(
     details: InvitationDetails,
+    selectedLanguage: InvitationLanguage,
+    onLanguageSelected: (InvitationLanguage) -> Unit,
     onNameChanged: (String) -> Unit,
     onDateChanged: (String) -> Unit,
     onTimeChanged: (String) -> Unit,
@@ -218,6 +224,10 @@ private fun EditorFields(
             text = "Invitation details",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
+        )
+        LanguageSelector(
+            selectedLanguage = selectedLanguage,
+            onLanguageSelected = onLanguageSelected
         )
         OutlinedTextField(
             value = details.name,
@@ -253,6 +263,34 @@ private fun EditorFields(
             label = { Text("Additional message") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3
+        )
+    }
+}
+
+@Composable
+private fun LanguageSelector(
+    selectedLanguage: InvitationLanguage,
+    onLanguageSelected: (InvitationLanguage) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Invitation language",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            InvitationLanguage.entries.forEach { language ->
+                FilterChip(
+                    selected = selectedLanguage == language,
+                    onClick = { onLanguageSelected(language) },
+                    label = { Text(text = language.displayName) }
+                )
+            }
+        }
+        Text(
+            text = "Choose Tamil to render invitation headings and labels in Tamil. You can type names and messages in Tamil using your phone keyboard.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

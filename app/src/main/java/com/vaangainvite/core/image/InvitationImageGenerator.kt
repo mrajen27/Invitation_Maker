@@ -15,7 +15,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
+import com.vaangainvite.R
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
 import java.io.File
 import java.io.FileOutputStream
@@ -26,7 +29,8 @@ class InvitationImageGenerator(private val context: Context) {
 
     fun createInvitationBitmap(
         template: InvitationTemplate,
-        details: InvitationDetails
+        details: InvitationDetails,
+        language: InvitationLanguage
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -37,7 +41,7 @@ class InvitationImageGenerator(private val context: Context) {
         } ?: canvas.drawColor(Color.rgb(255, 244, 230))
 
         drawReadablePanel(canvas)
-        drawInvitationText(canvas, template, details)
+        drawInvitationText(canvas, template, details, language)
 
         return bitmap
     }
@@ -110,60 +114,74 @@ class InvitationImageGenerator(private val context: Context) {
     private fun drawInvitationText(
         canvas: Canvas,
         template: InvitationTemplate,
-        details: InvitationDetails
+        details: InvitationDetails,
+        language: InvitationLanguage
     ) {
         val primary = template.primaryColor
+        val tamilTypeface = tamilTypeface()
+        val headingTypeface = when (language) {
+            InvitationLanguage.TAMIL -> Typeface.create(tamilTypeface, Typeface.BOLD)
+            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+        }
+        val bodyTypeface = when (language) {
+            InvitationLanguage.TAMIL -> tamilTypeface
+            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
+        }
+        val footerTypeface = when (language) {
+            InvitationLanguage.TAMIL -> Typeface.create(tamilTypeface, Typeface.BOLD)
+            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+        }
         val titlePaint = textPaint(
             color = primary,
             textSize = 58f,
-            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+            typeface = headingTypeface
         )
         val headingPaint = textPaint(
             color = Color.rgb(72, 50, 38),
             textSize = 34f,
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            typeface = headingTypeface
         )
         val bodyPaint = textPaint(
             color = Color.rgb(38, 38, 38),
             textSize = 32f,
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
+            typeface = bodyTypeface
         )
         val messagePaint = textPaint(
             color = Color.rgb(72, 50, 38),
             textSize = 30f,
-            typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
+            typeface = bodyTypeface
         )
         val footerPaint = textPaint(
             color = primary,
             textSize = 28f,
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            typeface = footerTypeface
         )
 
         var y = 395f
-        y = drawCenteredLines(canvas, "You are warmly invited", headingPaint, y, 700f, 12f)
+        y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 12f)
         y += 28f
         y = drawCenteredLines(
             canvas = canvas,
-            text = details.name.ifBlank { "Name of Honoree" },
+            text = details.name.ifBlank { language.fallbackName },
             paint = titlePaint,
             startY = y,
             maxWidth = 690f,
             lineSpacing = 14f
         )
         y += 44f
-        y = drawDetailLine(canvas, "Date", details.date.ifBlank { "Add date" }, bodyPaint, y)
-        y = drawDetailLine(canvas, "Time", details.time.ifBlank { "Add time" }, bodyPaint, y)
-        y = drawDetailLine(canvas, "Venue", details.venue.ifBlank { "Add venue" }, bodyPaint, y)
+        y = drawDetailLine(canvas, language.dateLabel, details.date.ifBlank { language.fallbackDate }, bodyPaint, y)
+        y = drawDetailLine(canvas, language.timeLabel, details.time.ifBlank { language.fallbackTime }, bodyPaint, y)
+        y = drawDetailLine(canvas, language.venueLabel, details.venue.ifBlank { language.fallbackVenue }, bodyPaint, y)
         y += 26f
         drawCenteredLines(
             canvas = canvas,
-            text = details.message.ifBlank { "Please join us with family and friends." },
+            text = details.message.ifBlank { language.fallbackMessage },
             paint = messagePaint,
             startY = y,
             maxWidth = 660f,
             lineSpacing = 12f
         )
-        drawCenteredLines(canvas, "Created with Vaanga Invite", footerPaint, 1008f, 660f, 8f)
+        drawCenteredLines(canvas, language.footer, footerPaint, 1008f, 660f, 8f)
     }
 
     private fun drawDetailLine(
@@ -174,7 +192,7 @@ class InvitationImageGenerator(private val context: Context) {
         startY: Float
     ): Float {
         val labelPaint = Paint(paint).apply {
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            typeface = Typeface.create(paint.typeface, Typeface.BOLD)
         }
         val labelText = "$label: "
         val combinedText = "$labelText$value"
@@ -250,6 +268,11 @@ class InvitationImageGenerator(private val context: Context) {
             this.typeface = typeface
             textAlign = Paint.Align.LEFT
         }
+    }
+
+    private fun tamilTypeface(): Typeface {
+        return ResourcesCompat.getFont(context, R.font.noto_sans_tamil)
+            ?: Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
     }
 
     private fun centeredX(text: String, paint: Paint): Float {

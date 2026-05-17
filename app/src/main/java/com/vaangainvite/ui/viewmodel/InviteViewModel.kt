@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
 import com.vaangainvite.data.repository.TemplateRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ data class InviteUiState(
     val templates: List<InvitationTemplate> = emptyList(),
     val selectedCategory: InvitationCategory? = null,
     val selectedTemplate: InvitationTemplate? = null,
+    val selectedLanguage: InvitationLanguage = InvitationLanguage.ENGLISH,
     val details: InvitationDetails = InvitationDetails(),
     val generatedBitmap: Bitmap? = null,
     val cachedImageUri: Uri? = null,
@@ -69,6 +71,17 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
     fun updateVenue(venue: String) = updateDetails { copy(venue = venue) }
 
     fun updateMessage(message: String) = updateDetails { copy(message = message) }
+
+    fun selectLanguage(language: InvitationLanguage) {
+        _uiState.update { current ->
+            current.copy(
+                selectedLanguage = language,
+                generatedBitmap = null,
+                cachedImageUri = null,
+                statusMessage = null
+            )
+        }
+    }
 
     fun generateInvitation() {
         createBitmapAndCache(successMessage = "Invitation image generated")
@@ -133,7 +146,11 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         }
 
         return runCatching {
-            val bitmap = imageGenerator.createInvitationBitmap(template, state.details)
+            val bitmap = imageGenerator.createInvitationBitmap(
+                template = template,
+                details = state.details,
+                language = state.selectedLanguage
+            )
             val uri = imageGenerator.saveBitmapToCache(bitmap)
             bitmap to uri
         }.fold(
