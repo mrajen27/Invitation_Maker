@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -179,32 +181,98 @@ fun EditorScreen(
                 ) {
                     Text(text = "Save")
                 }
-                Button(
-                    onClick = {
-                        val imageUri = viewModel.getShareImageUri()
-                        if (imageUri != null) {
-                            val openedWhatsApp = InvitationShare.shareToWhatsApp(
-                                context = context,
-                                imageUri = imageUri,
-                                message = state.selectedLanguage.shareMessage
-                            )
-                            val message = if (openedWhatsApp) {
-                                "Opening WhatsApp"
-                            } else {
-                                "WhatsApp not found; opening share sheet"
-                            }
-                            viewModel.setStatusMessage(message)
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = state.selectedTemplate != null
-                ) {
-                    Text(text = "WhatsApp")
-                }
             }
+
+            ShareActions(
+                enabled = state.selectedTemplate != null,
+                onShareChat = {
+                    val imageUri = viewModel.getShareImageUri()
+                    if (imageUri != null) {
+                        val result = InvitationShare.shareToWhatsAppChat(
+                            context = context,
+                            imageUri = imageUri,
+                            message = state.selectedLanguage.shareMessage
+                        )
+                        viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp chat"))
+                    }
+                },
+                onShareStatus = {
+                    val imageUri = viewModel.getShareImageUri()
+                    if (imageUri != null) {
+                        val result = InvitationShare.shareToWhatsAppStatus(
+                            context = context,
+                            imageUri = imageUri,
+                            message = state.selectedLanguage.shareMessage
+                        )
+                        viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp Status"))
+                    }
+                }
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+    }
+}
+
+@Composable
+private fun ShareActions(
+    enabled: Boolean,
+    onShareChat: () -> Unit,
+    onShareStatus: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            text = "Easy WhatsApp sharing",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(
+                onClick = onShareChat,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                enabled = enabled
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "WhatsApp")
+                    Text(
+                        text = "Chat",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
+            FilledTonalButton(
+                onClick = onShareStatus,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                enabled = enabled
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "WhatsApp")
+                    Text(
+                        text = "Status",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
+        }
+        Text(
+            text = "If WhatsApp is not installed, the Android share sheet opens automatically.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+private fun InvitationShare.ShareResult.toStatusMessage(whatsAppMessage: String): String {
+    return when (this) {
+        InvitationShare.ShareResult.OPENED_WHATSAPP -> whatsAppMessage
+        InvitationShare.ShareResult.OPENED_SHARE_SHEET -> "WhatsApp not found; opening share sheet"
     }
 }
 

@@ -42,12 +42,28 @@ class TemplateRepository {
             primaryColor = 0xFF8B1E3F.toInt()
         ),
         InvitationTemplate(
+            id = "birthday_festive_arch",
+            categoryId = "birthday",
+            title = "Festive Birthday Arch",
+            description = "Layered arch, toran leaves, and cheerful pink-gold details.",
+            drawableResId = R.drawable.template_birthday_festive_arch,
+            primaryColor = 0xFF8B1E3F.toInt()
+        ),
+        InvitationTemplate(
             id = "wedding_kolam",
             categoryId = "wedding",
             title = "Kolam Muhurtham",
             description = "Classic maroon, gold, and kolam-inspired details.",
             drawableResId = R.drawable.template_wedding_kolam,
             primaryColor = 0xFF8B1E3F.toInt()
+        ),
+        InvitationTemplate(
+            id = "wedding_temple_bells",
+            categoryId = "wedding",
+            title = "Temple Bells",
+            description = "Temple-inspired roofline, bells, and a rich maroon frame.",
+            drawableResId = R.drawable.template_wedding_temple_bells,
+            primaryColor = 0xFF6E1634.toInt()
         ),
         InvitationTemplate(
             id = "housewarming_mango",
@@ -58,12 +74,28 @@ class TemplateRepository {
             primaryColor = 0xFF2E7D32.toInt()
         ),
         InvitationTemplate(
+            id = "housewarming_deepam",
+            categoryId = "housewarming",
+            title = "Deepam Grihapravesam",
+            description = "House motif with lamps, mango leaves, and green-gold accents.",
+            drawableResId = R.drawable.template_housewarming_deepam,
+            primaryColor = 0xFF1F6F35.toInt()
+        ),
+        InvitationTemplate(
             id = "puberty_floral",
             categoryId = "puberty",
             title = "Floral Blessings",
             description = "Soft floral frame for a puberty ceremony invitation.",
             drawableResId = R.drawable.template_puberty_floral,
             primaryColor = 0xFF9C27B0.toInt()
+        ),
+        InvitationTemplate(
+            id = "puberty_peacock",
+            categoryId = "puberty",
+            title = "Peacock Blessings",
+            description = "Peacock-inspired floral frame with jewel-toned highlights.",
+            drawableResId = R.drawable.template_puberty_peacock,
+            primaryColor = 0xFF6A1B9A.toInt()
         )
     )
 
