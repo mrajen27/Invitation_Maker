@@ -1,6 +1,7 @@
 package com.vaangainvite.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,7 +45,8 @@ private val HomeSandalwood = Color(0xFFFFF4E6)
 private val HomeMaroon = Color(0xFF8B1E3F)
 private val HomeGold = Color(0xFFF7C948)
 private val HomeLeaf = Color(0xFF2E7D32)
-private val CategoryCardGray = Color(0xFFE0E0E0)
+private val CategoryCardGray = Color(0xFFD1D1D1)
+private val CategoryCardBorderGray = Color(0xFF9E9E9E)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +161,8 @@ private fun CategoryCard(
         colors = CardDefaults.cardColors(
             containerColor = CategoryCardGray
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, CategoryCardBorderGray),
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Row(
             modifier = Modifier
