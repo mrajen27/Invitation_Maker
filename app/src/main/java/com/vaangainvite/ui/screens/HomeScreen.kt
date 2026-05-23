@@ -40,6 +40,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 
+private val HomeSandalwood = Color(0xFFFFF4E6)
+private val HomeMaroon = Color(0xFF8B1E3F)
+private val HomeGold = Color(0xFFF7C948)
+private val HomeLeaf = Color(0xFF2E7D32)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -49,12 +54,13 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = HomeSandalwood,
         topBar = {
             TopAppBar(
                 title = { Text(text = "Vaanga Invite") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = HomeMaroon,
+                    titleContentColor = Color.White
                 )
             )
         }
@@ -62,6 +68,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(HomeSandalwood)
                 .padding(paddingValues)
         ) {
             Image(
@@ -69,7 +76,7 @@ fun HomeScreen(
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.95f),
+                    .alpha(0.78f),
                 contentScale = ContentScale.Crop
             )
             LazyColumn(
@@ -97,19 +104,47 @@ fun HomeScreen(
 
 @Composable
 private fun Header() {
-    Column {
-        Text(
-            text = "Create beautiful South Indian invitations",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Pick a category, choose a local template, add details, then save or share on WhatsApp.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = HomeMaroon
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Text(
+                text = "Create beautiful South Indian invitations",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Pick a category, choose a local template, add details, then save or share on WhatsApp.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = HomeGold
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DecorativeDot(color = HomeGold)
+                DecorativeDot(color = HomeLeaf)
+                DecorativeDot(color = Color(0xFFE75A7C))
+            }
+        }
     }
+}
+
+@Composable
+private fun DecorativeDot(color: Color) {
+    Box(
+        modifier = Modifier
+            .size(10.dp)
+            .clip(CircleShape)
+            .background(color)
+    )
 }
 
 @Composable
@@ -123,7 +158,7 @@ private fun CategoryCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)
+            containerColor = Color.White.copy(alpha = 0.96f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -152,13 +187,14 @@ private fun CategoryCard(
                 Text(
                     text = category.title,
                     style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF2F2118),
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = category.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color(0xFF5F5148)
                 )
             }
         }

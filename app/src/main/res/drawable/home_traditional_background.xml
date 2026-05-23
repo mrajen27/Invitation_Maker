@@ -5,34 +5,34 @@
     android:viewportWidth="360"
     android:viewportHeight="720">
     <path
-        android:fillColor="#FFF4E6"
+        android:fillColor="#FFE8C2"
         android:pathData="M0,0h360v720h-360z" />
     <path
         android:fillColor="#8B1E3F"
-        android:fillAlpha="0.10"
+        android:fillAlpha="0.18"
         android:pathData="M-40,40c70,-55 145,-55 220,0c-70,55 -145,55 -220,0zM180,650c70,-55 145,-55 220,0c-70,55 -145,55 -220,0z" />
     <path
         android:fillColor="#F7C948"
-        android:fillAlpha="0.25"
+        android:fillAlpha="0.42"
         android:pathData="M0,0h360v28h-360zM0,692h360v28h-360z" />
     <path
         android:fillColor="#2E7D32"
-        android:fillAlpha="0.20"
+        android:fillAlpha="0.34"
         android:pathData="M18,44l12,-22l12,22zM58,44l12,-22l12,22zM98,44l12,-22l12,22zM138,44l12,-22l12,22zM178,44l12,-22l12,22zM218,44l12,-22l12,22zM258,44l12,-22l12,22zM298,44l12,-22l12,22z" />
     <path
         android:strokeColor="#8B1E3F"
-        android:strokeAlpha="0.16"
+        android:strokeAlpha="0.28"
         android:strokeWidth="2"
         android:fillColor="@android:color/transparent"
         android:pathData="M180,110c38,0 70,32 70,70s-32,70 -70,70s-70,-32 -70,-70s32,-70 70,-70zM180,132c26,0 48,22 48,48s-22,48 -48,48s-48,-22 -48,-48s22,-48 48,-48zM180,154c14,0 26,12 26,26s-12,26 -26,26s-26,-12 -26,-26s12,-26 26,-26z" />
     <path
         android:strokeColor="#F7C948"
-        android:strokeAlpha="0.24"
+        android:strokeAlpha="0.38"
         android:strokeWidth="3"
         android:fillColor="@android:color/transparent"
         android:pathData="M60,315c60,-42 180,-42 240,0M60,347c60,-42 180,-42 240,0M60,379c60,-42 180,-42 240,0" />
     <path
         android:fillColor="#E75A7C"
-        android:fillAlpha="0.14"
+        android:fillAlpha="0.28"
         android:pathData="M36,560m-26,0a26,26 0,1 0,52 0a26,26 0,1 0,-52 0M324,560m-26,0a26,26 0,1 0,52 0a26,26 0,1 0,-52 0M72,622m-18,0a18,18 0,1 0,36 0a18,18 0,1 0,-36 0M288,622m-18,0a18,18 0,1 0,36 0a18,18 0,1 0,-36 0" />
 </vector>
