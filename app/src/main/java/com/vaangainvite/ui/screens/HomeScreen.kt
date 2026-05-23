@@ -1,7 +1,6 @@
 package com.vaangainvite.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,8 +44,9 @@ private val HomeSandalwood = Color(0xFFFFF4E6)
 private val HomeMaroon = Color(0xFF8B1E3F)
 private val HomeGold = Color(0xFFF7C948)
 private val HomeLeaf = Color(0xFF2E7D32)
-private val CategoryCardGray = Color(0xFFD1D1D1)
-private val CategoryCardBorderGray = Color(0xFF9E9E9E)
+private val CategoryCardGray = Color(0xFF5C5C5C)
+private val CategoryCardTitle = Color(0xFFF5F5F5)
+private val CategoryCardDescription = Color(0xFFE0E0E0)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,8 +161,7 @@ private fun CategoryCard(
         colors = CardDefaults.cardColors(
             containerColor = CategoryCardGray
         ),
-        border = BorderStroke(1.dp, CategoryCardBorderGray),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -189,14 +188,14 @@ private fun CategoryCard(
                 Text(
                     text = category.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF2F2118),
+                    color = CategoryCardTitle,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = category.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF5F5148)
+                    color = CategoryCardDescription
                 )
             }
         }
