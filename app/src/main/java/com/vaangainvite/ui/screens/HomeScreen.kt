@@ -44,7 +44,7 @@ private val HomeSandalwood = Color(0xFFFFF4E6)
 private val HomeMaroon = Color(0xFF8B1E3F)
 private val HomeGold = Color(0xFFF7C948)
 private val HomeLeaf = Color(0xFF2E7D32)
-private val CategoryCardGray = Color(0xFFF0F0F0)
+private val CategoryCardGray = Color(0xFFE0E0E0)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +157,7 @@ private fun CategoryCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = CategoryCardGray.copy(alpha = 0.96f)
+            containerColor = CategoryCardGray
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
