@@ -12,6 +12,7 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
 - Traditional home screen background with toran, kolam, and floral motifs.
 - Template selection screen backed by local vector assets, with 20 designs per MVP category.
 - Invitation editor with fields for name, date picker, time, venue, and an additional message.
+- Quick additional-message chips with emoji-friendly input and a live message preview card.
 - English/Tamil invitation language selector for generated card headings and labels.
 - Optional photo upload to place a family, couple, child, or ceremony photo into the generated invitation.
 - Invitation image generation using Android `Bitmap` and `Canvas`.
@@ -72,6 +73,7 @@ Command line build:
 - `InvitationImageGenerator` draws the selected local template, optional uploaded photo, and editor text into a PNG bitmap.
 - Tamil text rendering uses the bundled Noto Sans Tamil font.
 - Photo selection uses Android's system photo picker and keeps the selected URI in editor state.
+- Quick message chips are reusable Compose components that update the editable message field while keeping the message fully editable.
 - Gallery saving uses `MediaStore`; Android 9 and below request `WRITE_EXTERNAL_STORAGE` at runtime.
 - WhatsApp sharing uses `ACTION_SEND` image intents with `com.whatsapp` as the preferred package and separate chat/status entry points before falling back to a chooser.
 

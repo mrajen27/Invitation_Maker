@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -51,7 +54,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +68,20 @@ import com.vaangainvite.ui.viewmodel.InviteViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+private data class QuickInviteMessage(
+    val id: String,
+    val text: String
+)
+
+private val QuickInviteMessages = listOf(
+    QuickInviteMessage("excited", "🎉 Excited to see you!"),
+    QuickInviteMessage("join", "🙏 Please join us"),
+    QuickInviteMessage("presence", "❤️ Your presence means a lot"),
+    QuickInviteMessage("celebrating", "😊 Looking forward to celebrating together"),
+    QuickInviteMessage("special", "🎊 Don’t miss this special day"),
+    QuickInviteMessage("celebrate", "🥳 Come celebrate with us")
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -395,13 +415,125 @@ private fun EditorFields(
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
         )
-        OutlinedTextField(
-            value = details.message,
-            onValueChange = onMessageChanged,
-            label = { Text("Additional message") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+        InviteMessageSection(
+            message = details.message,
+            onMessageChanged = onMessageChanged
         )
+    }
+}
+
+@Composable
+private fun InviteMessageSection(
+    message: String,
+    onMessageChanged: (String) -> Unit
+) {
+    var selectedQuickMessageId by remember { mutableStateOf<String?>(null) }
+    val selectedQuickMessage = QuickInviteMessages.firstOrNull { it.id == selectedQuickMessageId }
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = "Additional message",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Tap a quick message or type your own. Emojis are welcome.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        QuickMessageChips(
+            selectedMessageId = selectedQuickMessageId,
+            onMessageSelected = { quickMessage ->
+                selectedQuickMessageId = quickMessage.id
+                onMessageChanged(quickMessage.text)
+            }
+        )
+
+        OutlinedTextField(
+            value = message,
+            onValueChange = { updatedMessage ->
+                if (selectedQuickMessage?.text != updatedMessage) {
+                    selectedQuickMessageId = null
+                }
+                onMessageChanged(updatedMessage)
+            },
+            label = { Text("Message to guests") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 3,
+            maxLines = 6,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                keyboardType = KeyboardType.Text
+            ),
+            supportingText = {
+                Text(text = "This message appears on the generated invitation image.")
+            }
+        )
+
+        InviteMessagePreview(message = message)
+    }
+}
+
+@Composable
+private fun QuickMessageChips(
+    selectedMessageId: String?,
+    onMessageSelected: (QuickInviteMessage) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        items(
+            items = QuickInviteMessages,
+            key = { quickMessage -> quickMessage.id }
+        ) { quickMessage ->
+            FilterChip(
+                selected = selectedMessageId == quickMessage.id,
+                onClick = { onMessageSelected(quickMessage) },
+                label = {
+                    Text(text = quickMessage.text)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun InviteMessagePreview(message: String) {
+    val previewMessage = message.ifBlank {
+        "Your invitation message preview will appear here."
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Live invite message preview",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = previewMessage,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onTertiaryContainer
+            )
+        }
     }
 }
 
