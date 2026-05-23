@@ -187,14 +187,21 @@ class InvitationImageGenerator(private val context: Context) {
             y = drawDetailLine(canvas, contactLabel(language), details.mobileNumber, bodyPaint, y)
         }
         y += 26f
-        drawCenteredLines(
-            canvas = canvas,
-            text = details.message.ifBlank { language.fallbackMessage },
-            paint = messagePaint,
-            startY = y,
-            maxWidth = 660f,
-            lineSpacing = 12f
-        )
+        val messageLineSpacing = 8f
+        val availableMessageLines = ((1030f - y) / (messagePaint.fontSpacing + messageLineSpacing))
+            .toInt()
+            .coerceIn(0, 4)
+        if (availableMessageLines > 0) {
+            drawCenteredLines(
+                canvas = canvas,
+                text = details.message.ifBlank { language.fallbackMessage },
+                paint = messagePaint,
+                startY = y,
+                maxWidth = 620f,
+                lineSpacing = messageLineSpacing,
+                maxLines = availableMessageLines
+            )
+        }
     }
 
     private fun defaultOccasionTitle(language: InvitationLanguage): String {
@@ -343,14 +350,45 @@ class InvitationImageGenerator(private val context: Context) {
         paint: Paint,
         startY: Float,
         maxWidth: Float,
-        lineSpacing: Float
+        lineSpacing: Float,
+        maxLines: Int = Int.MAX_VALUE
     ): Float {
         var y = startY
-        wrapText(text, paint, maxWidth).forEach { line ->
+        wrapText(text, paint, maxWidth)
+            .limitLines(maxLines, paint, maxWidth)
+            .forEach { line ->
             canvas.drawText(line, centeredX(line, paint), y, paint)
             y += paint.fontSpacing + lineSpacing
         }
         return y
+    }
+
+    private fun List<String>.limitLines(
+        maxLines: Int,
+        paint: Paint,
+        maxWidth: Float
+    ): List<String> {
+        if (maxLines <= 0) return emptyList()
+        if (size <= maxLines) return this
+
+        val visibleLines = take(maxLines).toMutableList()
+        visibleLines[maxLines - 1] = truncateToWidth(visibleLines.last(), paint, maxWidth)
+        return visibleLines
+    }
+
+    private fun truncateToWidth(
+        text: String,
+        paint: Paint,
+        maxWidth: Float
+    ): String {
+        val suffix = "..."
+        if (paint.measureText(text + suffix) <= maxWidth) return text + suffix
+
+        var truncated = text
+        while (truncated.isNotEmpty() && paint.measureText(truncated + suffix) > maxWidth) {
+            truncated = truncated.dropLast(1).trimEnd()
+        }
+        return if (truncated.isEmpty()) suffix else truncated + suffix
     }
 
     private fun wrapText(text: String, paint: Paint, maxWidth: Float): List<String> {
