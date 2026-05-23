@@ -134,10 +134,6 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.TAMIL -> tamilTypeface
             InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
         }
-        val footerTypeface = when (language) {
-            InvitationLanguage.TAMIL -> Typeface.create(tamilTypeface, Typeface.BOLD)
-            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-        }
         val titlePaint = textPaint(
             color = primary,
             textSize = 58f,
@@ -163,12 +159,6 @@ class InvitationImageGenerator(private val context: Context) {
             textSize = 30f,
             typeface = bodyTypeface
         )
-        val footerPaint = textPaint(
-            color = primary,
-            textSize = 28f,
-            typeface = footerTypeface
-        )
-
         var y = if (hasUploadedPhoto) 665f else 395f
         y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 12f)
         y += 20f
@@ -205,7 +195,6 @@ class InvitationImageGenerator(private val context: Context) {
             maxWidth = 660f,
             lineSpacing = 12f
         )
-        drawCenteredLines(canvas, language.footer, footerPaint, 1008f, 660f, 8f)
     }
 
     private fun defaultOccasionTitle(language: InvitationLanguage): String {
