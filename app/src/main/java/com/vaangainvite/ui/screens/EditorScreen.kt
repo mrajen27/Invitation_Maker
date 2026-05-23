@@ -71,16 +71,38 @@ import java.time.format.DateTimeFormatter
 
 private data class QuickInviteMessage(
     val id: String,
-    val text: String
+    val text: String,
+    val language: InvitationLanguage,
+    val categoryId: String?,
+    val tone: QuickMessageTone
 )
 
+private enum class QuickMessageTone(val label: String) {
+    ALL("All"),
+    FORMAL("Formal"),
+    CASUAL("Casual"),
+    BLESSING("Blessing")
+}
+
 private val QuickInviteMessages = listOf(
-    QuickInviteMessage("excited", "🎉 Excited to see you!"),
-    QuickInviteMessage("join", "🙏 Please join us"),
-    QuickInviteMessage("presence", "❤️ Your presence means a lot"),
-    QuickInviteMessage("celebrating", "😊 Looking forward to celebrating together"),
-    QuickInviteMessage("special", "🎊 Don’t miss this special day"),
-    QuickInviteMessage("celebrate", "🥳 Come celebrate with us")
+    QuickInviteMessage("en_excited", "🎉 Excited to see you!", InvitationLanguage.ENGLISH, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("en_join", "🙏 Please join us", InvitationLanguage.ENGLISH, null, QuickMessageTone.FORMAL),
+    QuickInviteMessage("en_presence", "❤️ Your presence means a lot", InvitationLanguage.ENGLISH, null, QuickMessageTone.BLESSING),
+    QuickInviteMessage("en_celebrating", "😊 Looking forward to celebrating together", InvitationLanguage.ENGLISH, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("en_special", "🎊 Don’t miss this special day", InvitationLanguage.ENGLISH, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("en_celebrate", "🥳 Come celebrate with us", InvitationLanguage.ENGLISH, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("en_birthday", "🎂 Come bless and celebrate this birthday with us", InvitationLanguage.ENGLISH, "birthday", QuickMessageTone.BLESSING),
+    QuickInviteMessage("en_wedding", "💍 Kindly grace the wedding and bless the couple", InvitationLanguage.ENGLISH, "wedding", QuickMessageTone.FORMAL),
+    QuickInviteMessage("en_housewarming", "🏡 Please join our housewarming ceremony with your blessings", InvitationLanguage.ENGLISH, "housewarming", QuickMessageTone.FORMAL),
+    QuickInviteMessage("en_puberty", "🌸 Your blessings and presence will make this ceremony special", InvitationLanguage.ENGLISH, "puberty", QuickMessageTone.BLESSING),
+    QuickInviteMessage("ta_join", "🙏 தயவு செய்து கலந்து கொள்ளுங்கள்", InvitationLanguage.TAMIL, null, QuickMessageTone.FORMAL),
+    QuickInviteMessage("ta_presence", "❤️ உங்கள் வருகை எங்களுக்கு மகிழ்ச்சி தரும்", InvitationLanguage.TAMIL, null, QuickMessageTone.BLESSING),
+    QuickInviteMessage("ta_celebrate", "😊 ஒன்றாக கொண்டாட ஆவலுடன் காத்திருக்கிறோம்", InvitationLanguage.TAMIL, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("ta_special", "🎊 இந்த சிறப்பு நாளை தவற விடாதீர்கள்", InvitationLanguage.TAMIL, null, QuickMessageTone.CASUAL),
+    QuickInviteMessage("ta_birthday", "🎂 பிறந்தநாள் விழாவில் கலந்து கொண்டு ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "birthday", QuickMessageTone.BLESSING),
+    QuickInviteMessage("ta_wedding", "💍 திருமண விழாவில் கலந்து கொண்டு மணமக்களை ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "wedding", QuickMessageTone.FORMAL),
+    QuickInviteMessage("ta_housewarming", "🏡 புதுமனை புகுவிழாவில் கலந்து கொண்டு ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "housewarming", QuickMessageTone.FORMAL),
+    QuickInviteMessage("ta_puberty", "🌸 இவ்விழாவில் உங்கள் வருகையும் ஆசீர்வாதமும் வேண்டுகிறோம்", InvitationLanguage.TAMIL, "puberty", QuickMessageTone.BLESSING)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,6 +197,7 @@ fun EditorScreen(
             EditorFields(
                 details = state.details,
                 selectedLanguage = state.selectedLanguage,
+                selectedCategoryId = state.selectedCategory?.id,
                 onLanguageSelected = viewModel::selectLanguage,
                 onNameChanged = viewModel::updateName,
                 onDateChanged = viewModel::updateDate,
@@ -373,6 +396,7 @@ private fun InvitationShare.ShareResult.toStatusMessage(whatsAppMessage: String)
 private fun EditorFields(
     details: InvitationDetails,
     selectedLanguage: InvitationLanguage,
+    selectedCategoryId: String?,
     onLanguageSelected: (InvitationLanguage) -> Unit,
     onNameChanged: (String) -> Unit,
     onDateChanged: (String) -> Unit,
@@ -417,6 +441,8 @@ private fun EditorFields(
         )
         InviteMessageSection(
             message = details.message,
+            selectedLanguage = selectedLanguage,
+            selectedCategoryId = selectedCategoryId,
             onMessageChanged = onMessageChanged
         )
     }
@@ -425,9 +451,19 @@ private fun EditorFields(
 @Composable
 private fun InviteMessageSection(
     message: String,
+    selectedLanguage: InvitationLanguage,
+    selectedCategoryId: String?,
     onMessageChanged: (String) -> Unit
 ) {
     var selectedQuickMessageId by remember { mutableStateOf<String?>(null) }
+    var selectedTone by remember { mutableStateOf(QuickMessageTone.ALL) }
+    val quickMessages = remember(selectedLanguage, selectedCategoryId, selectedTone) {
+        QuickInviteMessages.filter { quickMessage ->
+            quickMessage.language == selectedLanguage &&
+                (quickMessage.categoryId == null || quickMessage.categoryId == selectedCategoryId) &&
+                (selectedTone == QuickMessageTone.ALL || quickMessage.tone == selectedTone)
+        }
+    }
     val selectedQuickMessage = QuickInviteMessages.firstOrNull { it.id == selectedQuickMessageId }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -444,7 +480,16 @@ private fun InviteMessageSection(
             )
         }
 
+        MessageToneFilters(
+            selectedTone = selectedTone,
+            onToneSelected = { tone ->
+                selectedTone = tone
+                selectedQuickMessageId = null
+            }
+        )
+
         QuickMessageChips(
+            quickMessages = quickMessages,
             selectedMessageId = selectedQuickMessageId,
             onMessageSelected = { quickMessage ->
                 selectedQuickMessageId = quickMessage.id
@@ -469,16 +514,18 @@ private fun InviteMessageSection(
                 keyboardType = KeyboardType.Text
             ),
             supportingText = {
-                Text(text = "This message appears on the generated invitation image.")
+                Text(text = "This message appears on the generated invitation image. Emojis and Tamil text are supported.")
             }
         )
 
+        ImageSafeMessageCounter(characterCount = message.length)
         InviteMessagePreview(message = message)
     }
 }
 
 @Composable
 private fun QuickMessageChips(
+    quickMessages: List<QuickInviteMessage>,
     selectedMessageId: String?,
     onMessageSelected: (QuickInviteMessage) -> Unit
 ) {
@@ -489,7 +536,7 @@ private fun QuickMessageChips(
             .animateContentSize()
     ) {
         items(
-            items = QuickInviteMessages,
+            items = quickMessages,
             key = { quickMessage -> quickMessage.id }
         ) { quickMessage ->
             FilterChip(
@@ -500,6 +547,67 @@ private fun QuickMessageChips(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun MessageToneFilters(
+    selectedTone: QuickMessageTone,
+    onToneSelected: (QuickMessageTone) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        items(
+            items = QuickMessageTone.entries,
+            key = { tone -> tone.name }
+        ) { tone ->
+            FilterChip(
+                selected = tone == selectedTone,
+                onClick = { onToneSelected(tone) },
+                label = { Text(text = tone.label) },
+                modifier = Modifier.animateContentSize()
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageSafeMessageCounter(
+    characterCount: Int,
+    recommendedMax: Int = 140
+) {
+    val isLong = characterCount > recommendedMax
+    val counterColor = if (isLong) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val guidance = if (isLong) {
+        "Long messages may wrap too much on the invitation image."
+    } else {
+        "Good length for a clean invitation image."
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = guidance,
+            style = MaterialTheme.typography.bodySmall,
+            color = counterColor
+        )
+        Text(
+            text = "$characterCount/$recommendedMax",
+            style = MaterialTheme.typography.labelMedium,
+            color = counterColor,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
