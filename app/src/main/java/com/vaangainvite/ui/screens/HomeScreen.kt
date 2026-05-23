@@ -1,6 +1,7 @@
 package com.vaangainvite.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,10 +28,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vaangainvite.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.ui.viewmodel.InviteViewModel
@@ -54,24 +59,37 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Header()
-            }
-            items(state.categories) { category ->
-                CategoryCard(
-                    category = category,
-                    onClick = {
-                        viewModel.selectCategory(category.id)
-                        onCategorySelected()
-                    }
-                )
+            Image(
+                painter = painterResource(id = R.drawable.home_traditional_background),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.95f),
+                contentScale = ContentScale.Crop
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    Header()
+                }
+                items(state.categories) { category ->
+                    CategoryCard(
+                        category = category,
+                        onClick = {
+                            viewModel.selectCategory(category.id)
+                            onCategorySelected()
+                        }
+                    )
+                }
             }
         }
     }
@@ -105,7 +123,7 @@ private fun CategoryCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

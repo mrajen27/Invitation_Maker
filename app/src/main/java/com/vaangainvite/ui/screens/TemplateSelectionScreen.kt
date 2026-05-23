@@ -78,7 +78,7 @@ fun TemplateSelectionScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Each design is stored locally and can be exported as a shareable image.",
+                    text = "Each category includes 20 local designs that can be exported as shareable images.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

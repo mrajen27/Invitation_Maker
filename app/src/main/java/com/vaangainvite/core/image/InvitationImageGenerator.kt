@@ -3,9 +3,11 @@ package com.vaangainvite.core.image
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
@@ -30,7 +32,8 @@ class InvitationImageGenerator(private val context: Context) {
     fun createInvitationBitmap(
         template: InvitationTemplate,
         details: InvitationDetails,
-        language: InvitationLanguage
+        language: InvitationLanguage,
+        uploadedPhotoUri: Uri?
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -41,7 +44,8 @@ class InvitationImageGenerator(private val context: Context) {
         } ?: canvas.drawColor(Color.rgb(255, 244, 230))
 
         drawReadablePanel(canvas)
-        drawInvitationText(canvas, template, details, language)
+        val hasUploadedPhoto = drawUploadedPhoto(canvas, uploadedPhotoUri)
+        drawInvitationText(canvas, template, details, language, hasUploadedPhoto)
 
         return bitmap
     }
@@ -115,7 +119,8 @@ class InvitationImageGenerator(private val context: Context) {
         canvas: Canvas,
         template: InvitationTemplate,
         details: InvitationDetails,
-        language: InvitationLanguage
+        language: InvitationLanguage,
+        hasUploadedPhoto: Boolean
     ) {
         val primary = template.primaryColor
         val tamilTypeface = tamilTypeface()
@@ -157,7 +162,7 @@ class InvitationImageGenerator(private val context: Context) {
             typeface = footerTypeface
         )
 
-        var y = 395f
+        var y = if (hasUploadedPhoto) 665f else 395f
         y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 12f)
         y += 28f
         y = drawCenteredLines(
@@ -182,6 +187,63 @@ class InvitationImageGenerator(private val context: Context) {
             lineSpacing = 12f
         )
         drawCenteredLines(canvas, language.footer, footerPaint, 1008f, 660f, 8f)
+    }
+
+    private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?): Boolean {
+        if (uploadedPhotoUri == null) return false
+
+        val photoBitmap = runCatching {
+            context.contentResolver.openInputStream(uploadedPhotoUri)?.use { input ->
+                BitmapFactory.decodeStream(input)
+            }
+        }.getOrNull() ?: return false
+
+        val frame = RectF(395f, 360f, 685f, 620f)
+        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(70, 0, 0, 0)
+        }
+        val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(247, 201, 72)
+            style = Paint.Style.STROKE
+            strokeWidth = 10f
+        }
+
+        canvas.drawRoundRect(
+            RectF(frame.left + 8f, frame.top + 10f, frame.right + 8f, frame.bottom + 10f),
+            34f,
+            34f,
+            shadowPaint
+        )
+
+        val path = Path().apply {
+            addRoundRect(frame, 32f, 32f, Path.Direction.CW)
+        }
+        canvas.save()
+        canvas.clipPath(path)
+        canvas.drawBitmap(
+            photoBitmap,
+            centeredCropSource(photoBitmap, frame),
+            frame,
+            Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+        )
+        canvas.restore()
+        canvas.drawRoundRect(frame, 32f, 32f, borderPaint)
+        return true
+    }
+
+    private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
+        val bitmapAspect = bitmap.width.toFloat() / bitmap.height.toFloat()
+        val targetAspect = target.width() / target.height()
+
+        return if (bitmapAspect > targetAspect) {
+            val sourceWidth = (bitmap.height * targetAspect).toInt()
+            val left = (bitmap.width - sourceWidth) / 2
+            Rect(left, 0, left + sourceWidth, bitmap.height)
+        } else {
+            val sourceHeight = (bitmap.width / targetAspect).toInt()
+            val top = (bitmap.height - sourceHeight) / 2
+            Rect(0, top, bitmap.width, top + sourceHeight)
+        }
     }
 
     private fun drawDetailLine(

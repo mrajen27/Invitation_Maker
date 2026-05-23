@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
@@ -34,10 +37,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Alignment
@@ -53,6 +59,9 @@ import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +79,13 @@ fun EditorScreen(
             viewModel.saveInvitationToGallery()
         } else {
             viewModel.setStatusMessage("Storage permission is required to save on this Android version")
+        }
+    }
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.updateUploadedPhoto(uri)
         }
     }
 
@@ -123,6 +139,18 @@ fun EditorScreen(
                     )
                 }
             }
+
+            PhotoUploadSection(
+                hasPhoto = state.uploadedPhotoUri != null,
+                onChoosePhoto = {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                onRemovePhoto = {
+                    viewModel.updateUploadedPhoto(null)
+                }
+            )
 
             EditorFields(
                 details = state.details,
@@ -269,6 +297,51 @@ private fun ShareActions(
     }
 }
 
+@Composable
+private fun PhotoUploadSection(
+    hasPhoto: Boolean,
+    onChoosePhoto: () -> Unit,
+    onRemovePhoto: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "Photo template option",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = if (hasPhoto) {
+                    "Photo selected. It will appear inside the generated invitation card."
+                } else {
+                    "Upload a family, couple, child, or ceremony photo to include in the invitation."
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(onClick = onChoosePhoto) {
+                    Text(text = if (hasPhoto) "Change photo" else "Upload photo")
+                }
+                if (hasPhoto) {
+                    TextButton(onClick = onRemovePhoto) {
+                        Text(text = "Remove")
+                    }
+                }
+            }
+        }
+    }
+}
+
 private fun InvitationShare.ShareResult.toStatusMessage(whatsAppMessage: String): String {
     return when (this) {
         InvitationShare.ShareResult.OPENED_WHATSAPP -> whatsAppMessage
@@ -304,12 +377,9 @@ private fun EditorFields(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
-        OutlinedTextField(
-            value = details.date,
-            onValueChange = onDateChanged,
-            label = { Text("Date") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+        DatePickerField(
+            date = details.date,
+            onDateSelected = onDateChanged
         )
         OutlinedTextField(
             value = details.time,
@@ -333,6 +403,70 @@ private fun EditorFields(
             minLines = 3
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerField(
+    date: String,
+    onDateSelected: (String) -> Unit
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = date,
+            onValueChange = {},
+            label = { Text("Date") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            placeholder = { Text("Pick function date") },
+            trailingIcon = {
+                TextButton(onClick = { showDatePicker = true }) {
+                    Text(text = "Pick")
+                }
+            }
+        )
+        Text(
+            text = "Use the date picker to avoid typing mistakes.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            onDateSelected(formatDate(millis))
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text(text = "OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(text = "Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+private fun formatDate(dateMillis: Long): String {
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+    return Instant.ofEpochMilli(dateMillis)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+        .format(formatter)
 }
 
 @Composable

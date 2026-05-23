@@ -22,6 +22,7 @@ data class InviteUiState(
     val selectedTemplate: InvitationTemplate? = null,
     val selectedLanguage: InvitationLanguage = InvitationLanguage.ENGLISH,
     val details: InvitationDetails = InvitationDetails(),
+    val uploadedPhotoUri: Uri? = null,
     val generatedBitmap: Bitmap? = null,
     val cachedImageUri: Uri? = null,
     val statusMessage: String? = null
@@ -71,6 +72,17 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
     fun updateVenue(venue: String) = updateDetails { copy(venue = venue) }
 
     fun updateMessage(message: String) = updateDetails { copy(message = message) }
+
+    fun updateUploadedPhoto(uri: Uri?) {
+        _uiState.update { current ->
+            current.copy(
+                uploadedPhotoUri = uri,
+                generatedBitmap = null,
+                cachedImageUri = null,
+                statusMessage = if (uri == null) "Photo removed" else "Photo added to invitation"
+            )
+        }
+    }
 
     fun selectLanguage(language: InvitationLanguage) {
         _uiState.update { current ->
@@ -149,7 +161,8 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             val bitmap = imageGenerator.createInvitationBitmap(
                 template = template,
                 details = state.details,
-                language = state.selectedLanguage
+                language = state.selectedLanguage,
+                uploadedPhotoUri = state.uploadedPhotoUri
             )
             val uri = imageGenerator.saveBitmapToCache(bitmap)
             bitmap to uri
