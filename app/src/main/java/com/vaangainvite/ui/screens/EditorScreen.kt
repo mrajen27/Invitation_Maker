@@ -421,23 +421,39 @@ private fun EditorFields(
         OutlinedTextField(
             value = details.occasionTitle,
             onValueChange = onOccasionTitleChanged,
-            label = { Text("Occasion / Event title") },
+            label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "விழா தலைப்பு" else "Occasion / Event title") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            placeholder = { Text("Kavin's First Birthday") },
+            placeholder = {
+                Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கவின் முதல் பிறந்தநாள்" else "Kavin's First Birthday")
+            },
             supportingText = {
-                Text(text = "This tells guests what the invitation is for.")
+                Text(
+                    text = if (selectedLanguage == InvitationLanguage.TAMIL) {
+                        "தமிழில் விழா தலைப்பை எழுதலாம். இது அழைப்பிதழ் எந்த விழாவுக்கானது என்பதை காட்டும்."
+                    } else {
+                        "You can type this in Tamil too. This tells guests what the invitation is for."
+                    }
+                )
             }
         )
         OutlinedTextField(
             value = details.name,
             onValueChange = onNameChanged,
-            label = { Text("Name on invitation") },
+            label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "அழைப்பிதழில் பெயர்" else "Name on invitation") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            placeholder = { Text("Karthik & Meena") },
+            placeholder = {
+                Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கார்த்திக் & மீனா" else "Karthik & Meena")
+            },
             supportingText = {
-                Text(text = "Examples: Kavin, Karthik & Meena, Ravi Family")
+                Text(
+                    text = if (selectedLanguage == InvitationLanguage.TAMIL) {
+                        "தமிழ் விசைப்பலகையை பயன்படுத்தி பெயரை தமிழில் எழுதலாம்."
+                    } else {
+                        "Examples: Kavin, Karthik & Meena, Ravi Family. Tamil names are supported."
+                    }
+                )
             }
         )
         DatePickerField(

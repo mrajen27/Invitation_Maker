@@ -45,7 +45,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 templates = repository.templatesForCategory(categoryId),
                 selectedTemplate = null,
                 details = current.details.copy(
-                    occasionTitle = defaultOccasionTitle(categoryId)
+                    occasionTitle = defaultOccasionTitle(categoryId, current.selectedLanguage)
                 ),
                 generatedBitmap = null,
                 cachedImageUri = null,
@@ -93,8 +93,18 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
 
     fun selectLanguage(language: InvitationLanguage) {
         _uiState.update { current ->
+            val selectedCategoryId = current.selectedCategory?.id
+            val occasionTitle = if (
+                selectedCategoryId != null &&
+                isDefaultOccasionTitle(current.details.occasionTitle)
+            ) {
+                defaultOccasionTitle(selectedCategoryId, language)
+            } else {
+                current.details.occasionTitle
+            }
             current.copy(
                 selectedLanguage = language,
+                details = current.details.copy(occasionTitle = occasionTitle),
                 generatedBitmap = null,
                 cachedImageUri = null,
                 statusMessage = null
@@ -193,13 +203,38 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
-    private fun defaultOccasionTitle(categoryId: String): String {
-        return when (categoryId) {
-            "birthday" -> "Birthday Celebration"
-            "wedding" -> "Wedding Invitation"
-            "housewarming" -> "Housewarming Ceremony"
-            "puberty" -> "Puberty Ceremony"
-            else -> "Special Occasion"
+    private fun defaultOccasionTitle(categoryId: String, language: InvitationLanguage): String {
+        return when (language) {
+            InvitationLanguage.ENGLISH -> when (categoryId) {
+                "birthday" -> "Birthday Celebration"
+                "wedding" -> "Wedding Invitation"
+                "housewarming" -> "Housewarming Ceremony"
+                "puberty" -> "Puberty Ceremony"
+                else -> "Special Occasion"
+            }
+            InvitationLanguage.TAMIL -> when (categoryId) {
+                "birthday" -> "பிறந்தநாள் விழா"
+                "wedding" -> "திருமண அழைப்பிதழ்"
+                "housewarming" -> "புதுமனை புகுவிழா"
+                "puberty" -> "பூப்புனித நீராட்டு விழா"
+                else -> "சிறப்பு விழா"
+            }
         }
+    }
+
+    private fun isDefaultOccasionTitle(title: String): Boolean {
+        val defaultTitles = listOf(
+            "Birthday Celebration",
+            "Wedding Invitation",
+            "Housewarming Ceremony",
+            "Puberty Ceremony",
+            "Special Occasion",
+            "பிறந்தநாள் விழா",
+            "திருமண அழைப்பிதழ்",
+            "புதுமனை புகுவிழா",
+            "பூப்புனித நீராட்டு விழா",
+            "சிறப்பு விழா"
+        )
+        return title.isBlank() || title in defaultTitles
     }
 }
