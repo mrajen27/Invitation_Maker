@@ -11,7 +11,7 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
   - Puberty Ceremony
 - Traditional home screen background with toran, kolam, and floral motifs.
 - Template selection screen backed by local vector assets, with 20 designs per MVP category.
-- Invitation editor with fields for name, date picker, time, venue, and an additional message.
+- Invitation editor with fields for occasion/event title, name on invitation, date picker, time, venue, and an additional message.
 - Quick additional-message chips with English/Tamil suggestions, category-specific messages, tone filters, emoji-friendly input, image-safe character guidance, and a live message preview card.
 - English/Tamil invitation language selector for generated card headings and labels.
 - Optional photo upload to place a family, couple, child, or ceremony photo into the generated invitation.
@@ -70,6 +70,7 @@ Command line build:
 
 - `TemplateRepository` owns the MVP category and template metadata.
 - `InviteViewModel` exposes a single `StateFlow<InviteUiState>` for the Compose screens.
+- Category selection pre-fills an editable occasion title such as Birthday Celebration, Wedding Invitation, Housewarming Ceremony, or Puberty Ceremony.
 - `InvitationImageGenerator` draws the selected local template, optional uploaded photo, and editor text into a PNG bitmap.
 - Tamil text rendering uses the bundled Noto Sans Tamil font.
 - Photo selection uses Android's system photo picker and keeps the selected URI in editor state.

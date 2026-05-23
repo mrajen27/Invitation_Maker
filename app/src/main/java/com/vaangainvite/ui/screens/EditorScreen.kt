@@ -199,6 +199,7 @@ fun EditorScreen(
                 selectedLanguage = state.selectedLanguage,
                 selectedCategoryId = state.selectedCategory?.id,
                 onLanguageSelected = viewModel::selectLanguage,
+                onOccasionTitleChanged = viewModel::updateOccasionTitle,
                 onNameChanged = viewModel::updateName,
                 onDateChanged = viewModel::updateDate,
                 onTimeChanged = viewModel::updateTime,
@@ -398,6 +399,7 @@ private fun EditorFields(
     selectedLanguage: InvitationLanguage,
     selectedCategoryId: String?,
     onLanguageSelected: (InvitationLanguage) -> Unit,
+    onOccasionTitleChanged: (String) -> Unit,
     onNameChanged: (String) -> Unit,
     onDateChanged: (String) -> Unit,
     onTimeChanged: (String) -> Unit,
@@ -415,11 +417,26 @@ private fun EditorFields(
             onLanguageSelected = onLanguageSelected
         )
         OutlinedTextField(
+            value = details.occasionTitle,
+            onValueChange = onOccasionTitleChanged,
+            label = { Text("Occasion / Event title") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Kavin's First Birthday") },
+            supportingText = {
+                Text(text = "This tells guests what the invitation is for.")
+            }
+        )
+        OutlinedTextField(
             value = details.name,
             onValueChange = onNameChanged,
-            label = { Text("Name") },
+            label = { Text("Name on invitation") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            placeholder = { Text("Karthik & Meena") },
+            supportingText = {
+                Text(text = "Examples: Kavin, Karthik & Meena, Ravi Family")
+            }
         )
         DatePickerField(
             date = details.date,

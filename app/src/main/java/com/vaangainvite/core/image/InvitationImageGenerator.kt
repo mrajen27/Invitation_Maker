@@ -141,6 +141,11 @@ class InvitationImageGenerator(private val context: Context) {
             textSize = 58f,
             typeface = headingTypeface
         )
+        val occasionPaint = textPaint(
+            color = primary,
+            textSize = 42f,
+            typeface = headingTypeface
+        )
         val headingPaint = textPaint(
             color = Color.rgb(72, 50, 38),
             textSize = 34f,
@@ -164,7 +169,16 @@ class InvitationImageGenerator(private val context: Context) {
 
         var y = if (hasUploadedPhoto) 665f else 395f
         y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 12f)
-        y += 28f
+        y += 20f
+        y = drawCenteredLines(
+            canvas = canvas,
+            text = details.occasionTitle.ifBlank { defaultOccasionTitle(language) },
+            paint = occasionPaint,
+            startY = y,
+            maxWidth = 690f,
+            lineSpacing = 12f
+        )
+        y += 20f
         y = drawCenteredLines(
             canvas = canvas,
             text = details.name.ifBlank { language.fallbackName },
@@ -187,6 +201,13 @@ class InvitationImageGenerator(private val context: Context) {
             lineSpacing = 12f
         )
         drawCenteredLines(canvas, language.footer, footerPaint, 1008f, 660f, 8f)
+    }
+
+    private fun defaultOccasionTitle(language: InvitationLanguage): String {
+        return when (language) {
+            InvitationLanguage.ENGLISH -> "Special Occasion"
+            InvitationLanguage.TAMIL -> "சிறப்பு விழா"
+        }
     }
 
     private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?): Boolean {

@@ -44,6 +44,9 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 selectedCategory = category,
                 templates = repository.templatesForCategory(categoryId),
                 selectedTemplate = null,
+                details = current.details.copy(
+                    occasionTitle = defaultOccasionTitle(categoryId)
+                ),
                 generatedBitmap = null,
                 cachedImageUri = null,
                 statusMessage = null
@@ -62,6 +65,8 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             )
         }
     }
+
+    fun updateOccasionTitle(occasionTitle: String) = updateDetails { copy(occasionTitle = occasionTitle) }
 
     fun updateName(name: String) = updateDetails { copy(name = name) }
 
@@ -184,5 +189,15 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 null
             }
         )
+    }
+
+    private fun defaultOccasionTitle(categoryId: String): String {
+        return when (categoryId) {
+            "birthday" -> "Birthday Celebration"
+            "wedding" -> "Wedding Invitation"
+            "housewarming" -> "Housewarming Ceremony"
+            "puberty" -> "Puberty Ceremony"
+            else -> "Special Occasion"
+        }
     }
 }
