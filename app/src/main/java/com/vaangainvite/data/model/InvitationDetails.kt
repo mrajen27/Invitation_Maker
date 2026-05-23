@@ -6,5 +6,6 @@ data class InvitationDetails(
     val date: String = "",
     val time: String = "",
     val venue: String = "",
+    val mobileNumber: String = "",
     val message: String = ""
 )

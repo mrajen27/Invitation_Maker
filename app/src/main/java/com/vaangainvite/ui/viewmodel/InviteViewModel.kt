@@ -76,6 +76,8 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
 
     fun updateVenue(venue: String) = updateDetails { copy(venue = venue) }
 
+    fun updateMobileNumber(mobileNumber: String) = updateDetails { copy(mobileNumber = mobileNumber) }
+
     fun updateMessage(message: String) = updateDetails { copy(message = message) }
 
     fun updateUploadedPhoto(uri: Uri?) {

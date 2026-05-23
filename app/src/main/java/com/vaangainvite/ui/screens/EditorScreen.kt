@@ -204,6 +204,7 @@ fun EditorScreen(
                 onDateChanged = viewModel::updateDate,
                 onTimeChanged = viewModel::updateTime,
                 onVenueChanged = viewModel::updateVenue,
+                onMobileNumberChanged = viewModel::updateMobileNumber,
                 onMessageChanged = viewModel::updateMessage
             )
 
@@ -404,6 +405,7 @@ private fun EditorFields(
     onDateChanged: (String) -> Unit,
     onTimeChanged: (String) -> Unit,
     onVenueChanged: (String) -> Unit,
+    onMobileNumberChanged: (String) -> Unit,
     onMessageChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -455,6 +457,20 @@ private fun EditorFields(
             label = { Text("Venue") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
+        )
+        OutlinedTextField(
+            value = details.mobileNumber,
+            onValueChange = onMobileNumberChanged,
+            label = { Text("Mobile number for queries") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("+91 98765 43210") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            ),
+            supportingText = {
+                Text(text = "Guests can call this number for location help or questions.")
+            }
         )
         InviteMessageSection(
             message = details.message,

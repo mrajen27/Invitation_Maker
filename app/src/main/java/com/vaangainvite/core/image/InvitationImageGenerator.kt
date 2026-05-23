@@ -6,11 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -172,25 +174,28 @@ class InvitationImageGenerator(private val context: Context) {
         y += 20f
         y = drawCenteredLines(
             canvas = canvas,
-            text = details.occasionTitle.ifBlank { defaultOccasionTitle(language) },
-            paint = occasionPaint,
-            startY = y,
-            maxWidth = 690f,
-            lineSpacing = 12f
-        )
-        y += 20f
-        y = drawCenteredLines(
-            canvas = canvas,
             text = details.name.ifBlank { language.fallbackName },
             paint = titlePaint,
             startY = y,
             maxWidth = 690f,
             lineSpacing = 14f
         )
+        y += 20f
+        y = drawCenteredLines(
+            canvas = canvas,
+            text = details.occasionTitle.ifBlank { defaultOccasionTitle(language) },
+            paint = occasionPaint,
+            startY = y,
+            maxWidth = 690f,
+            lineSpacing = 12f
+        )
         y += 44f
         y = drawDetailLine(canvas, language.dateLabel, details.date.ifBlank { language.fallbackDate }, bodyPaint, y)
         y = drawDetailLine(canvas, language.timeLabel, details.time.ifBlank { language.fallbackTime }, bodyPaint, y)
         y = drawDetailLine(canvas, language.venueLabel, details.venue.ifBlank { language.fallbackVenue }, bodyPaint, y)
+        if (details.mobileNumber.isNotBlank()) {
+            y = drawDetailLine(canvas, contactLabel(language), details.mobileNumber, bodyPaint, y)
+        }
         y += 26f
         drawCenteredLines(
             canvas = canvas,
@@ -210,6 +215,13 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
+    private fun contactLabel(language: InvitationLanguage): String {
+        return when (language) {
+            InvitationLanguage.ENGLISH -> "Contact"
+            InvitationLanguage.TAMIL -> "தொடர்பு"
+        }
+    }
+
     private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?): Boolean {
         if (uploadedPhotoUri == null) return false
 
@@ -217,7 +229,9 @@ class InvitationImageGenerator(private val context: Context) {
             context.contentResolver.openInputStream(uploadedPhotoUri)?.use { input ->
                 BitmapFactory.decodeStream(input)
             }
-        }.getOrNull() ?: return false
+        }.getOrNull()?.let { bitmap ->
+            correctBitmapOrientation(bitmap, uploadedPhotoUri)
+        } ?: return false
 
         val frame = RectF(395f, 360f, 685f, 620f)
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -250,6 +264,46 @@ class InvitationImageGenerator(private val context: Context) {
         canvas.restore()
         canvas.drawRoundRect(frame, 32f, 32f, borderPaint)
         return true
+    }
+
+    private fun correctBitmapOrientation(bitmap: Bitmap, uploadedPhotoUri: Uri): Bitmap {
+        val orientation = runCatching {
+            context.contentResolver.openInputStream(uploadedPhotoUri)?.use { input ->
+                ExifInterface(input).getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            } ?: ExifInterface.ORIENTATION_NORMAL
+        }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
+
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                matrix.postRotate(90f)
+                matrix.postScale(-1f, 1f)
+            }
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                matrix.postRotate(270f)
+                matrix.postScale(-1f, 1f)
+            }
+        }
+
+        if (matrix.isIdentity) return bitmap
+
+        return Bitmap.createBitmap(
+            bitmap,
+            0,
+            0,
+            bitmap.width,
+            bitmap.height,
+            matrix,
+            true
+        )
     }
 
     private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
