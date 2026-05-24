@@ -25,14 +25,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationTemplate
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 
@@ -78,7 +81,7 @@ fun TemplateSelectionScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Five hand-picked designs per category — bold borders and motifs made to stand out on WhatsApp.",
+                    text = "Premium printable-style cards with balloons, florals, and gold accents — like professional invitation templates.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -101,6 +104,11 @@ private fun TemplateCard(
     template: InvitationTemplate,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val preview = remember(template.id) {
+        InvitationImageGenerator(context).createTemplatePreviewBitmap(template).asImageBitmap()
+    }
+
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -114,7 +122,7 @@ private fun TemplateCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = template.drawableResId),
+                bitmap = preview,
                 contentDescription = template.title,
                 modifier = Modifier
                     .width(96.dp)
