@@ -11,7 +11,7 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
   - Puberty Ceremony
 - Traditional splash/loading screen with spinner to avoid a blank white startup screen.
 - Traditional home screen background with toran, kolam, and floral motifs.
-- Template selection screen with 5 bold, hand-picked vector designs per category.
+- Template selection screen with 5 photo-style printable WebP designs per category (20 total).
 - Invitation editor with fields for name on invitation, occasion/event title, date picker, time, venue, mobile number for queries/location help, and an additional message.
 - Quick additional-message chips with English/Tamil suggestions, category-specific messages, tone filters, emoji-friendly input, image-safe character guidance, and a live message preview card.
 - English/Tamil invitation language selector for generated card headings and labels.

@@ -15,197 +15,211 @@ class TemplateRepository {
         InvitationCategory(
             id = "wedding",
             title = "Wedding",
-            description = "Royal maroon-and-gold looks for your big day.",
+            description = "Five royal maroon-and-gold printable cards for your muhurtham.",
             accentColor = 0xFF6E1634.toInt()
         ),
         InvitationCategory(
             id = "housewarming",
             title = "Housewarming",
-            description = "Fresh, auspicious greens for grihapravesam.",
+            description = "Five auspicious green-and-gold grihapravesam printable cards.",
             accentColor = 0xFF1B5E20.toInt()
         ),
         InvitationCategory(
             id = "puberty",
             title = "Puberty Ceremony",
-            description = "Elegant purple-and-rose ceremony styles.",
+            description = "Five elegant purple-and-rose printable ceremony cards.",
             accentColor = 0xFF6A1B9A.toInt()
         )
     )
 
     private val templates: List<InvitationTemplate> = listOf(
-        // Birthday — 5 photo-style WebP backgrounds (printable invitation look)
-        InvitationTemplate(
+        // Birthday
+        photoTemplate(
             id = "birthday_01",
             categoryId = "birthday",
             title = "Pink & Gold Balloons",
-            description = "Soft pink card with realistic balloons and gold frame — like a print-shop invite.",
-            drawableResId = R.drawable.bg_birthday_balloon_blast,
-            backgroundResId = R.drawable.bg_birthday_balloon_blast,
+            description = "Soft pink with realistic balloons and gold frame.",
+            resId = R.drawable.bg_birthday_balloon_blast,
             primaryColor = 0xFFC2185B.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "birthday_02",
             categoryId = "birthday",
             title = "Navy Gold Party",
-            description = "Premium navy and gold balloons with lights — elegant evening celebration.",
-            drawableResId = R.drawable.bg_birthday_navy_gold,
-            backgroundResId = R.drawable.bg_birthday_navy_gold,
+            description = "Premium navy and gold balloons with string lights.",
+            resId = R.drawable.bg_birthday_navy_gold,
             primaryColor = 0xFF5D1532.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "birthday_03",
             categoryId = "birthday",
             title = "Kids Party Fun",
-            description = "Bright cartoon balloons, cake, and confetti — perfect for children.",
-            drawableResId = R.drawable.bg_birthday_playful,
-            backgroundResId = R.drawable.bg_birthday_playful,
+            description = "Bright cartoon balloons, cake, and confetti.",
+            resId = R.drawable.bg_birthday_playful,
             primaryColor = 0xFFE65100.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "birthday_04",
             categoryId = "birthday",
             title = "Watercolor Roses",
-            description = "Sage green watercolor with pink roses — soft and beautiful.",
-            drawableResId = R.drawable.bg_birthday_floral,
-            backgroundResId = R.drawable.bg_birthday_floral,
+            description = "Sage green watercolor with pink roses.",
+            resId = R.drawable.bg_birthday_floral,
             primaryColor = 0xFFAD1457.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "birthday_05",
             categoryId = "birthday",
             title = "Purple Night Glow",
-            description = "Glam purple bokeh with pink balloons — bold party vibe.",
-            drawableResId = R.drawable.bg_birthday_purple_party,
-            backgroundResId = R.drawable.bg_birthday_purple_party,
+            description = "Glam purple bokeh with pink balloons.",
+            resId = R.drawable.bg_birthday_purple_party,
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Wedding — 5 standout styles
-        InvitationTemplate(
+        // Wedding
+        photoTemplate(
             id = "wedding_01",
             categoryId = "wedding",
             title = "Royal Kolam",
-            description = "Maroon-gold kolam mandala — classic South Indian wedding charm.",
-            drawableResId = R.drawable.template_wedding_01,
+            description = "Maroon and gold kolam borders — classic kalyanam look.",
+            resId = R.drawable.bg_wedding_kolam,
             primaryColor = 0xFF6E1634.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "wedding_02",
             categoryId = "wedding",
             title = "Temple Mandapam",
-            description = "Temple arch with sacred bells — ceremonial and striking.",
-            drawableResId = R.drawable.template_wedding_02,
+            description = "Temple arch, bells, and jasmine — ceremonial elegance.",
+            resId = R.drawable.bg_wedding_temple,
             primaryColor = 0xFF5D1532.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "wedding_03",
             categoryId = "wedding",
             title = "Golden Mandapam",
-            description = "Diagonal gold drape with maroon pillars — luxury wedding feel.",
-            drawableResId = R.drawable.template_wedding_03,
+            description = "Gold silk drape with maroon pillars — luxury wedding.",
+            resId = R.drawable.bg_wedding_golden_mandapam,
             primaryColor = 0xFF3E0F24.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "wedding_04",
             categoryId = "wedding",
             title = "Sacred Knot",
-            description = "Thali knot motif at center — meaningful and eye-catching.",
-            drawableResId = R.drawable.template_wedding_04,
+            description = "Traditional thali motif with marigold accents.",
+            resId = R.drawable.bg_wedding_sacred_knot,
             primaryColor = 0xFF8B1E3F.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "wedding_05",
             categoryId = "wedding",
             title = "Peacock Kalyanam",
-            description = "Twin peacock crowns in maroon-gold — show-stopping wedding card.",
-            drawableResId = R.drawable.template_wedding_05,
+            description = "Twin peacock crests in maroon and gold.",
+            resId = R.drawable.bg_wedding_peacock,
             primaryColor = 0xFF4A0E1F.toInt()
         ),
 
-        // Housewarming — 5 standout styles
-        InvitationTemplate(
+        // Housewarming
+        photoTemplate(
             id = "housewarming_01",
             categoryId = "housewarming",
             title = "Mango Toran",
-            description = "Mango-leaf toran with home silhouette — warm grihapravesam welcome.",
-            drawableResId = R.drawable.template_housewarming_01,
+            description = "Mango-leaf toran on fresh green and gold.",
+            resId = R.drawable.bg_housewarming_mango_toran,
             primaryColor = 0xFF1B5E20.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "housewarming_02",
             categoryId = "housewarming",
             title = "Deepam Glow",
-            description = "Row of glowing lamps — auspicious light for your new home.",
-            drawableResId = R.drawable.template_housewarming_02,
+            description = "Glowing oil lamps — auspicious grihapravesam light.",
+            resId = R.drawable.bg_housewarming_deepam,
             primaryColor = 0xFF0D3B1E.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "housewarming_03",
             categoryId = "housewarming",
             title = "Gopuram Welcome",
-            description = "Temple doorway frame in green-gold — grand housewarming entrance.",
-            drawableResId = R.drawable.template_housewarming_03,
+            description = "Temple doorway in green and gold.",
+            resId = R.drawable.bg_housewarming_gopuram,
             primaryColor = 0xFF1F6F35.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "housewarming_04",
             categoryId = "housewarming",
             title = "Banana Leaf Feast",
-            description = "Banana-leaf panel with festive border — homely and celebratory.",
-            drawableResId = R.drawable.template_housewarming_04,
+            description = "Traditional banana-leaf border frame.",
+            resId = R.drawable.bg_housewarming_banana_leaf,
             primaryColor = 0xFF2E7D32.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "housewarming_05",
             categoryId = "housewarming",
             title = "Prosperity Kolam",
-            description = "Green kolam ring with gold accents — blessings for the new threshold.",
-            drawableResId = R.drawable.template_housewarming_05,
+            description = "Green kolam ring with marigold corners.",
+            resId = R.drawable.bg_housewarming_kolam,
             primaryColor = 0xFF0B4F2A.toInt()
         ),
 
-        // Puberty ceremony — 5 standout styles
-        InvitationTemplate(
+        // Puberty ceremony
+        photoTemplate(
             id = "puberty_01",
             categoryId = "puberty",
             title = "Peacock Grace",
-            description = "Twin peacock crests in purple-gold — elegant ceremony statement.",
-            drawableResId = R.drawable.template_puberty_01,
+            description = "Purple and gold peacock crests — regal ceremony.",
+            resId = R.drawable.bg_puberty_peacock,
             primaryColor = 0xFF6A1B9A.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "puberty_02",
             categoryId = "puberty",
             title = "Jasmine Garland",
-            description = "Rose-gold garland frame with floral corners — soft and festive.",
-            drawableResId = R.drawable.template_puberty_02,
+            description = "Rose and jasmine garland on blush gold.",
+            resId = R.drawable.bg_puberty_jasmine,
             primaryColor = 0xFFAD1457.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "puberty_03",
             categoryId = "puberty",
             title = "Lotus Bloom",
-            description = "Pink lotus mandala on purple — delicate yet vibrant.",
-            drawableResId = R.drawable.template_puberty_03,
+            description = "Lotus mandala in purple and pink.",
+            resId = R.drawable.bg_puberty_lotus,
             primaryColor = 0xFF6A1B9A.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "puberty_04",
             categoryId = "puberty",
             title = "Royal Purple",
-            description = "Deep violet with gold arch and gem florals — regal ceremony look.",
-            drawableResId = R.drawable.template_puberty_04,
+            description = "Deep violet with gold arch and florals.",
+            resId = R.drawable.bg_puberty_royal_purple,
             primaryColor = 0xFF311B92.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "puberty_05",
             categoryId = "puberty",
             title = "Rose Festival",
-            description = "Rose-gold diagonal sweep with lamp garland — bright and memorable.",
-            drawableResId = R.drawable.template_puberty_05,
+            description = "Rose-gold sweep with lamps and roses.",
+            resId = R.drawable.bg_puberty_rose_festival,
             primaryColor = 0xFF7B1FA2.toInt()
         )
     )
+
+    private fun photoTemplate(
+        id: String,
+        categoryId: String,
+        title: String,
+        description: String,
+        resId: Int,
+        primaryColor: Int
+    ): InvitationTemplate {
+        return InvitationTemplate(
+            id = id,
+            categoryId = categoryId,
+            title = title,
+            description = description,
+            drawableResId = resId,
+            backgroundResId = resId,
+            primaryColor = primaryColor
+        )
+    }
 
     fun templatesForCategory(categoryId: String): List<InvitationTemplate> {
         return templates.filter { it.categoryId == categoryId }
