@@ -8,4 +8,8 @@ data class InvitationDetails(
     val venue: String = "",
     val mobileNumber: String = "",
     val message: String = ""
-)
+) {
+    companion object {
+        const val VENUE_MAX_LINES = 3
+    }
+}
