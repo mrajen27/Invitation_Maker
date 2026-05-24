@@ -43,30 +43,34 @@ class InvitationImageGenerator(private val context: Context) {
         drawTemplateBackground(canvas, template, imageWidth, imageHeight)
 
         val usesPhotoBackground = template.usesPhotoBackground()
-        val contentCard = if (usesPhotoBackground) {
-            RectF(130f, 360f, 950f, 1240f)
+        val hasUploadedPhoto = if (usesPhotoBackground) {
+            drawUploadedPhoto(
+                canvas = canvas,
+                uploadedPhotoUri = uploadedPhotoUri,
+                frame = InvitationLayout.photoFrame()
+            )
         } else {
-            RectF(100f, 260f, 980f, 1180f)
+            val classicZone = InvitationLayout.classicTextZone()
+            drawFrostedCard(canvas, classicZone)
+            drawUploadedPhoto(
+                canvas = canvas,
+                uploadedPhotoUri = uploadedPhotoUri,
+                frame = RectF(370f, classicZone.top + 20f, 710f, classicZone.top + 250f)
+            )
         }
 
-        if (usesPhotoBackground) {
-            drawSoftTextBackdrop(canvas, contentCard)
+        val textZone = if (usesPhotoBackground) {
+            InvitationLayout.photoTextZone(hasUploadedPhoto)
         } else {
-            drawFrostedCard(canvas, contentCard)
+            InvitationLayout.classicTextZone()
         }
 
-        val hasUploadedPhoto = drawUploadedPhoto(
-            canvas = canvas,
-            uploadedPhotoUri = uploadedPhotoUri,
-            cardTop = contentCard.top,
-            usesPhotoBackground = usesPhotoBackground
-        )
         drawInvitationText(
             canvas = canvas,
             template = template,
             details = details,
             language = language,
-            card = contentCard,
+            zone = textZone,
             hasUploadedPhoto = hasUploadedPhoto,
             usesPhotoBackground = usesPhotoBackground
         )
@@ -102,13 +106,6 @@ class InvitationImageGenerator(private val context: Context) {
             }
         }
         InvitationBackgroundPainter.draw(canvas, template.id, width, height)
-    }
-
-    private fun drawSoftTextBackdrop(canvas: Canvas, bounds: RectF) {
-        val backdrop = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.argb(175, 255, 255, 255)
-        }
-        canvas.drawRoundRect(bounds, 32f, 32f, backdrop)
     }
 
     fun saveBitmapToCache(bitmap: Bitmap): Uri {
@@ -178,7 +175,7 @@ class InvitationImageGenerator(private val context: Context) {
             )
         }
         val panelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.argb(245, 255, 255, 255)
+            color = Color.argb(230, 255, 255, 255)
         }
         val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(200, 247, 201, 72)
@@ -194,7 +191,7 @@ class InvitationImageGenerator(private val context: Context) {
         template: InvitationTemplate,
         details: InvitationDetails,
         language: InvitationLanguage,
-        card: RectF,
+        zone: RectF,
         hasUploadedPhoto: Boolean,
         usesPhotoBackground: Boolean
     ) {
@@ -209,41 +206,36 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.ENGLISH -> serifTypeface()
         }
 
-        val introPaint = textPaint(Color.parseColor("#5D4037"), 30f, serif, usesPhotoBackground)
-        val occasionPaint = textPaint(primary, 44f, serif, usesPhotoBackground)
+        val shadowed = usesPhotoBackground
+        val introPaint = textPaint(Color.parseColor("#4E342E"), 32f, serif, shadowed)
+        val occasionPaint = textPaint(primary, 46f, serif, shadowed)
         val namePaint = textPaint(
             primary,
-            if (hasUploadedPhoto) 62f else 72f,
+            if (hasUploadedPhoto) 64f else 76f,
             script,
-            usesPhotoBackground
+            shadowed
         )
         val bodyPaint = textPaint(
-            Color.parseColor("#424242"),
-            30f,
+            Color.parseColor("#3E2723"),
+            28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
             },
-            usesPhotoBackground
+            shadowed
         )
         val messagePaint = textPaint(
-            Color.parseColor("#5D4037"),
-            27f,
+            Color.parseColor("#4E342E"),
+            26f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
             },
-            usesPhotoBackground
+            shadowed
         )
 
-        var y = if (hasUploadedPhoto) {
-            card.top + 320f
-        } else if (usesPhotoBackground) {
-            card.top + 48f
-        } else {
-            card.top + 56f
-        }
-        val maxTextWidth = card.width() - 120f
+        var y = zone.top + 8f
+        val maxTextWidth = zone.width() - 40f
 
         y = drawCenteredLines(canvas, language.inviteIntro, introPaint, y, maxTextWidth, 6f, maxLines = 1)
         y += 10f
@@ -268,13 +260,14 @@ class InvitationImageGenerator(private val context: Context) {
         )
         y += 20f
 
+        y += 12f
         y = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_calendar,
             value = details.date.ifBlank { language.fallbackDate },
             paint = bodyPaint,
             startY = y,
-            card = card,
+            zone = zone,
             maxLines = 1
         )
         y = drawDetailWithIcon(
@@ -283,7 +276,7 @@ class InvitationImageGenerator(private val context: Context) {
             value = details.time.ifBlank { language.fallbackTime },
             paint = bodyPaint,
             startY = y,
-            card = card,
+            zone = zone,
             maxLines = 1
         )
         y = drawDetailWithIcon(
@@ -292,7 +285,7 @@ class InvitationImageGenerator(private val context: Context) {
             value = details.venue.ifBlank { language.fallbackVenue },
             paint = bodyPaint,
             startY = y,
-            card = card,
+            zone = zone,
             maxLines = InvitationDetails.VENUE_MAX_LINES
         )
         if (details.mobileNumber.isNotBlank()) {
@@ -302,13 +295,13 @@ class InvitationImageGenerator(private val context: Context) {
                 value = details.mobileNumber,
                 paint = bodyPaint,
                 startY = y,
-                card = card,
+                zone = zone,
                 maxLines = 1
             )
         }
 
-        val messageTop = (y + 16f).coerceIn(card.top + 520f, card.bottom - 120f)
-        val messageMaxLines = ((card.bottom - 40f - messageTop) / (messagePaint.fontSpacing + 8f))
+        val messageTop = (y + 20f).coerceIn(zone.top + 280f, zone.bottom - 100f)
+        val messageMaxLines = ((zone.bottom - messageTop) / (messagePaint.fontSpacing + 8f))
             .toInt()
             .coerceIn(1, 3)
         drawCenteredLines(
@@ -316,7 +309,7 @@ class InvitationImageGenerator(private val context: Context) {
             text = details.message.ifBlank { language.fallbackMessage },
             paint = messagePaint,
             startY = messageTop,
-            maxWidth = maxTextWidth - 40f,
+            maxWidth = maxTextWidth,
             lineSpacing = 8f,
             maxLines = messageMaxLines
         )
@@ -328,15 +321,13 @@ class InvitationImageGenerator(private val context: Context) {
         value: String,
         paint: Paint,
         startY: Float,
-        card: RectF,
+        zone: RectF,
         maxLines: Int
     ): Float {
-        val iconSize = 40f
-        val gap = 18f
-        val textWidth = card.width() - 160f
-        val lines = wrapText(value, paint, textWidth).limitLines(maxLines, paint, textWidth)
-        val blockWidth = iconSize + gap + textWidth
-        val blockLeft = card.left + (card.width() - blockWidth) / 2f
+        val iconSize = 36f
+        val gap = 14f
+        val maxLineWidth = zone.width() - iconSize - gap - 24f
+        val lines = wrapText(value, paint, maxLineWidth).limitLines(maxLines, paint, maxLineWidth)
         val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)) {
             "Missing detail icon"
         }
@@ -344,21 +335,24 @@ class InvitationImageGenerator(private val context: Context) {
 
         lines.forEachIndexed { index, line ->
             if (index == 0) {
+                val lineWidth = paint.measureText(line)
+                val rowWidth = iconSize + gap + lineWidth
+                val rowLeft = zone.centerX() - rowWidth / 2f
                 val iconTop = (y - iconSize + 6f).toInt()
                 icon.setBounds(
-                    blockLeft.toInt(),
+                    rowLeft.toInt(),
                     iconTop,
-                    (blockLeft + iconSize).toInt(),
+                    (rowLeft + iconSize).toInt(),
                     iconTop + iconSize.toInt()
                 )
                 icon.draw(canvas)
-                canvas.drawText(line, blockLeft + iconSize + gap, y, paint)
+                canvas.drawText(line, rowLeft + iconSize + gap, y, paint)
             } else {
-                canvas.drawText(line, blockLeft + iconSize + gap, y, paint)
+                canvas.drawText(line, centeredX(line, paint), y, paint)
             }
             y += paint.fontSpacing + 10f
         }
-        return y + 6f
+        return y + 8f
     }
 
     private fun defaultOccasionTitle(language: InvitationLanguage, template: InvitationTemplate): String {
@@ -381,8 +375,7 @@ class InvitationImageGenerator(private val context: Context) {
     private fun drawUploadedPhoto(
         canvas: Canvas,
         uploadedPhotoUri: Uri?,
-        cardTop: Float,
-        usesPhotoBackground: Boolean
+        frame: RectF
     ): Boolean {
         if (uploadedPhotoUri == null) return false
 
@@ -393,12 +386,6 @@ class InvitationImageGenerator(private val context: Context) {
         }.getOrNull()?.let { bitmap ->
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
-
-        val frame = if (usesPhotoBackground) {
-            RectF(360f, cardTop + 12f, 720f, cardTop + 260f)
-        } else {
-            RectF(340f, cardTop + 24f, 740f, cardTop + 300f)
-        }
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -575,7 +562,7 @@ class InvitationImageGenerator(private val context: Context) {
             this.typeface = typeface
             textAlign = Paint.Align.LEFT
             if (shadowed) {
-                setShadowLayer(6f, 0f, 2f, Color.argb(90, 0, 0, 0))
+                setShadowLayer(8f, 0f, 2f, Color.argb(120, 0, 0, 0))
             }
         }
     }
