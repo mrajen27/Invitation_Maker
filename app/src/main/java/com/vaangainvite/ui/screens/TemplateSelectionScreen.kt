@@ -45,10 +45,8 @@ fun TemplateSelectionScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categoryTitle = state.selectedCategory?.title ?: "Templates"
-    val categorySubtitle = when (state.selectedCategory?.id) {
-        "birthday" -> "Photo-style printable backgrounds — pick a design, then your details are layered on top."
-        else -> "Premium invitation designs with traditional motifs and gold accents."
-    }
+    val categorySubtitle =
+        "Photo-style printable designs — pick a card, then your details are layered on top."
 
     Scaffold(
         topBar = {
