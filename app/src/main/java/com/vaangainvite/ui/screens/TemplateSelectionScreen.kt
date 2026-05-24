@@ -78,7 +78,7 @@ fun TemplateSelectionScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Each category includes 20 local designs that can be exported as shareable images.",
+                    text = "Five hand-picked designs per category — bold borders and motifs made to stand out on WhatsApp.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
