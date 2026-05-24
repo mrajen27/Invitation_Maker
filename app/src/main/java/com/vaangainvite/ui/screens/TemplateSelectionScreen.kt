@@ -25,17 +25,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationTemplate
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 
@@ -48,6 +45,10 @@ fun TemplateSelectionScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categoryTitle = state.selectedCategory?.title ?: "Templates"
+    val categorySubtitle = when (state.selectedCategory?.id) {
+        "birthday" -> "Photo-style printable backgrounds — pick a design, then your details are layered on top."
+        else -> "Premium invitation designs with traditional motifs and gold accents."
+    }
 
     Scaffold(
         topBar = {
@@ -81,7 +82,7 @@ fun TemplateSelectionScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Premium printable-style cards with balloons, florals, and gold accents — like professional invitation templates.",
+                    text = categorySubtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -104,11 +105,6 @@ private fun TemplateCard(
     template: InvitationTemplate,
     onClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val preview = remember(template.id) {
-        InvitationImageGenerator(context).createTemplatePreviewBitmap(template).asImageBitmap()
-    }
-
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -122,10 +118,10 @@ private fun TemplateCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                bitmap = preview,
+                painter = painterResource(id = template.previewResId()),
                 contentDescription = template.title,
                 modifier = Modifier
-                    .width(96.dp)
+                    .width(110.dp)
                     .aspectRatio(0.8f)
                     .clip(RoundedCornerShape(18.dp)),
                 contentScale = ContentScale.Crop

@@ -9,7 +9,7 @@ class TemplateRepository {
         InvitationCategory(
             id = "birthday",
             title = "Birthday",
-            description = "Bold, festive cards that pop on WhatsApp.",
+            description = "Five photo-style printable cards with balloons, florals, and party themes.",
             accentColor = 0xFFFF1744.toInt()
         ),
         InvitationCategory(
@@ -33,46 +33,51 @@ class TemplateRepository {
     )
 
     private val templates: List<InvitationTemplate> = listOf(
-        // Birthday — 5 standout styles
+        // Birthday — 5 photo-style WebP backgrounds (printable invitation look)
         InvitationTemplate(
             id = "birthday_01",
             categoryId = "birthday",
-            title = "Balloon Blast",
-            description = "Hot pink frame with floating balloons — instant party energy.",
-            drawableResId = R.drawable.template_birthday_01,
-            primaryColor = 0xFFFF1744.toInt()
+            title = "Pink & Gold Balloons",
+            description = "Soft pink card with realistic balloons and gold frame — like a print-shop invite.",
+            drawableResId = R.drawable.bg_birthday_balloon_blast,
+            backgroundResId = R.drawable.bg_birthday_balloon_blast,
+            primaryColor = 0xFFC2185B.toInt()
         ),
         InvitationTemplate(
             id = "birthday_02",
             categoryId = "birthday",
-            title = "Lotus Spotlight",
-            description = "Gold mandala lotus on rose — traditional yet vibrant.",
-            drawableResId = R.drawable.template_birthday_02,
-            primaryColor = 0xFF880E4F.toInt()
+            title = "Navy Gold Party",
+            description = "Premium navy and gold balloons with lights — elegant evening celebration.",
+            drawableResId = R.drawable.bg_birthday_navy_gold,
+            backgroundResId = R.drawable.bg_birthday_navy_gold,
+            primaryColor = 0xFF5D1532.toInt()
         ),
         InvitationTemplate(
             id = "birthday_03",
             categoryId = "birthday",
-            title = "Confetti Pop",
-            description = "Diagonal gold sweep with rainbow confetti — pure celebration.",
-            drawableResId = R.drawable.template_birthday_03,
-            primaryColor = 0xFF1565C0.toInt()
+            title = "Kids Party Fun",
+            description = "Bright cartoon balloons, cake, and confetti — perfect for children.",
+            drawableResId = R.drawable.bg_birthday_playful,
+            backgroundResId = R.drawable.bg_birthday_playful,
+            primaryColor = 0xFFE65100.toInt()
         ),
         InvitationTemplate(
             id = "birthday_04",
             categoryId = "birthday",
-            title = "Peacock Fiesta",
-            description = "Teal peacock feathers and jewel tones — unforgettable and bold.",
-            drawableResId = R.drawable.template_birthday_04,
-            primaryColor = 0xFF004D40.toInt()
+            title = "Watercolor Roses",
+            description = "Sage green watercolor with pink roses — soft and beautiful.",
+            drawableResId = R.drawable.bg_birthday_floral,
+            backgroundResId = R.drawable.bg_birthday_floral,
+            primaryColor = 0xFFAD1457.toInt()
         ),
         InvitationTemplate(
             id = "birthday_05",
             categoryId = "birthday",
-            title = "Golden Arch",
-            description = "Regal purple arch with marigold toran — grand birthday entrance.",
-            drawableResId = R.drawable.template_birthday_05,
-            primaryColor = 0xFF4A148C.toInt()
+            title = "Purple Night Glow",
+            description = "Glam purple bokeh with pink balloons — bold party vibe.",
+            drawableResId = R.drawable.bg_birthday_purple_party,
+            backgroundResId = R.drawable.bg_birthday_purple_party,
+            primaryColor = 0xFF7B1FA2.toInt()
         ),
 
         // Wedding — 5 standout styles

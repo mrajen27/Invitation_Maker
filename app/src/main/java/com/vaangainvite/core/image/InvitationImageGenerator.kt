@@ -40,19 +40,35 @@ class InvitationImageGenerator(private val context: Context) {
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        InvitationBackgroundPainter.draw(canvas, template.id, imageWidth, imageHeight)
+        drawTemplateBackground(canvas, template, imageWidth, imageHeight)
 
-        val contentCard = RectF(100f, 260f, 980f, 1180f)
-        drawFrostedCard(canvas, contentCard)
+        val usesPhotoBackground = template.usesPhotoBackground()
+        val contentCard = if (usesPhotoBackground) {
+            RectF(130f, 360f, 950f, 1240f)
+        } else {
+            RectF(100f, 260f, 980f, 1180f)
+        }
 
-        val hasUploadedPhoto = drawUploadedPhoto(canvas, uploadedPhotoUri, contentCard.top)
+        if (usesPhotoBackground) {
+            drawSoftTextBackdrop(canvas, contentCard)
+        } else {
+            drawFrostedCard(canvas, contentCard)
+        }
+
+        val hasUploadedPhoto = drawUploadedPhoto(
+            canvas = canvas,
+            uploadedPhotoUri = uploadedPhotoUri,
+            cardTop = contentCard.top,
+            usesPhotoBackground = usesPhotoBackground
+        )
         drawInvitationText(
             canvas = canvas,
             template = template,
             details = details,
             language = language,
             card = contentCard,
-            hasUploadedPhoto = hasUploadedPhoto
+            hasUploadedPhoto = hasUploadedPhoto,
+            usesPhotoBackground = usesPhotoBackground
         )
 
         return bitmap
@@ -63,17 +79,36 @@ class InvitationImageGenerator(private val context: Context) {
         val height = 405
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        InvitationBackgroundPainter.draw(canvas, template.id, width, height)
-        val card = RectF(30f, 78f, width - 30f, height - 78f)
-        drawFrostedCard(canvas, card, cornerRadius = 12f, shadow = false)
-
-        val introPaint = textPaint(Color.parseColor("#5D4037"), 14f, serifTypeface())
-        canvas.drawText("Preview", (width - introPaint.measureText("Preview")) / 2f, 130f, introPaint)
-
-        val namePaint = textPaint(template.primaryColor, 26f, scriptTypeface())
-        val sample = template.title
-        canvas.drawText(sample, (width - namePaint.measureText(sample)) / 2f, 170f, namePaint)
+        drawTemplateBackground(canvas, template, width, height)
         return bitmap
+    }
+
+    private fun drawTemplateBackground(
+        canvas: Canvas,
+        template: InvitationTemplate,
+        width: Int,
+        height: Int
+    ) {
+        val backgroundRes = template.backgroundResId
+        if (backgroundRes != null) {
+            val options = BitmapFactory.Options().apply {
+                inScaled = false
+            }
+            val source = BitmapFactory.decodeResource(context.resources, backgroundRes, options)
+            if (source != null) {
+                val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+                canvas.drawBitmap(source, null, Rect(0, 0, width, height), paint)
+                return
+            }
+        }
+        InvitationBackgroundPainter.draw(canvas, template.id, width, height)
+    }
+
+    private fun drawSoftTextBackdrop(canvas: Canvas, bounds: RectF) {
+        val backdrop = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(175, 255, 255, 255)
+        }
+        canvas.drawRoundRect(bounds, 32f, 32f, backdrop)
     }
 
     fun saveBitmapToCache(bitmap: Bitmap): Uri {
@@ -160,7 +195,8 @@ class InvitationImageGenerator(private val context: Context) {
         details: InvitationDetails,
         language: InvitationLanguage,
         card: RectF,
-        hasUploadedPhoto: Boolean
+        hasUploadedPhoto: Boolean,
+        usesPhotoBackground: Boolean
     ) {
         val primary = template.primaryColor
         val tamilTypeface = tamilTypeface()
@@ -173,19 +209,40 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.ENGLISH -> serifTypeface()
         }
 
-        val introPaint = textPaint(Color.parseColor("#5D4037"), 30f, serif)
-        val occasionPaint = textPaint(primary, 44f, serif)
-        val namePaint = textPaint(primary, if (hasUploadedPhoto) 62f else 72f, script)
-        val bodyPaint = textPaint(Color.parseColor("#424242"), 30f, when (language) {
-            InvitationLanguage.TAMIL -> tamilTypeface
-            InvitationLanguage.ENGLISH -> serifTypeface()
-        })
-        val messagePaint = textPaint(Color.parseColor("#5D4037"), 27f, when (language) {
-            InvitationLanguage.TAMIL -> tamilTypeface
-            InvitationLanguage.ENGLISH -> serifTypeface()
-        })
+        val introPaint = textPaint(Color.parseColor("#5D4037"), 30f, serif, usesPhotoBackground)
+        val occasionPaint = textPaint(primary, 44f, serif, usesPhotoBackground)
+        val namePaint = textPaint(
+            primary,
+            if (hasUploadedPhoto) 62f else 72f,
+            script,
+            usesPhotoBackground
+        )
+        val bodyPaint = textPaint(
+            Color.parseColor("#424242"),
+            30f,
+            when (language) {
+                InvitationLanguage.TAMIL -> tamilTypeface
+                InvitationLanguage.ENGLISH -> serifTypeface()
+            },
+            usesPhotoBackground
+        )
+        val messagePaint = textPaint(
+            Color.parseColor("#5D4037"),
+            27f,
+            when (language) {
+                InvitationLanguage.TAMIL -> tamilTypeface
+                InvitationLanguage.ENGLISH -> serifTypeface()
+            },
+            usesPhotoBackground
+        )
 
-        var y = if (hasUploadedPhoto) card.top + 340f else card.top + 56f
+        var y = if (hasUploadedPhoto) {
+            card.top + 320f
+        } else if (usesPhotoBackground) {
+            card.top + 48f
+        } else {
+            card.top + 56f
+        }
         val maxTextWidth = card.width() - 120f
 
         y = drawCenteredLines(canvas, language.inviteIntro, introPaint, y, maxTextWidth, 6f, maxLines = 1)
@@ -321,7 +378,12 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
-    private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?, cardTop: Float): Boolean {
+    private fun drawUploadedPhoto(
+        canvas: Canvas,
+        uploadedPhotoUri: Uri?,
+        cardTop: Float,
+        usesPhotoBackground: Boolean
+    ): Boolean {
         if (uploadedPhotoUri == null) return false
 
         val photoBitmap = runCatching {
@@ -332,7 +394,11 @@ class InvitationImageGenerator(private val context: Context) {
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
 
-        val frame = RectF(340f, cardTop + 24f, 740f, cardTop + 300f)
+        val frame = if (usesPhotoBackground) {
+            RectF(360f, cardTop + 12f, 720f, cardTop + 260f)
+        } else {
+            RectF(340f, cardTop + 24f, 740f, cardTop + 300f)
+        }
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -500,13 +566,17 @@ class InvitationImageGenerator(private val context: Context) {
     private fun textPaint(
         color: Int,
         textSize: Float,
-        typeface: Typeface
+        typeface: Typeface,
+        shadowed: Boolean = false
     ): Paint {
         return Paint(Paint.ANTI_ALIAS_FLAG).apply {
             this.color = color
             this.textSize = textSize
             this.typeface = typeface
             textAlign = Paint.Align.LEFT
+            if (shadowed) {
+                setShadowLayer(6f, 0f, 2f, Color.argb(90, 0, 0, 0))
+            }
         }
     }
 

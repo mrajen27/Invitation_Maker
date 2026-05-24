@@ -9,5 +9,11 @@ data class InvitationTemplate(
     val title: String,
     val description: String,
     @DrawableRes val drawableResId: Int,
-    @ColorInt val primaryColor: Int
-)
+    @ColorInt val primaryColor: Int,
+    @DrawableRes val backgroundResId: Int? = null
+) {
+    /** Resource used in the template picker and as the card background when set. */
+    fun previewResId(): Int = backgroundResId ?: drawableResId
+
+    fun usesPhotoBackground(): Boolean = backgroundResId != null
+}
