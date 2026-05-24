@@ -40,15 +40,39 @@ class InvitationImageGenerator(private val context: Context) {
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        ContextCompat.getDrawable(context, template.drawableResId)?.let { drawable ->
-            drawable.setBounds(0, 0, imageWidth, imageHeight)
-            drawable.draw(canvas)
-        } ?: canvas.drawColor(Color.rgb(255, 244, 230))
+        InvitationBackgroundPainter.draw(canvas, template.id, imageWidth, imageHeight)
 
-        drawReadablePanel(canvas)
-        val hasUploadedPhoto = drawUploadedPhoto(canvas, uploadedPhotoUri)
-        drawInvitationText(canvas, template, details, language, hasUploadedPhoto)
+        val contentCard = RectF(100f, 260f, 980f, 1180f)
+        drawFrostedCard(canvas, contentCard)
 
+        val hasUploadedPhoto = drawUploadedPhoto(canvas, uploadedPhotoUri, contentCard.top)
+        drawInvitationText(
+            canvas = canvas,
+            template = template,
+            details = details,
+            language = language,
+            card = contentCard,
+            hasUploadedPhoto = hasUploadedPhoto
+        )
+
+        return bitmap
+    }
+
+    fun createTemplatePreviewBitmap(template: InvitationTemplate): Bitmap {
+        val width = 324
+        val height = 405
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        InvitationBackgroundPainter.draw(canvas, template.id, width, height)
+        val card = RectF(30f, 78f, width - 30f, height - 78f)
+        drawFrostedCard(canvas, card, cornerRadius = 12f, shadow = false)
+
+        val introPaint = textPaint(Color.parseColor("#5D4037"), 14f, serifTypeface())
+        canvas.drawText("Preview", (width - introPaint.measureText("Preview")) / 2f, 130f, introPaint)
+
+        val namePaint = textPaint(template.primaryColor, 26f, scriptTypeface())
+        val sample = template.title
+        canvas.drawText(sample, (width - namePaint.measureText(sample)) / 2f, 170f, namePaint)
         return bitmap
     }
 
@@ -101,20 +125,33 @@ class InvitationImageGenerator(private val context: Context) {
         return uri
     }
 
-    private fun drawReadablePanel(canvas: Canvas) {
+    private fun drawFrostedCard(
+        canvas: Canvas,
+        bounds: RectF,
+        cornerRadius: Float = 28f,
+        shadow: Boolean = true
+    ) {
+        if (shadow) {
+            val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.argb(45, 0, 0, 0)
+            }
+            canvas.drawRoundRect(
+                RectF(bounds.left + 6f, bounds.top + 8f, bounds.right + 6f, bounds.bottom + 8f),
+                cornerRadius,
+                cornerRadius,
+                shadowPaint
+            )
+        }
         val panelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            alpha = 228
+            color = Color.argb(245, 255, 255, 255)
         }
         val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(247, 201, 72)
+            color = Color.argb(200, 247, 201, 72)
             style = Paint.Style.STROKE
-            strokeWidth = 8f
+            strokeWidth = 4f
         }
-
-        val panel = RectF(150f, 330f, 930f, 1065f)
-        canvas.drawRoundRect(panel, 36f, 36f, panelPaint)
-        canvas.drawRoundRect(panel, 36f, 36f, borderPaint)
+        canvas.drawRoundRect(bounds, cornerRadius, cornerRadius, panelPaint)
+        canvas.drawRoundRect(bounds, cornerRadius, cornerRadius, borderPaint)
     }
 
     private fun drawInvitationText(
@@ -122,82 +159,99 @@ class InvitationImageGenerator(private val context: Context) {
         template: InvitationTemplate,
         details: InvitationDetails,
         language: InvitationLanguage,
+        card: RectF,
         hasUploadedPhoto: Boolean
     ) {
         val primary = template.primaryColor
         val tamilTypeface = tamilTypeface()
-        val headingTypeface = when (language) {
-            InvitationLanguage.TAMIL -> Typeface.create(tamilTypeface, Typeface.BOLD)
-            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-        }
-        val bodyTypeface = when (language) {
+        val script = when (language) {
             InvitationLanguage.TAMIL -> tamilTypeface
-            InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
+            InvitationLanguage.ENGLISH -> scriptTypeface()
         }
-        val titlePaint = textPaint(
-            color = primary,
-            textSize = if (hasUploadedPhoto) 46f else 52f,
-            typeface = headingTypeface
+        val serif = when (language) {
+            InvitationLanguage.TAMIL -> Typeface.create(tamilTypeface, Typeface.BOLD)
+            InvitationLanguage.ENGLISH -> serifTypeface()
+        }
+
+        val introPaint = textPaint(Color.parseColor("#5D4037"), 30f, serif)
+        val occasionPaint = textPaint(primary, 44f, serif)
+        val namePaint = textPaint(primary, if (hasUploadedPhoto) 62f else 72f, script)
+        val bodyPaint = textPaint(Color.parseColor("#424242"), 30f, when (language) {
+            InvitationLanguage.TAMIL -> tamilTypeface
+            InvitationLanguage.ENGLISH -> serifTypeface()
+        })
+        val messagePaint = textPaint(Color.parseColor("#5D4037"), 27f, when (language) {
+            InvitationLanguage.TAMIL -> tamilTypeface
+            InvitationLanguage.ENGLISH -> serifTypeface()
+        })
+
+        var y = if (hasUploadedPhoto) card.top + 340f else card.top + 56f
+        val maxTextWidth = card.width() - 120f
+
+        y = drawCenteredLines(canvas, language.inviteIntro, introPaint, y, maxTextWidth, 6f, maxLines = 1)
+        y += 10f
+        y = drawCenteredLines(
+            canvas = canvas,
+            text = details.occasionTitle.ifBlank { defaultOccasionTitle(language, template) },
+            paint = occasionPaint,
+            startY = y,
+            maxWidth = maxTextWidth,
+            lineSpacing = 6f,
+            maxLines = 2
         )
-        val occasionPaint = textPaint(
-            color = primary,
-            textSize = if (hasUploadedPhoto) 32f else 36f,
-            typeface = headingTypeface
-        )
-        val headingPaint = textPaint(
-            color = Color.rgb(72, 50, 38),
-            textSize = if (hasUploadedPhoto) 28f else 32f,
-            typeface = headingTypeface
-        )
-        val bodyPaint = textPaint(
-            color = Color.rgb(38, 38, 38),
-            textSize = if (hasUploadedPhoto) 26f else 29f,
-            typeface = bodyTypeface
-        )
-        val messagePaint = textPaint(
-            color = Color.rgb(72, 50, 38),
-            textSize = if (hasUploadedPhoto) 24f else 27f,
-            typeface = bodyTypeface
-        )
-        var y = if (hasUploadedPhoto) 600f else 390f
-        y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 4f, maxLines = 1)
-        y += 6f
+        y += 8f
         y = drawCenteredLines(
             canvas = canvas,
             text = details.name.ifBlank { language.fallbackName },
-            paint = titlePaint,
+            paint = namePaint,
             startY = y,
-            maxWidth = 690f,
+            maxWidth = maxTextWidth,
             lineSpacing = 4f,
             maxLines = 2
         )
-        y += 4f
-        y = drawCenteredLines(
+        y += 20f
+
+        y = drawDetailWithIcon(
             canvas = canvas,
-            text = details.occasionTitle.ifBlank { defaultOccasionTitle(language) },
-            paint = occasionPaint,
+            iconResId = R.drawable.ic_invite_calendar,
+            value = details.date.ifBlank { language.fallbackDate },
+            paint = bodyPaint,
             startY = y,
-            maxWidth = 690f,
-            lineSpacing = 4f,
-            maxLines = 2
+            card = card,
+            maxLines = 1
         )
-        y += 14f
-        y = drawDetailLine(canvas, language.dateLabel, details.date.ifBlank { language.fallbackDate }, bodyPaint, y, maxLines = 1)
-        y = drawDetailLine(canvas, language.timeLabel, details.time.ifBlank { language.fallbackTime }, bodyPaint, y, maxLines = 1)
-        y = drawDetailLine(
-            canvas,
-            language.venueLabel,
-            details.venue.ifBlank { language.fallbackVenue },
-            bodyPaint,
-            y,
+        y = drawDetailWithIcon(
+            canvas = canvas,
+            iconResId = R.drawable.ic_invite_clock,
+            value = details.time.ifBlank { language.fallbackTime },
+            paint = bodyPaint,
+            startY = y,
+            card = card,
+            maxLines = 1
+        )
+        y = drawDetailWithIcon(
+            canvas = canvas,
+            iconResId = R.drawable.ic_invite_location,
+            value = details.venue.ifBlank { language.fallbackVenue },
+            paint = bodyPaint,
+            startY = y,
+            card = card,
             maxLines = InvitationDetails.VENUE_MAX_LINES
         )
         if (details.mobileNumber.isNotBlank()) {
-            y = drawDetailLine(canvas, contactLabel(language), details.mobileNumber, bodyPaint, y, maxLines = 1)
+            y = drawDetailWithIcon(
+                canvas = canvas,
+                iconResId = R.drawable.ic_invite_phone,
+                value = details.mobileNumber,
+                paint = bodyPaint,
+                startY = y,
+                card = card,
+                maxLines = 1
+            )
         }
-        val messageLineSpacing = 8f
-        val messageTop = (y + 10f).coerceIn(if (hasUploadedPhoto) 900f else 840f, 965f)
-        val messageMaxLines = ((1040f - messageTop) / (messagePaint.fontSpacing + messageLineSpacing))
+
+        val messageTop = (y + 16f).coerceIn(card.top + 520f, card.bottom - 120f)
+        val messageMaxLines = ((card.bottom - 40f - messageTop) / (messagePaint.fontSpacing + 8f))
             .toInt()
             .coerceIn(1, 3)
         drawCenteredLines(
@@ -205,27 +259,69 @@ class InvitationImageGenerator(private val context: Context) {
             text = details.message.ifBlank { language.fallbackMessage },
             paint = messagePaint,
             startY = messageTop,
-            maxWidth = 620f,
-            lineSpacing = messageLineSpacing,
+            maxWidth = maxTextWidth - 40f,
+            lineSpacing = 8f,
             maxLines = messageMaxLines
         )
     }
 
-    private fun defaultOccasionTitle(language: InvitationLanguage): String {
+    private fun drawDetailWithIcon(
+        canvas: Canvas,
+        iconResId: Int,
+        value: String,
+        paint: Paint,
+        startY: Float,
+        card: RectF,
+        maxLines: Int
+    ): Float {
+        val iconSize = 40f
+        val gap = 18f
+        val textWidth = card.width() - 160f
+        val lines = wrapText(value, paint, textWidth).limitLines(maxLines, paint, textWidth)
+        val blockWidth = iconSize + gap + textWidth
+        val blockLeft = card.left + (card.width() - blockWidth) / 2f
+        val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)) {
+            "Missing detail icon"
+        }
+        var y = startY + paint.textSize
+
+        lines.forEachIndexed { index, line ->
+            if (index == 0) {
+                val iconTop = (y - iconSize + 6f).toInt()
+                icon.setBounds(
+                    blockLeft.toInt(),
+                    iconTop,
+                    (blockLeft + iconSize).toInt(),
+                    iconTop + iconSize.toInt()
+                )
+                icon.draw(canvas)
+                canvas.drawText(line, blockLeft + iconSize + gap, y, paint)
+            } else {
+                canvas.drawText(line, blockLeft + iconSize + gap, y, paint)
+            }
+            y += paint.fontSpacing + 10f
+        }
+        return y + 6f
+    }
+
+    private fun defaultOccasionTitle(language: InvitationLanguage, template: InvitationTemplate): String {
         return when (language) {
-            InvitationLanguage.ENGLISH -> "Special Occasion"
-            InvitationLanguage.TAMIL -> "சிறப்பு விழா"
+            InvitationLanguage.ENGLISH -> when {
+                template.id.startsWith("wedding") -> "Wedding Celebration"
+                template.id.startsWith("housewarming") -> "Housewarming Ceremony"
+                template.id.startsWith("puberty") -> "Puberty Ceremony"
+                else -> "Birthday Celebration"
+            }
+            InvitationLanguage.TAMIL -> when {
+                template.id.startsWith("wedding") -> "திருமண விழா"
+                template.id.startsWith("housewarming") -> "கிருஹப்பிரவேசம்"
+                template.id.startsWith("puberty") -> "பருவ விழா"
+                else -> "பிறந்தநாள் விழா"
+            }
         }
     }
 
-    private fun contactLabel(language: InvitationLanguage): String {
-        return when (language) {
-            InvitationLanguage.ENGLISH -> "Contact"
-            InvitationLanguage.TAMIL -> "தொடர்பு"
-        }
-    }
-
-    private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?): Boolean {
+    private fun drawUploadedPhoto(canvas: Canvas, uploadedPhotoUri: Uri?, cardTop: Float): Boolean {
         if (uploadedPhotoUri == null) return false
 
         val photoBitmap = runCatching {
@@ -236,7 +332,7 @@ class InvitationImageGenerator(private val context: Context) {
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
 
-        val frame = RectF(405f, 350f, 675f, 570f)
+        val frame = RectF(340f, cardTop + 24f, 740f, cardTop + 300f)
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -324,35 +420,6 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
-    private fun drawDetailLine(
-        canvas: Canvas,
-        label: String,
-        value: String,
-        paint: Paint,
-        startY: Float,
-        maxLines: Int = Int.MAX_VALUE
-    ): Float {
-        val labelPaint = Paint(paint).apply {
-            typeface = Typeface.create(paint.typeface, Typeface.BOLD)
-        }
-        val labelText = "$label: "
-        val combinedText = "$labelText$value"
-        val lines = wrapText(combinedText, paint, 650f)
-            .limitLines(maxLines, paint, 650f)
-        var y = startY
-        lines.forEachIndexed { index, line ->
-            if (index == 0 && line.startsWith(labelText)) {
-                val x = centeredX(line, paint)
-                canvas.drawText(labelText, x, y, labelPaint)
-                canvas.drawText(line.removePrefix(labelText), x + labelPaint.measureText(labelText), y, paint)
-            } else {
-                canvas.drawText(line, centeredX(line, paint), y, paint)
-            }
-            y += paint.fontSpacing + 4f
-        }
-        return y + 4f
-    }
-
     private fun drawCenteredLines(
         canvas: Canvas,
         text: String,
@@ -362,13 +429,13 @@ class InvitationImageGenerator(private val context: Context) {
         lineSpacing: Float,
         maxLines: Int = Int.MAX_VALUE
     ): Float {
-        var y = startY
+        var y = startY + paint.textSize
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
-            canvas.drawText(line, centeredX(line, paint), y, paint)
-            y += paint.fontSpacing + lineSpacing
-        }
+                canvas.drawText(line, centeredX(line, paint), y, paint)
+                y += paint.fontSpacing + lineSpacing
+            }
         return y
     }
 
@@ -443,14 +510,22 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
+    private fun scriptTypeface(): Typeface {
+        return ResourcesCompat.getFont(context, R.font.great_vibes)
+            ?: Typeface.create(Typeface.SANS_SERIF, Typeface.ITALIC)
+    }
+
+    private fun serifTypeface(): Typeface {
+        return ResourcesCompat.getFont(context, R.font.playfair_display_bold)
+            ?: Typeface.create(Typeface.SERIF, Typeface.BOLD)
+    }
+
     private fun tamilTypeface(): Typeface {
         return ResourcesCompat.getFont(context, R.font.noto_sans_tamil)
             ?: Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
     }
 
     private fun centeredX(text: String, paint: Paint): Float {
-        val bounds = Rect()
-        paint.getTextBounds(text, 0, text.length, bounds)
         return (imageWidth - paint.measureText(text)) / 2f
     }
 }

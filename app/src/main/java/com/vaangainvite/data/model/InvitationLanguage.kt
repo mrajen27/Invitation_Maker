@@ -2,6 +2,7 @@ package com.vaangainvite.data.model
 
 enum class InvitationLanguage(
     val displayName: String,
+    val inviteIntro: String,
     val heading: String,
     val fallbackName: String,
     val dateLabel: String,
@@ -16,6 +17,7 @@ enum class InvitationLanguage(
 ) {
     ENGLISH(
         displayName = "English",
+        inviteIntro = "Please join us for a",
         heading = "You are warmly invited",
         fallbackName = "Name of Honoree",
         dateLabel = "Date",
@@ -30,6 +32,7 @@ enum class InvitationLanguage(
     ),
     TAMIL(
         displayName = "தமிழ்",
+        inviteIntro = "அன்புடன் அழைக்கிறோம்",
         heading = "அன்புடன் அழைக்கிறோம்",
         fallbackName = "அழைப்பவரின் பெயர்",
         dateLabel = "தேதி",
