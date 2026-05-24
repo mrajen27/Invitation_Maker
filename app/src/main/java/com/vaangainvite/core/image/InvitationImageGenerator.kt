@@ -184,7 +184,14 @@ class InvitationImageGenerator(private val context: Context) {
         y += 14f
         y = drawDetailLine(canvas, language.dateLabel, details.date.ifBlank { language.fallbackDate }, bodyPaint, y, maxLines = 1)
         y = drawDetailLine(canvas, language.timeLabel, details.time.ifBlank { language.fallbackTime }, bodyPaint, y, maxLines = 1)
-        y = drawDetailLine(canvas, language.venueLabel, details.venue.ifBlank { language.fallbackVenue }, bodyPaint, y, maxLines = 2)
+        y = drawDetailLine(
+            canvas,
+            language.venueLabel,
+            details.venue.ifBlank { language.fallbackVenue },
+            bodyPaint,
+            y,
+            maxLines = InvitationDetails.VENUE_MAX_LINES
+        )
         if (details.mobileNumber.isNotBlank()) {
             y = drawDetailLine(canvas, contactLabel(language), details.mobileNumber, bodyPaint, y, maxLines = 1)
         }

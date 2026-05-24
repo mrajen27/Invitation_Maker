@@ -470,9 +470,19 @@ private fun EditorFields(
         OutlinedTextField(
             value = details.venue,
             onValueChange = onVenueChanged,
-            label = { Text("Venue") },
+            label = { Text(selectedLanguage.venueLabel) },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 2
+            minLines = InvitationDetails.VENUE_MAX_LINES,
+            maxLines = InvitationDetails.VENUE_MAX_LINES,
+            supportingText = {
+                Text(
+                    text = if (selectedLanguage == InvitationLanguage.TAMIL) {
+                        "அழைப்பிதழில் அதிகபட்சம் ${InvitationDetails.VENUE_MAX_LINES} வரிகள் மட்டுமே காட்டப்படும். நீளமான முகவரி தானாக அடுத்த வரிக்கு செல்லும்."
+                    } else {
+                        "Up to ${InvitationDetails.VENUE_MAX_LINES} lines appear on the invitation card. Long addresses wrap to the next line automatically."
+                    }
+                )
+            }
         )
         OutlinedTextField(
             value = details.mobileNumber,
