@@ -20,6 +20,7 @@ import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.vaangainvite.R
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationLanguage
@@ -196,7 +197,7 @@ class InvitationImageGenerator(private val context: Context) {
         hasUploadedPhoto: Boolean,
         usesPhotoBackground: Boolean
     ) {
-        val primary = template.primaryColor
+        val palette = invitationTextPalette(template, language, usesPhotoBackground)
         val tamilTypeface = tamilTypeface()
         val script = when (language) {
             InvitationLanguage.TAMIL -> tamilTypeface
@@ -207,11 +208,10 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.ENGLISH -> serifTypeface()
         }
 
-        val shadowed = usesPhotoBackground
-        val introPaint = textPaint(Color.parseColor("#4E342E"), 32f, serif, shadowed)
-        val occasionPaint = textPaint(primary, 46f, serif, shadowed)
+        val introPaint = textPaint(palette.introColor, 32f, serif, palette.strongShadow)
+        val occasionPaint = textPaint(palette.primaryColor, 46f, serif, palette.strongShadow)
         val namePaint = textPaint(
-            primary,
+            palette.primaryColor,
             when {
                 hasUploadedPhoto && usesPhotoBackground -> 58f
                 usesPhotoBackground -> 70f
@@ -219,25 +219,25 @@ class InvitationImageGenerator(private val context: Context) {
                 else -> 72f
             },
             script,
-            shadowed
+            palette.strongShadow
         )
         val bodyPaint = textPaint(
-            Color.parseColor("#3E2723"),
+            palette.bodyColor,
             28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
             },
-            shadowed
+            palette.strongShadow
         )
         val messagePaint = textPaint(
-            Color.parseColor("#4E342E"),
+            palette.messageColor,
             26f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
             },
-            shadowed
+            palette.strongShadow
         )
 
         var blockTop = zone.top + 4f
@@ -280,6 +280,7 @@ class InvitationImageGenerator(private val context: Context) {
             paint = bodyPaint,
             topY = blockTop,
             zone = zone,
+            iconTint = palette.iconTint,
             maxLines = 1
         )
         blockTop = drawDetailWithIcon(
@@ -289,6 +290,7 @@ class InvitationImageGenerator(private val context: Context) {
             paint = bodyPaint,
             topY = blockTop,
             zone = zone,
+            iconTint = palette.iconTint,
             maxLines = 1
         )
         blockTop = drawDetailWithIcon(
@@ -298,6 +300,7 @@ class InvitationImageGenerator(private val context: Context) {
             paint = bodyPaint,
             topY = blockTop,
             zone = zone,
+            iconTint = palette.iconTint,
             maxLines = InvitationDetails.VENUE_MAX_LINES
         )
         if (details.mobileNumber.isNotBlank()) {
@@ -308,6 +311,7 @@ class InvitationImageGenerator(private val context: Context) {
                 paint = bodyPaint,
                 topY = blockTop,
                 zone = zone,
+                iconTint = palette.iconTint,
                 maxLines = 1
             )
         }
@@ -331,6 +335,41 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
+    private data class InvitationTextPalette(
+        val introColor: Int,
+        val primaryColor: Int,
+        val bodyColor: Int,
+        val messageColor: Int,
+        val iconTint: Int,
+        val strongShadow: Boolean
+    )
+
+    private fun invitationTextPalette(
+        template: InvitationTemplate,
+        language: InvitationLanguage,
+        usesPhotoBackground: Boolean
+    ): InvitationTextPalette {
+        if (template.usesLightText) {
+            return InvitationTextPalette(
+                introColor = Color.parseColor("#FFF8E7"),
+                primaryColor = template.primaryColor,
+                bodyColor = Color.parseColor("#FFFFFF"),
+                messageColor = Color.parseColor("#FCE4EC"),
+                iconTint = Color.parseColor("#FFFFFF"),
+                strongShadow = true
+            )
+        }
+        val shadow = usesPhotoBackground
+        return InvitationTextPalette(
+            introColor = Color.parseColor("#4E342E"),
+            primaryColor = template.primaryColor,
+            bodyColor = Color.parseColor("#3E2723"),
+            messageColor = Color.parseColor("#4E342E"),
+            iconTint = Color.parseColor("#5D4037"),
+            strongShadow = shadow
+        )
+    }
+
     private fun drawDetailWithIcon(
         canvas: Canvas,
         iconResId: Int,
@@ -338,15 +377,17 @@ class InvitationImageGenerator(private val context: Context) {
         paint: Paint,
         topY: Float,
         zone: RectF,
+        iconTint: Int,
         maxLines: Int
     ): Float {
         val iconSize = 36f
         val gap = 14f
         val maxLineWidth = zone.width() - iconSize - gap - 24f
         val lines = wrapText(value, paint, maxLineWidth).limitLines(maxLines, paint, maxLineWidth)
-        val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)) {
+        val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)?.mutate()) {
             "Missing detail icon"
         }
+        DrawableCompat.setTint(icon, iconTint)
         val fm = paint.fontMetrics
         var baseline = topY - fm.ascent
 
@@ -589,7 +630,7 @@ class InvitationImageGenerator(private val context: Context) {
             this.typeface = typeface
             textAlign = Paint.Align.LEFT
             if (shadowed) {
-                setShadowLayer(8f, 0f, 2f, Color.argb(120, 0, 0, 0))
+                setShadowLayer(10f, 0f, 2f, Color.argb(160, 0, 0, 0))
             }
         }
     }

@@ -72,7 +72,8 @@ class TemplateRepository {
             title = "Purple Night Glow",
             description = "Glam purple bokeh with pink balloons.",
             resId = R.drawable.bg_birthday_purple_party,
-            primaryColor = 0xFF7B1FA2.toInt()
+            primaryColor = 0xFFFFB74D.toInt(),
+            usesLightText = true
         ),
 
         // Wedding
@@ -190,7 +191,8 @@ class TemplateRepository {
             title = "Royal Purple",
             description = "Deep violet with gold arch and florals.",
             resId = R.drawable.bg_puberty_royal_purple,
-            primaryColor = 0xFF311B92.toInt()
+            primaryColor = 0xFFFFD54F.toInt(),
+            usesLightText = true
         ),
         photoTemplate(
             id = "puberty_05",
@@ -208,7 +210,8 @@ class TemplateRepository {
         title: String,
         description: String,
         resId: Int,
-        primaryColor: Int
+        primaryColor: Int,
+        usesLightText: Boolean = false
     ): InvitationTemplate {
         return InvitationTemplate(
             id = id,
@@ -217,7 +220,8 @@ class TemplateRepository {
             description = description,
             drawableResId = resId,
             backgroundResId = resId,
-            primaryColor = primaryColor
+            primaryColor = primaryColor,
+            usesLightText = usesLightText
         )
     }
 
