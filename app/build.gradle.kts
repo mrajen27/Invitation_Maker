@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -21,8 +23,41 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = rootProject.file(keystorePath)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                    ?: error("ANDROID_KEYSTORE_PASSWORD is required for release signing")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                    ?: error("ANDROID_KEY_ALIAS is required for release signing")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+                    ?: storePassword
+            } else {
+                val keystorePropertiesFile = rootProject.file("keystore.properties")
+                if (keystorePropertiesFile.exists()) {
+                    val props = Properties()
+                    keystorePropertiesFile.inputStream().use { props.load(it) }
+                    storeFile = rootProject.file(
+                        props.getProperty("storeFile")
+                            ?: error("storeFile is missing in keystore.properties"),
+                    )
+                    storePassword = props.getProperty("storePassword")
+                        ?: error("storePassword is missing in keystore.properties")
+                    keyAlias = props.getProperty("keyAlias")
+                        ?: error("keyAlias is missing in keystore.properties")
+                    keyPassword = props.getProperty("keyPassword") ?: storePassword
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.getByName("release").takeIf { it.storeFile?.exists() == true }?.let {
+                signingConfig = it
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

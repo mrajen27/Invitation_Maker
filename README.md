@@ -67,6 +67,47 @@ Command line build:
 ./gradlew assembleDebug
 ```
 
+## Google Play release (signed AAB)
+
+Google Play requires a signed Android App Bundle (`.aab`). CI builds one via the **Build Signed Release AAB** workflow (`.github/workflows/android-release-aab.yml`).
+
+### One-time signing key
+
+Create an upload keystore (keep it safe; you need the same key for all future updates):
+
+```bash
+keytool -genkey -v -keystore release.keystore -alias vaanga-invite \
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+
+### GitHub Actions secrets
+
+In the repository **Settings → Secrets and variables → Actions**, add:
+
+| Secret | Description |
+|--------|-------------|
+| `ANDROID_KEYSTORE_BASE64` | Base64 of `release.keystore` (`base64 -w 0 release.keystore` on Linux) |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | Key alias (e.g. `vaanga-invite`) |
+| `ANDROID_KEY_PASSWORD` | Key password (often the same as the keystore password) |
+
+### Run the workflow
+
+- **Actions → Build Signed Release AAB → Run workflow**, or
+- Push a version tag such as `v1.0.0` to trigger a build automatically.
+
+Download the `.aab` from the workflow run’s **Artifacts** section and upload it in [Google Play Console](https://play.google.com/console).
+
+### Local signed release build
+
+Copy `keystore.properties.example` to `keystore.properties`, place your keystore at the repo root, then run:
+
+```bash
+./gradlew bundleRelease
+```
+
+The signed bundle is written to `app/build/outputs/bundle/release/`.
+
 ## Implementation notes
 
 - `TemplateRepository` owns the MVP category and template metadata.
