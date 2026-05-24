@@ -98,6 +98,26 @@ In the repository **Settings → Secrets and variables → Actions**, add:
 
 Download the `.aab` from the workflow run’s **Artifacts** section and upload it in [Google Play Console](https://play.google.com/console).
 
+## Privacy policy (Google Play)
+
+Google Play requires a **public privacy policy URL** for apps that access photos or user-provided content. Vaanga Invite does not send data to a developer server; the policy describes on-device processing, gallery save, and optional sharing.
+
+### Publish on GitHub Pages (one-time)
+
+1. In the repository on GitHub, open **Settings → Pages**.
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. Choose branch **`main`** and folder **`/docs`**, then save.
+4. After a minute or two, the site is live at:
+   - **Privacy policy:** `https://mrajen27.github.io/Invitation_Maker/privacy-policy.html`
+   - **Short link (redirect):** `https://mrajen27.github.io/Invitation_Maker/`
+
+### Play Console
+
+- **App content → Privacy policy:** paste the privacy policy URL above.
+- **Data safety:** align answers with the policy (no data collected or shared with the developer; user-initiated share to other apps; optional photo from device; gallery save on device).
+
+Source files live in [`docs/privacy-policy.html`](docs/privacy-policy.html). Update the effective date in that file when you change app behavior.
+
 ### Local signed release build
 
 Copy `keystore.properties.example` to `keystore.properties`, place your keystore at the repo root, then run:
