@@ -43,6 +43,7 @@ class InvitationImageGenerator(private val context: Context) {
         drawTemplateBackground(canvas, template, imageWidth, imageHeight)
 
         val usesPhotoBackground = template.usesPhotoBackground()
+        val expectsPhoto = uploadedPhotoUri != null
         val hasUploadedPhoto = if (usesPhotoBackground) {
             drawUploadedPhoto(
                 canvas = canvas,
@@ -50,19 +51,19 @@ class InvitationImageGenerator(private val context: Context) {
                 frame = InvitationLayout.photoFrame()
             )
         } else {
-            val classicZone = InvitationLayout.classicTextZone()
+            val classicZone = InvitationLayout.classicTextZone(expectsPhoto)
             drawFrostedCard(canvas, classicZone)
             drawUploadedPhoto(
                 canvas = canvas,
                 uploadedPhotoUri = uploadedPhotoUri,
-                frame = RectF(370f, classicZone.top + 20f, 710f, classicZone.top + 250f)
+                frame = RectF(370f, classicZone.top + 16f, 710f, classicZone.top + 236f)
             )
         }
 
         val textZone = if (usesPhotoBackground) {
             InvitationLayout.photoTextZone(hasUploadedPhoto)
         } else {
-            InvitationLayout.classicTextZone()
+            InvitationLayout.classicTextZone(hasUploadedPhoto)
         }
 
         drawInvitationText(
@@ -211,7 +212,12 @@ class InvitationImageGenerator(private val context: Context) {
         val occasionPaint = textPaint(primary, 46f, serif, shadowed)
         val namePaint = textPaint(
             primary,
-            if (hasUploadedPhoto) 64f else 76f,
+            when {
+                hasUploadedPhoto && usesPhotoBackground -> 58f
+                usesPhotoBackground -> 70f
+                hasUploadedPhoto -> 60f
+                else -> 72f
+            },
             script,
             shadowed
         )
@@ -234,85 +240,95 @@ class InvitationImageGenerator(private val context: Context) {
             shadowed
         )
 
-        var y = zone.top + 8f
+        var blockTop = zone.top + 4f
         val maxTextWidth = zone.width() - 40f
 
-        y = drawCenteredLines(canvas, language.inviteIntro, introPaint, y, maxTextWidth, 6f, maxLines = 1)
-        y += 10f
-        y = drawCenteredLines(
+        blockTop = drawCenteredLines(
+            canvas,
+            language.inviteIntro,
+            introPaint,
+            blockTop,
+            maxTextWidth,
+            4f,
+            maxLines = 1
+        ) + InvitationLayout.Spacing.afterIntro
+
+        blockTop = drawCenteredLines(
             canvas = canvas,
             text = details.occasionTitle.ifBlank { defaultOccasionTitle(language, template) },
             paint = occasionPaint,
-            startY = y,
-            maxWidth = maxTextWidth,
-            lineSpacing = 6f,
-            maxLines = 2
-        )
-        y += 8f
-        y = drawCenteredLines(
-            canvas = canvas,
-            text = details.name.ifBlank { language.fallbackName },
-            paint = namePaint,
-            startY = y,
+            topY = blockTop,
             maxWidth = maxTextWidth,
             lineSpacing = 4f,
             maxLines = 2
-        )
-        y += 20f
+        ) + InvitationLayout.Spacing.afterOccasion
 
-        y += 12f
-        y = drawDetailWithIcon(
+        blockTop = drawCenteredLines(
+            canvas = canvas,
+            text = details.name.ifBlank { language.fallbackName },
+            paint = namePaint,
+            topY = blockTop,
+            maxWidth = maxTextWidth,
+            lineSpacing = 2f,
+            maxLines = 2
+        ) + InvitationLayout.Spacing.afterName
+
+        blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_calendar,
             value = details.date.ifBlank { language.fallbackDate },
             paint = bodyPaint,
-            startY = y,
+            topY = blockTop,
             zone = zone,
             maxLines = 1
         )
-        y = drawDetailWithIcon(
+        blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_clock,
             value = details.time.ifBlank { language.fallbackTime },
             paint = bodyPaint,
-            startY = y,
+            topY = blockTop,
             zone = zone,
             maxLines = 1
         )
-        y = drawDetailWithIcon(
+        blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
             value = details.venue.ifBlank { language.fallbackVenue },
             paint = bodyPaint,
-            startY = y,
+            topY = blockTop,
             zone = zone,
             maxLines = InvitationDetails.VENUE_MAX_LINES
         )
         if (details.mobileNumber.isNotBlank()) {
-            y = drawDetailWithIcon(
+            blockTop = drawDetailWithIcon(
                 canvas = canvas,
                 iconResId = R.drawable.ic_invite_phone,
                 value = details.mobileNumber,
                 paint = bodyPaint,
-                startY = y,
+                topY = blockTop,
                 zone = zone,
                 maxLines = 1
             )
         }
 
-        val messageTop = (y + 20f).coerceIn(zone.top + 280f, zone.bottom - 100f)
-        val messageMaxLines = ((zone.bottom - messageTop) / (messagePaint.fontSpacing + 8f))
-            .toInt()
-            .coerceIn(1, 3)
-        drawCenteredLines(
-            canvas = canvas,
-            text = details.message.ifBlank { language.fallbackMessage },
-            paint = messagePaint,
-            startY = messageTop,
-            maxWidth = maxTextWidth,
-            lineSpacing = 8f,
-            maxLines = messageMaxLines
-        )
+        val message = details.message.ifBlank { language.fallbackMessage }
+        val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
+        val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 8f
+        if (messageTop + minMessageHeight <= zone.bottom - 16f) {
+            val messageMaxLines = ((zone.bottom - messageTop) / (messagePaint.fontSpacing + 6f))
+                .toInt()
+                .coerceIn(1, 3)
+            drawCenteredLines(
+                canvas = canvas,
+                text = message,
+                paint = messagePaint,
+                topY = messageTop,
+                maxWidth = maxTextWidth,
+                lineSpacing = 6f,
+                maxLines = messageMaxLines
+            )
+        }
     }
 
     private fun drawDetailWithIcon(
@@ -320,7 +336,7 @@ class InvitationImageGenerator(private val context: Context) {
         iconResId: Int,
         value: String,
         paint: Paint,
-        startY: Float,
+        topY: Float,
         zone: RectF,
         maxLines: Int
     ): Float {
@@ -331,14 +347,15 @@ class InvitationImageGenerator(private val context: Context) {
         val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)) {
             "Missing detail icon"
         }
-        var y = startY + paint.textSize
+        val fm = paint.fontMetrics
+        var baseline = topY - fm.ascent
 
         lines.forEachIndexed { index, line ->
             if (index == 0) {
                 val lineWidth = paint.measureText(line)
                 val rowWidth = iconSize + gap + lineWidth
                 val rowLeft = zone.centerX() - rowWidth / 2f
-                val iconTop = (y - iconSize + 6f).toInt()
+                val iconTop = (baseline + fm.ascent - 4f).toInt()
                 icon.setBounds(
                     rowLeft.toInt(),
                     iconTop,
@@ -346,13 +363,18 @@ class InvitationImageGenerator(private val context: Context) {
                     iconTop + iconSize.toInt()
                 )
                 icon.draw(canvas)
-                canvas.drawText(line, rowLeft + iconSize + gap, y, paint)
+                canvas.drawText(line, rowLeft + iconSize + gap, baseline, paint)
             } else {
-                canvas.drawText(line, centeredX(line, paint), y, paint)
+                canvas.drawText(line, centeredX(line, paint), baseline, paint)
             }
-            y += paint.fontSpacing + 10f
+            baseline += lineHeight(paint, InvitationLayout.Spacing.betweenDetails)
         }
-        return y + 8f
+        return baseline - fm.descent + InvitationLayout.Spacing.betweenDetails
+    }
+
+    private fun lineHeight(paint: Paint, extra: Float): Float {
+        val fm = paint.fontMetrics
+        return fm.descent - fm.ascent + extra
     }
 
     private fun defaultOccasionTitle(language: InvitationLanguage, template: InvitationTemplate): String {
@@ -473,23 +495,28 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
+    /**
+     * Draws wrapped centered lines starting at [topY] (top edge of this text block).
+     * Returns the Y coordinate of the bottom edge for stacking the next block.
+     */
     private fun drawCenteredLines(
         canvas: Canvas,
         text: String,
         paint: Paint,
-        startY: Float,
+        topY: Float,
         maxWidth: Float,
         lineSpacing: Float,
         maxLines: Int = Int.MAX_VALUE
     ): Float {
-        var y = startY + paint.textSize
+        val fm = paint.fontMetrics
+        var baseline = topY - fm.ascent
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
-                canvas.drawText(line, centeredX(line, paint), y, paint)
-                y += paint.fontSpacing + lineSpacing
+                canvas.drawText(line, centeredX(line, paint), baseline, paint)
+                baseline += lineHeight(paint, lineSpacing)
             }
-        return y
+        return baseline - fm.descent
     }
 
     private fun List<String>.limitLines(
