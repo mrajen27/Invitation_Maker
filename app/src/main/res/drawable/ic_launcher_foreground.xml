@@ -4,19 +4,48 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FFF4E6"
-        android:pathData="M0,0h108v108h-108z" />
-    <path
-        android:fillColor="#8B1E3F"
-        android:pathData="M22,20h64a8,8 0,0 1,8 8v52a8,8 0,0 1,-8 8h-64a8,8 0,0 1,-8 -8v-52a8,8 0,0 1,8 -8z" />
-    <path
-        android:fillColor="#F7C948"
-        android:pathData="M27,27h54a5,5 0,0 1,5 5v44a5,5 0,0 1,-5 5h-54a5,5 0,0 1,-5 -5v-44a5,5 0,0 1,5 -5z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M33,36h42v5h-42zM33,50h42v4h-42zM33,62h30v4h-30z" />
+    <!-- Toran garland -->
     <path
         android:fillColor="#2E7D32"
-        android:pathData="M24,17l8,9h-16zM44,17l8,9h-16zM64,17l8,9h-16zM84,17l8,9h-16z" />
+        android:pathData="M18,30 Q27,18 36,30 Q45,18 54,30 Q63,18 72,30 Q81,18 90,30 L90,34 Q81,24 72,34 Q63,24 54,34 Q45,24 36,34 Q27,24 18,34 Z" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M30,28m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0M42,26m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0M54,25m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0M66,26m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0M78,28m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <!-- Kolam corner accents -->
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M24,72 L24,80 L32,80 L32,76 L28,76 L28,72 ZM24,72 L20,76 L24,80 Z" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M84,72 L84,80 L76,80 L76,76 L80,76 L80,72 ZM84,72 L88,76 L84,80 Z" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M24,88m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0M84,88m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0" />
+    <!-- Invitation envelope -->
+    <path
+        android:fillColor="#FFF4E6"
+        android:pathData="M26,40h56a6,6 0,0 1,6 6v38a6,6 0,0 1,-6 6h-56a6,6 0,0 1,-6 -6v-38a6,6 0,0 1,6 -6z" />
+    <path
+        android:fillColor="#E8D4B8"
+        android:pathData="M26,46 L54,66 L82,46 L82,40 L26,40 Z" />
+    <path
+        android:fillColor="#8B1E3F"
+        android:pathData="M26,40 L54,62 L82,40 Z" />
+    <!-- Card lines -->
+    <path
+        android:fillColor="#8B1E3F"
+        android:pathData="M34,72h40v3h-40zM34,79h28v3h-28z" />
+    <!-- Gold wax seal with marigold -->
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M54,58m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0" />
+    <path
+        android:fillColor="#E75A7C"
+        android:pathData="M54,52m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M54,60 L52,64 L56,64 Z" />
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M48,56m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0M60,56m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0" />
 </vector>
