@@ -279,8 +279,6 @@ class InvitationImageGenerator(private val context: Context) {
             maxLines = 2
         ) + if (compactLayout) 6f else InvitationLayout.Spacing.afterName
 
-        val venueMaxLines = if (compactLayout) 2 else InvitationDetails.VENUE_MAX_LINES
-
         blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_calendar,
@@ -309,7 +307,7 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
-            maxLines = venueMaxLines
+            maxLines = InvitationDetails.VENUE_MAX_LINES
         )
         if (details.mobileNumber.isNotBlank()) {
             blockTop = drawDetailWithIcon(
