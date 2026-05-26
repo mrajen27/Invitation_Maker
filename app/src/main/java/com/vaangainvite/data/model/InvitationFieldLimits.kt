@@ -10,8 +10,9 @@ object InvitationFieldLimits {
     const val TIME_MAX_LENGTH = 18
     const val VENUE_MAX_LENGTH = 99
     const val MOBILE_MAX_LENGTH = 18
-    const val MESSAGE_MAX_LENGTH = 140
-    const val MESSAGE_MAX_LINES_ON_CARD = 3
+    /** Fits ~2 lines inside photo-template side/bottom safe area without overlapping art. */
+    const val MESSAGE_MAX_LENGTH = 80
+    const val MESSAGE_MAX_LINES_ON_CARD = 2
 }
 
 fun InvitationDetails.clampedForCard(): InvitationDetails {

@@ -233,7 +233,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val messagePaint = textPaint(
             palette.messageColor,
-            26f,
+            if (usesPhotoBackground) 24f else 26f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -318,21 +318,33 @@ class InvitationImageGenerator(private val context: Context) {
         }
 
         val message = details.message.ifBlank { language.fallbackMessage }
-        val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
-        val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 8f
-        if (messageTop + minMessageHeight <= zone.bottom - 16f) {
-            val messageMaxLines = ((zone.bottom - messageTop) / (messagePaint.fontSpacing + 6f))
-                .toInt()
-                .coerceIn(1, InvitationDetails.MESSAGE_MAX_LINES_ON_CARD)
-            drawCenteredLines(
-                canvas = canvas,
-                text = message,
-                paint = messagePaint,
-                topY = messageTop,
-                maxWidth = maxTextWidth,
-                lineSpacing = 6f,
-                maxLines = messageMaxLines
-            )
+        if (message.isNotBlank()) {
+            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
+            val messageMaxWidth = messageSafe.width() - 48f
+            val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
+            val messageBottomLimit = messageSafe.bottom
+            val lineSpacing = 5f
+            val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 6f
+            if (messageTop + minMessageHeight <= messageBottomLimit) {
+                val maxLinesByHeight = ((messageBottomLimit - messageTop) /
+                    lineHeight(messagePaint, lineSpacing))
+                    .toInt()
+                val messageMaxLines = minOf(
+                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                    maxLinesByHeight
+                ).coerceAtLeast(1)
+                drawCenteredLines(
+                    canvas = canvas,
+                    text = message,
+                    paint = messagePaint,
+                    topY = messageTop,
+                    maxWidth = messageMaxWidth,
+                    lineSpacing = lineSpacing,
+                    maxLines = messageMaxLines,
+                    horizontalBounds = messageSafe,
+                    maxBottomY = messageBottomLimit
+                )
+            }
         }
     }
 
@@ -550,15 +562,19 @@ class InvitationImageGenerator(private val context: Context) {
         topY: Float,
         maxWidth: Float,
         lineSpacing: Float,
-        maxLines: Int = Int.MAX_VALUE
+        maxLines: Int = Int.MAX_VALUE,
+        horizontalBounds: RectF? = null,
+        maxBottomY: Float = Float.MAX_VALUE
     ): Float {
         val fm = paint.fontMetrics
         var baseline = topY - fm.ascent
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
+                if (baseline - fm.ascent >= maxBottomY) return@forEach
                 val fittedLine = fitLineToWidth(line, paint, maxWidth)
-                canvas.drawText(fittedLine, centeredX(fittedLine, paint), baseline, paint)
+                val x = centeredX(fittedLine, paint, horizontalBounds)
+                canvas.drawText(fittedLine, x, baseline, paint)
                 baseline += lineHeight(paint, lineSpacing)
             }
         return baseline - fm.descent
@@ -683,7 +699,9 @@ class InvitationImageGenerator(private val context: Context) {
             ?: Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
     }
 
-    private fun centeredX(text: String, paint: Paint): Float {
-        return (imageWidth - paint.measureText(text)) / 2f
+    private fun centeredX(text: String, paint: Paint, bounds: RectF? = null): Float {
+        val lineWidth = paint.measureText(text)
+        val centerX = bounds?.centerX() ?: (imageWidth / 2f)
+        return centerX - lineWidth / 2f
     }
 }

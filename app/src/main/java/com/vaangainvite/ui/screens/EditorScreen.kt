@@ -632,8 +632,8 @@ private fun InviteMessageSection(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text
             ),
-            helperText = "Wraps on the invitation (max ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines). " +
-                "Max ${InvitationDetails.MESSAGE_MAX_LENGTH} characters. Emojis and Tamil are supported."
+            helperText = "Stays inside the card art (max ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines, " +
+                "${InvitationDetails.MESSAGE_MAX_LENGTH} characters). Emojis and Tamil are supported."
         )
 
         ImageSafeMessageCounter(
@@ -708,7 +708,7 @@ private fun ImageSafeMessageCounter(
         MaterialTheme.colorScheme.onSurfaceVariant
     }
     val guidance = if (isAtLimit) {
-        "Character limit reached. Shorten the message to avoid overlap on the card."
+        "Character limit reached. Shorten the message so it stays above the bottom design."
     } else {
         "Good length for a clean invitation image."
     }
