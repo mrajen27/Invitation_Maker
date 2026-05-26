@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -172,16 +173,16 @@ private fun CategoryCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(60.dp)
                     .clip(CircleShape)
-                    .background(accent.copy(alpha = 0.16f)),
+                    .background(accent),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = category.title.first().toString(),
-                    color = accent,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    painter = painterResource(id = category.iconResId),
+                    contentDescription = category.title,
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
