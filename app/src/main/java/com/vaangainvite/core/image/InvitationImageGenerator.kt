@@ -38,7 +38,7 @@ class InvitationImageGenerator(private val context: Context) {
         details: InvitationDetails,
         language: InvitationLanguage,
         uploadedPhotoUri: Uri?
-    ): Bitmap {
+    ): InvitationBitmapResult {
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
@@ -68,17 +68,17 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLayout.classicTextZone(hasUploadedPhoto)
         }
 
-        drawInvitationText(
+        val renderReport = drawInvitationText(
             canvas = canvas,
             template = template,
-            details = details.clampedForCard(),
+            details = details.clampedForCard(hasUploadedPhoto),
             language = language,
             zone = textZone,
             hasUploadedPhoto = hasUploadedPhoto,
             usesPhotoBackground = usesPhotoBackground
         )
 
-        return bitmap
+        return InvitationBitmapResult(bitmap = bitmap, renderReport = renderReport)
     }
 
     fun createTemplatePreviewBitmap(template: InvitationTemplate): Bitmap {
@@ -197,7 +197,7 @@ class InvitationImageGenerator(private val context: Context) {
         zone: RectF,
         hasUploadedPhoto: Boolean,
         usesPhotoBackground: Boolean
-    ) {
+    ): InvitationRenderReport {
         val palette = invitationTextPalette(template, language, usesPhotoBackground)
         val tamilTypeface = tamilTypeface()
         val script = when (language) {
@@ -209,11 +209,16 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.ENGLISH -> serifTypeface()
         }
 
+        val userMessage = details.message.trim()
+        val hasUserMessage = userMessage.isNotBlank()
+        val compactLayout = hasUploadedPhoto && hasUserMessage
+
         val introPaint = textPaint(palette.introColor, 32f, serif, palette.strongShadow)
         val occasionPaint = textPaint(palette.primaryColor, 46f, serif, palette.strongShadow)
         val namePaint = textPaint(
             palette.primaryColor,
             when {
+                compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 58f
                 usesPhotoBackground -> 70f
                 hasUploadedPhoto -> 60f
@@ -224,7 +229,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            28f,
+            if (compactLayout) 24f else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -272,7 +277,9 @@ class InvitationImageGenerator(private val context: Context) {
             maxWidth = maxTextWidth,
             lineSpacing = 2f,
             maxLines = 2
-        ) + InvitationLayout.Spacing.afterName
+        ) + if (compactLayout) 6f else InvitationLayout.Spacing.afterName
+
+        val venueMaxLines = if (compactLayout) 2 else InvitationDetails.VENUE_MAX_LINES
 
         blockTop = drawDetailWithIcon(
             canvas = canvas,
@@ -302,7 +309,7 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
-            maxLines = InvitationDetails.VENUE_MAX_LINES
+            maxLines = venueMaxLines
         )
         if (details.mobileNumber.isNotBlank()) {
             blockTop = drawDetailWithIcon(
@@ -317,35 +324,58 @@ class InvitationImageGenerator(private val context: Context) {
             )
         }
 
-        val message = details.message.ifBlank { language.fallbackMessage }
-        if (message.isNotBlank()) {
-            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
-            val messageMaxWidth = messageSafe.width() - 48f
-            val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
-            val messageBottomLimit = messageSafe.bottom
-            val lineSpacing = 5f
-            val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 6f
-            if (messageTop + minMessageHeight <= messageBottomLimit) {
-                val maxLinesByHeight = ((messageBottomLimit - messageTop) /
-                    lineHeight(messagePaint, lineSpacing))
-                    .toInt()
-                val messageMaxLines = minOf(
-                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                    maxLinesByHeight
-                ).coerceAtLeast(1)
-                drawCenteredLines(
-                    canvas = canvas,
-                    text = message,
-                    paint = messagePaint,
-                    topY = messageTop,
-                    maxWidth = messageMaxWidth,
-                    lineSpacing = lineSpacing,
-                    maxLines = messageMaxLines,
-                    horizontalBounds = messageSafe,
-                    maxBottomY = messageBottomLimit
-                )
-            }
+        val messageText = userMessage.ifBlank { language.fallbackMessage }
+        if (messageText.isBlank()) {
+            return InvitationRenderReport()
         }
+
+        val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
+        val lineSpacing = 5f
+        val messageTruncated = drawMessageBottomAnchored(
+            canvas = canvas,
+            text = messageText,
+            paint = messagePaint,
+            messageSafe = messageSafe,
+            maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+            lineSpacing = lineSpacing
+        )
+        return InvitationRenderReport(
+            messageShown = true,
+            messageTruncated = messageTruncated
+        )
+    }
+
+    /**
+     * Pins the additional message to the bottom safe band so it still appears when a photo
+     * pushes event details lower on the card.
+     */
+    private fun drawMessageBottomAnchored(
+        canvas: Canvas,
+        text: String,
+        paint: Paint,
+        messageSafe: RectF,
+        maxLines: Int,
+        lineSpacing: Float
+    ): Boolean {
+        val maxWidth = messageSafe.width() - 48f
+        val wrapped = wrapText(text, paint, maxWidth)
+        val truncated = wrapped.size > maxLines
+        val lines = wrapped.limitLines(maxLines, paint, maxWidth)
+        if (lines.isEmpty()) return false
+
+        val fm = paint.fontMetrics
+        var baseline = messageSafe.bottom - 14f - fm.descent
+        for (line in lines.asReversed()) {
+            val fittedLine = fitLineToWidth(line, paint, maxWidth)
+            canvas.drawText(
+                fittedLine,
+                centeredX(fittedLine, paint, messageSafe),
+                baseline,
+                paint
+            )
+            baseline -= lineHeight(paint, lineSpacing)
+        }
+        return truncated
     }
 
     private data class InvitationTextPalette(

@@ -10,12 +10,22 @@ object InvitationFieldLimits {
     const val TIME_MAX_LENGTH = 18
     const val VENUE_MAX_LENGTH = 99
     const val MOBILE_MAX_LENGTH = 18
-    /** Fits ~2 lines inside photo-template side/bottom safe area without overlapping art. */
+    /** Fits ~2 lines in the bottom safe area without overlapping art. */
     const val MESSAGE_MAX_LENGTH = 80
+    /** Tighter limit when a photo uses more vertical space on the card. */
+    const val MESSAGE_MAX_LENGTH_WITH_PHOTO = 60
     const val MESSAGE_MAX_LINES_ON_CARD = 2
 }
 
-fun InvitationDetails.clampedForCard(): InvitationDetails {
+fun InvitationDetails.messageMaxLength(hasUploadedPhoto: Boolean): Int {
+    return if (hasUploadedPhoto) {
+        InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO
+    } else {
+        InvitationFieldLimits.MESSAGE_MAX_LENGTH
+    }
+}
+
+fun InvitationDetails.clampedForCard(hasUploadedPhoto: Boolean = false): InvitationDetails {
     return copy(
         occasionTitle = occasionTitle.take(InvitationFieldLimits.OCCASION_MAX_LENGTH),
         name = name.take(InvitationFieldLimits.NAME_MAX_LENGTH),
@@ -23,11 +33,12 @@ fun InvitationDetails.clampedForCard(): InvitationDetails {
         time = time.take(InvitationFieldLimits.TIME_MAX_LENGTH),
         venue = venue.take(InvitationFieldLimits.VENUE_MAX_LENGTH),
         mobileNumber = mobileNumber.take(InvitationFieldLimits.MOBILE_MAX_LENGTH),
-        message = message.take(InvitationFieldLimits.MESSAGE_MAX_LENGTH)
+        message = message.take(messageMaxLength(hasUploadedPhoto))
     )
 }
 
-fun InvitationDetails.validationError(): String? {
+fun InvitationDetails.validationError(hasUploadedPhoto: Boolean = false): String? {
+    val messageLimit = messageMaxLength(hasUploadedPhoto)
     when {
         occasionTitle.length > InvitationFieldLimits.OCCASION_MAX_LENGTH ->
             return "Occasion title must be ${InvitationFieldLimits.OCCASION_MAX_LENGTH} characters or less"
@@ -41,8 +52,8 @@ fun InvitationDetails.validationError(): String? {
             return "Venue must be ${InvitationFieldLimits.VENUE_MAX_LENGTH} characters or less"
         mobileNumber.length > InvitationFieldLimits.MOBILE_MAX_LENGTH ->
             return "Mobile number must be ${InvitationFieldLimits.MOBILE_MAX_LENGTH} characters or less"
-        message.length > InvitationFieldLimits.MESSAGE_MAX_LENGTH ->
-            return "Message must be ${InvitationFieldLimits.MESSAGE_MAX_LENGTH} characters or less"
+        message.length > messageLimit ->
+            return "Message must be $messageLimit characters or less"
     }
     return null
 }
