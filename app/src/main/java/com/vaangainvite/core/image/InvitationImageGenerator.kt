@@ -472,7 +472,7 @@ class InvitationImageGenerator(private val context: Context) {
         canvas.clipPath(path)
         canvas.drawBitmap(
             photoBitmap,
-            centeredCropSource(photoBitmap, frame),
+            topAlignedCropSource(photoBitmap, frame),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
@@ -521,18 +521,21 @@ class InvitationImageGenerator(private val context: Context) {
         )
     }
 
-    private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
+    /**
+     * Scale-to-fill crop for the photo frame. Horizontally centered; vertically top-aligned
+     * so faces near the top of portrait photos are not cut off (excess is trimmed from the bottom).
+     */
+    private fun topAlignedCropSource(bitmap: Bitmap, target: RectF): Rect {
         val bitmapAspect = bitmap.width.toFloat() / bitmap.height.toFloat()
         val targetAspect = target.width() / target.height()
 
         return if (bitmapAspect > targetAspect) {
-            val sourceWidth = (bitmap.height * targetAspect).toInt()
-            val left = (bitmap.width - sourceWidth) / 2
+            val sourceWidth = (bitmap.height * targetAspect).toInt().coerceAtMost(bitmap.width)
+            val left = ((bitmap.width - sourceWidth) / 2).coerceAtLeast(0)
             Rect(left, 0, left + sourceWidth, bitmap.height)
         } else {
-            val sourceHeight = (bitmap.width / targetAspect).toInt()
-            val top = (bitmap.height - sourceHeight) / 2
-            Rect(0, top, bitmap.width, top + sourceHeight)
+            val sourceHeight = (bitmap.width / targetAspect).toInt().coerceAtMost(bitmap.height)
+            Rect(0, 0, bitmap.width, sourceHeight)
         }
     }
 
