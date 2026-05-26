@@ -65,6 +65,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 import kotlinx.coroutines.launch
@@ -188,6 +189,7 @@ fun EditorScreen(
 
             PhotoUploadSection(
                 hasPhoto = state.uploadedPhotoUri != null,
+                hasMessage = state.details.message.isNotBlank(),
                 onChoosePhoto = {
                     photoPickerLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -209,7 +211,8 @@ fun EditorScreen(
                 onTimeChanged = viewModel::updateTime,
                 onVenueChanged = viewModel::updateVenue,
                 onMobileNumberChanged = viewModel::updateMobileNumber,
-                onMessageChanged = viewModel::updateMessage
+                onMessageChanged = viewModel::updateMessage,
+                hasUploadedPhoto = state.uploadedPhotoUri != null
             )
 
             Button(
@@ -357,6 +360,7 @@ private fun ShareActions(
 @Composable
 private fun PhotoUploadSection(
     hasPhoto: Boolean,
+    hasMessage: Boolean,
     onChoosePhoto: () -> Unit,
     onRemovePhoto: () -> Unit
 ) {
@@ -377,10 +381,13 @@ private fun PhotoUploadSection(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = if (hasPhoto) {
-                    "Photo selected. It will appear inside the generated invitation card."
-                } else {
-                    "Upload a family, couple, child, or ceremony photo to include in the invitation."
+                text = when {
+                    hasPhoto && hasMessage ->
+                        "Photo selected. Your additional message is placed at the bottom of the card, above the decoration."
+                    hasPhoto ->
+                        "Photo selected. It will appear inside the generated invitation card."
+                    else ->
+                        "Upload a family, couple, child, or ceremony photo to include in the invitation."
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -488,7 +495,8 @@ private fun EditorFields(
     onTimeChanged: (String) -> Unit,
     onVenueChanged: (String) -> Unit,
     onMobileNumberChanged: (String) -> Unit,
-    onMessageChanged: (String) -> Unit
+    onMessageChanged: (String) -> Unit,
+    hasUploadedPhoto: Boolean
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
@@ -571,6 +579,7 @@ private fun EditorFields(
             message = details.message,
             selectedLanguage = selectedLanguage,
             selectedCategoryId = selectedCategoryId,
+            hasUploadedPhoto = hasUploadedPhoto,
             onMessageChanged = onMessageChanged
         )
     }
@@ -581,8 +590,14 @@ private fun InviteMessageSection(
     message: String,
     selectedLanguage: InvitationLanguage,
     selectedCategoryId: String?,
+    hasUploadedPhoto: Boolean,
     onMessageChanged: (String) -> Unit
 ) {
+    val maxMessageChars = if (hasUploadedPhoto) {
+        InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO
+    } else {
+        InvitationFieldLimits.MESSAGE_MAX_LENGTH
+    }
     var selectedQuickMessageId by remember { mutableStateOf<String?>(null) }
     var selectedTone by remember { mutableStateOf(QuickMessageTone.ALL) }
     val quickMessages = remember(selectedLanguage, selectedCategoryId, selectedTone) {
@@ -606,6 +621,24 @@ private fun InviteMessageSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+
+        if (hasUploadedPhoto) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "With a photo, your message is shown at the bottom of the invitation " +
+                        "(max $maxMessageChars characters, ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines).",
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
         }
 
         MessageToneFilters(
@@ -633,7 +666,7 @@ private fun InviteMessageSection(
                 }
                 onMessageChanged(updatedMessage)
             },
-            maxLength = InvitationDetails.MESSAGE_MAX_LENGTH,
+            maxLength = maxMessageChars,
             label = { Text("Message to guests") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = false,
@@ -643,13 +676,16 @@ private fun InviteMessageSection(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text
             ),
-            helperText = "Stays inside the card art (max ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines, " +
-                "${InvitationDetails.MESSAGE_MAX_LENGTH} characters). Emojis and Tamil are supported."
+            helperText = if (hasUploadedPhoto) {
+                "Placed at the bottom of the card so it stays visible with your photo."
+            } else {
+                "Stays inside the card art (max ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines)."
+            }
         )
 
         ImageSafeMessageCounter(
             characterCount = message.length,
-            maxLength = InvitationDetails.MESSAGE_MAX_LENGTH
+            maxLength = maxMessageChars
         )
         InviteMessagePreview(message = message)
     }

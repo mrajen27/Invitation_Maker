@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationFieldLimits
+import com.vaangainvite.data.model.clampedForCard
+import com.vaangainvite.data.model.messageMaxLength
 import com.vaangainvite.data.model.validationError
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
@@ -95,17 +98,29 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         copy(mobileNumber = mobileNumber.take(InvitationDetails.MOBILE_MAX_LENGTH))
     }
 
-    fun updateMessage(message: String) = updateDetails {
-        copy(message = message.take(InvitationDetails.MESSAGE_MAX_LENGTH))
+    fun updateMessage(message: String) {
+        val hasPhoto = _uiState.value.uploadedPhotoUri != null
+        val maxLength = _uiState.value.details.messageMaxLength(hasPhoto)
+        updateDetails { copy(message = message.take(maxLength)) }
     }
 
     fun updateUploadedPhoto(uri: Uri?) {
         _uiState.update { current ->
+            val hasPhoto = uri != null
             current.copy(
                 uploadedPhotoUri = uri,
+                details = if (hasPhoto) {
+                    current.details.clampedForCard(hasUploadedPhoto = true)
+                } else {
+                    current.details
+                },
                 generatedBitmap = null,
                 cachedImageUri = null,
-                statusMessage = if (uri == null) "Photo removed" else "Photo added to invitation"
+                statusMessage = if (uri == null) {
+                    "Photo removed"
+                } else {
+                    "Photo added. Your message will appear at the bottom of the card."
+                }
             )
         }
     }
@@ -195,7 +210,8 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             return@withContext null
         }
 
-        state.details.validationError()?.let { errorMessage ->
+        val hasUploadedPhoto = state.uploadedPhotoUri != null
+        state.details.validationError(hasUploadedPhoto)?.let { errorMessage ->
             _uiState.update { current ->
                 current.copy(statusMessage = errorMessage)
             }
@@ -203,24 +219,29 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         }
 
         runCatching {
-            val bitmap = imageGenerator.createInvitationBitmap(
+            val result = imageGenerator.createInvitationBitmap(
                 template = template,
                 details = state.details,
                 language = state.selectedLanguage,
                 uploadedPhotoUri = state.uploadedPhotoUri
             )
-            val uri = imageGenerator.saveBitmapToCache(bitmap)
-            bitmap to uri
+            val uri = imageGenerator.saveBitmapToCache(result.bitmap)
+            result to uri
         }.fold(
-            onSuccess = { (bitmap, uri) ->
+            onSuccess = { (result, uri) ->
+                val status = buildGenerationStatus(
+                    baseMessage = successMessage,
+                    report = result.renderReport,
+                    hasUserMessage = state.details.message.isNotBlank()
+                )
                 _uiState.update { current ->
                     current.copy(
-                        generatedBitmap = bitmap,
+                        generatedBitmap = result.bitmap,
                         cachedImageUri = uri,
-                        statusMessage = successMessage
+                        statusMessage = status
                     )
                 }
-                bitmap
+                result.bitmap
             },
             onFailure = { error ->
                 _uiState.update { current ->
@@ -229,6 +250,21 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 null
             }
         )
+    }
+
+    private fun buildGenerationStatus(
+        baseMessage: String?,
+        report: com.vaangainvite.core.image.InvitationRenderReport,
+        hasUserMessage: Boolean
+    ): String? {
+        if (baseMessage == null) return null
+        return when {
+            report.messageTruncated ->
+                "$baseMessage Message was shortened to fit above the bottom design."
+            hasUserMessage && !report.messageShown ->
+                "$baseMessage Your message could not fit. Try shortening it or removing the photo."
+            else -> baseMessage
+        }
     }
 
     private fun defaultOccasionTitle(categoryId: String, language: InvitationLanguage): String {
