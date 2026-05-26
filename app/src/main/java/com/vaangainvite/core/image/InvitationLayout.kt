@@ -17,7 +17,29 @@ internal object InvitationLayout {
         /** Gap between name and date/details block. */
         const val afterName = 12f
         const val betweenDetails = 6f
-        const val beforeMessage = 20f
+        const val beforeMessage = 16f
+    }
+
+    /**
+     * Horizontal + bottom inset for the additional message on photo WebP templates
+     * (peacock/pillar side art and bottom mandap/gold motifs).
+     */
+    fun photoMessageSafeArea(): RectF = RectF(
+        300f,
+        0f,
+        780f,
+        1160f
+    )
+
+    fun classicMessageSafeArea(): RectF = RectF(
+        250f,
+        0f,
+        830f,
+        1070f
+    )
+
+    fun messageSafeArea(usesPhotoBackground: Boolean): RectF {
+        return if (usesPhotoBackground) photoMessageSafeArea() else classicMessageSafeArea()
     }
 
     /** Center column for photo-style WebP backgrounds (no overlay box). */
@@ -26,7 +48,7 @@ internal object InvitationLayout {
             220f,
             if (hasUploadedPhoto) 492f else 368f,
             860f,
-            1260f
+            1240f
         )
     }
 
