@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
@@ -11,10 +12,13 @@ import com.vaangainvite.data.model.validationError
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
 import com.vaangainvite.data.repository.TemplateRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class InviteUiState(
     val categories: List<InvitationCategory> = emptyList(),
@@ -128,31 +132,33 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun generateInvitation() {
-        createBitmapAndCache(successMessage = "Invitation image generated")
+        viewModelScope.launch {
+            createBitmapAndCache(successMessage = "Invitation image generated")
+        }
     }
 
     fun saveInvitationToGallery() {
-        val bitmap = _uiState.value.generatedBitmap ?: createBitmapAndCache(
-            successMessage = null
-        ) ?: return
+        viewModelScope.launch {
+            val bitmap = _uiState.value.generatedBitmap ?: createBitmapAndCache(
+                successMessage = null
+            ) ?: return@launch
 
-        runCatching {
-            imageGenerator.saveBitmapToGallery(bitmap)
-        }.onSuccess {
-            _uiState.update { current ->
-                current.copy(statusMessage = "Saved to gallery")
-            }
-        }.onFailure { error ->
-            _uiState.update { current ->
-                current.copy(statusMessage = error.message ?: "Unable to save invitation")
+            runCatching {
+                imageGenerator.saveBitmapToGallery(bitmap)
+            }.onSuccess {
+                _uiState.update { current ->
+                    current.copy(statusMessage = "Saved to gallery")
+                }
+            }.onFailure { error ->
+                _uiState.update { current ->
+                    current.copy(statusMessage = error.message ?: "Unable to save invitation")
+                }
             }
         }
     }
 
-    fun getShareImageUri(): Uri? {
-        val cachedUri = _uiState.value.cachedImageUri
-        if (cachedUri != null) return cachedUri
-
+    suspend fun getOrCreateShareImageUri(): Uri? {
+        _uiState.value.cachedImageUri?.let { return it }
         createBitmapAndCache(successMessage = null)
         return _uiState.value.cachedImageUri
     }
@@ -179,24 +185,24 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private fun createBitmapAndCache(successMessage: String?): Bitmap? {
+    private suspend fun createBitmapAndCache(successMessage: String?): Bitmap? = withContext(Dispatchers.Default) {
         val state = _uiState.value
         val template = state.selectedTemplate
         if (template == null) {
             _uiState.update { current ->
                 current.copy(statusMessage = "Choose a template first")
             }
-            return null
+            return@withContext null
         }
 
         state.details.validationError()?.let { errorMessage ->
             _uiState.update { current ->
                 current.copy(statusMessage = errorMessage)
             }
-            return null
+            return@withContext null
         }
 
-        return runCatching {
+        runCatching {
             val bitmap = imageGenerator.createInvitationBitmap(
                 template = template,
                 details = state.details,

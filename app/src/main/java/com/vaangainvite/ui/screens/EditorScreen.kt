@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +67,7 @@ import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -115,6 +117,7 @@ fun EditorScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val galleryPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -260,25 +263,33 @@ fun EditorScreen(
             ShareActions(
                 enabled = state.selectedTemplate != null,
                 onShareChat = {
-                    val imageUri = viewModel.getShareImageUri()
-                    if (imageUri != null) {
-                        val result = InvitationShare.shareToWhatsAppChat(
-                            context = context,
-                            imageUri = imageUri,
-                            message = state.selectedLanguage.shareMessage
-                        )
-                        viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp chat"))
+                    scope.launch {
+                        val imageUri = viewModel.getOrCreateShareImageUri()
+                        if (imageUri != null) {
+                            val result = InvitationShare.shareToWhatsAppChat(
+                                context = context,
+                                imageUri = imageUri,
+                                message = state.selectedLanguage.shareMessage
+                            )
+                            viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp chat"))
+                        } else {
+                            viewModel.setStatusMessage("Generate the invitation first")
+                        }
                     }
                 },
                 onShareStatus = {
-                    val imageUri = viewModel.getShareImageUri()
-                    if (imageUri != null) {
-                        val result = InvitationShare.shareToWhatsAppStatus(
-                            context = context,
-                            imageUri = imageUri,
-                            message = state.selectedLanguage.shareMessage
-                        )
-                        viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp Status"))
+                    scope.launch {
+                        val imageUri = viewModel.getOrCreateShareImageUri()
+                        if (imageUri != null) {
+                            val result = InvitationShare.shareToWhatsAppStatus(
+                                context = context,
+                                imageUri = imageUri,
+                                message = state.selectedLanguage.shareMessage
+                            )
+                            viewModel.setStatusMessage(result.toStatusMessage("Opening WhatsApp Status"))
+                        } else {
+                            viewModel.setStatusMessage("Generate the invitation first")
+                        }
                     }
                 }
             )
