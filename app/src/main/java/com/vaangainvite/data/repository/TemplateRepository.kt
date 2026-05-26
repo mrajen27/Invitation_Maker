@@ -10,25 +10,29 @@ class TemplateRepository {
             id = "birthday",
             title = "Birthday",
             description = "Five photo-style printable cards with balloons, florals, and party themes.",
-            accentColor = 0xFFFF1744.toInt()
+            accentColor = 0xFFFF1744.toInt(),
+            iconResId = R.drawable.ic_category_birthday
         ),
         InvitationCategory(
             id = "wedding",
             title = "Wedding",
             description = "Five royal maroon-and-gold printable cards for your muhurtham.",
-            accentColor = 0xFF6E1634.toInt()
+            accentColor = 0xFF6E1634.toInt(),
+            iconResId = R.drawable.ic_category_wedding
         ),
         InvitationCategory(
             id = "housewarming",
             title = "Housewarming",
             description = "Five auspicious green-and-gold grihapravesam printable cards.",
-            accentColor = 0xFF1B5E20.toInt()
+            accentColor = 0xFF1B5E20.toInt(),
+            iconResId = R.drawable.ic_category_housewarming
         ),
         InvitationCategory(
             id = "puberty",
             title = "Puberty Ceremony",
             description = "Five elegant purple-and-rose printable ceremony cards.",
-            accentColor = 0xFF6A1B9A.toInt()
+            accentColor = 0xFF6A1B9A.toInt(),
+            iconResId = R.drawable.ic_category_puberty
         )
     )
 
