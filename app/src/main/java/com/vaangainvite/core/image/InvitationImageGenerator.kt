@@ -23,6 +23,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.vaangainvite.R
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.clampedForCard
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
 import java.io.File
@@ -70,7 +71,7 @@ class InvitationImageGenerator(private val context: Context) {
         drawInvitationText(
             canvas = canvas,
             template = template,
-            details = details,
+            details = details.clampedForCard(),
             language = language,
             zone = textZone,
             hasUploadedPhoto = hasUploadedPhoto,
@@ -232,7 +233,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val messagePaint = textPaint(
             palette.messageColor,
-            26f,
+            if (usesPhotoBackground) 24f else 26f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -317,21 +318,33 @@ class InvitationImageGenerator(private val context: Context) {
         }
 
         val message = details.message.ifBlank { language.fallbackMessage }
-        val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
-        val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 8f
-        if (messageTop + minMessageHeight <= zone.bottom - 16f) {
-            val messageMaxLines = ((zone.bottom - messageTop) / (messagePaint.fontSpacing + 6f))
-                .toInt()
-                .coerceIn(1, 3)
-            drawCenteredLines(
-                canvas = canvas,
-                text = message,
-                paint = messagePaint,
-                topY = messageTop,
-                maxWidth = maxTextWidth,
-                lineSpacing = 6f,
-                maxLines = messageMaxLines
-            )
+        if (message.isNotBlank()) {
+            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
+            val messageMaxWidth = messageSafe.width() - 48f
+            val messageTop = blockTop + InvitationLayout.Spacing.beforeMessage
+            val messageBottomLimit = messageSafe.bottom
+            val lineSpacing = 5f
+            val minMessageHeight = messagePaint.fontMetrics.run { descent - ascent } + 6f
+            if (messageTop + minMessageHeight <= messageBottomLimit) {
+                val maxLinesByHeight = ((messageBottomLimit - messageTop) /
+                    lineHeight(messagePaint, lineSpacing))
+                    .toInt()
+                val messageMaxLines = minOf(
+                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                    maxLinesByHeight
+                ).coerceAtLeast(1)
+                drawCenteredLines(
+                    canvas = canvas,
+                    text = message,
+                    paint = messagePaint,
+                    topY = messageTop,
+                    maxWidth = messageMaxWidth,
+                    lineSpacing = lineSpacing,
+                    maxLines = messageMaxLines,
+                    horizontalBounds = messageSafe,
+                    maxBottomY = messageBottomLimit
+                )
+            }
         }
     }
 
@@ -404,9 +417,11 @@ class InvitationImageGenerator(private val context: Context) {
                     iconTop + iconSize.toInt()
                 )
                 icon.draw(canvas)
-                canvas.drawText(line, rowLeft + iconSize + gap, baseline, paint)
+                val fittedLine = fitLineToWidth(line, paint, maxLineWidth)
+                canvas.drawText(fittedLine, rowLeft + iconSize + gap, baseline, paint)
             } else {
-                canvas.drawText(line, centeredX(line, paint), baseline, paint)
+                val fittedLine = fitLineToWidth(line, paint, maxLineWidth)
+                canvas.drawText(fittedLine, centeredX(fittedLine, paint), baseline, paint)
             }
             baseline += lineHeight(paint, InvitationLayout.Spacing.betweenDetails)
         }
@@ -550,14 +565,19 @@ class InvitationImageGenerator(private val context: Context) {
         topY: Float,
         maxWidth: Float,
         lineSpacing: Float,
-        maxLines: Int = Int.MAX_VALUE
+        maxLines: Int = Int.MAX_VALUE,
+        horizontalBounds: RectF? = null,
+        maxBottomY: Float = Float.MAX_VALUE
     ): Float {
         val fm = paint.fontMetrics
         var baseline = topY - fm.ascent
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
-                canvas.drawText(line, centeredX(line, paint), baseline, paint)
+                if (baseline - fm.ascent >= maxBottomY) return@forEach
+                val fittedLine = fitLineToWidth(line, paint, maxWidth)
+                val x = centeredX(fittedLine, paint, horizontalBounds)
+                canvas.drawText(fittedLine, x, baseline, paint)
                 baseline += lineHeight(paint, lineSpacing)
             }
         return baseline - fm.descent
@@ -574,6 +594,32 @@ class InvitationImageGenerator(private val context: Context) {
         val visibleLines = take(maxLines).toMutableList()
         visibleLines[maxLines - 1] = truncateToWidth(visibleLines.last(), paint, maxWidth)
         return visibleLines
+    }
+
+    private fun splitLongToken(token: String, paint: Paint, maxWidth: Float): List<String> {
+        if (token.isEmpty()) return emptyList()
+        if (paint.measureText(token) <= maxWidth) return listOf(token)
+
+        val parts = mutableListOf<String>()
+        var remaining = token
+        while (remaining.isNotEmpty()) {
+            var length = remaining.length
+            while (length > 1 && paint.measureText(remaining.substring(0, length)) > maxWidth) {
+                length--
+            }
+            parts.add(remaining.substring(0, length))
+            remaining = remaining.substring(length)
+        }
+        return parts
+    }
+
+    private fun fitLineToWidth(text: String, paint: Paint, maxWidth: Float): String {
+        if (paint.measureText(text) <= maxWidth) return text
+        var fitted = text
+        while (fitted.isNotEmpty() && paint.measureText(fitted) > maxWidth) {
+            fitted = fitted.dropLast(1)
+        }
+        return fitted
     }
 
     private fun truncateToWidth(
@@ -602,14 +648,17 @@ class InvitationImageGenerator(private val context: Context) {
                     sequence {
                         var currentLine = ""
                         words.forEach { word ->
-                            val candidate = if (currentLine.isEmpty()) word else "$currentLine $word"
-                            if (paint.measureText(candidate) <= maxWidth) {
-                                currentLine = candidate
-                            } else {
-                                if (currentLine.isNotEmpty()) {
-                                    yield(currentLine)
+                            val wordParts = splitLongToken(word, paint, maxWidth)
+                            wordParts.forEach { part ->
+                                val candidate = if (currentLine.isEmpty()) part else "$currentLine $part"
+                                if (paint.measureText(candidate) <= maxWidth) {
+                                    currentLine = candidate
+                                } else {
+                                    if (currentLine.isNotEmpty()) {
+                                        yield(currentLine)
+                                    }
+                                    currentLine = part
                                 }
-                                currentLine = word
                             }
                         }
                         if (currentLine.isNotEmpty()) {
@@ -653,7 +702,9 @@ class InvitationImageGenerator(private val context: Context) {
             ?: Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
     }
 
-    private fun centeredX(text: String, paint: Paint): Float {
-        return (imageWidth - paint.measureText(text)) / 2f
+    private fun centeredX(text: String, paint: Paint, bounds: RectF? = null): Float {
+        val lineWidth = paint.measureText(text)
+        val centerX = bounds?.centerX() ?: (imageWidth / 2f)
+        return centerX - lineWidth / 2f
     }
 }
