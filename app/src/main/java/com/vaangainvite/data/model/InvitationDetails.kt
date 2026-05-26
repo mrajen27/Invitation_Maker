@@ -10,7 +10,7 @@ data class InvitationDetails(
     val message: String = ""
 ) {
     companion object {
-        const val VENUE_MAX_LINES = 3
+        const val VENUE_MAX_LINES = 2
 
         const val OCCASION_MAX_LENGTH = InvitationFieldLimits.OCCASION_MAX_LENGTH
         const val NAME_MAX_LENGTH = InvitationFieldLimits.NAME_MAX_LENGTH
