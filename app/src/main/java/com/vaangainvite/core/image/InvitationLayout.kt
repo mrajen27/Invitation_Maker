@@ -46,7 +46,15 @@ internal object InvitationLayout {
             messageBottom = 1200f,
             topInset = 8f
         ),
-        "wedding_04" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 288f, topWithPhoto = 492f),
+        "wedding_04" to TextZoneSpec(
+            left = 220f,
+            right = 860f,
+            topNoPhoto = 415f,
+            topWithPhoto = 528f,
+            bottom = 1240f,
+            messageBottom = 1160f,
+            topInset = 10f
+        ),
         "wedding_05" to TextZoneSpec(left = 468f, right = 612f, topNoPhoto = 368f, topWithPhoto = 492f),
         "housewarming_03" to TextZoneSpec(
             left = 220f,
@@ -64,6 +72,8 @@ internal object InvitationLayout {
     private val templatePhotoFrames = mapOf(
         // Lower/wider slot inside the temple arch cream panel.
         "wedding_02" to RectF(360f, 308f, 720f, 498f),
+        // Below sacred-knot medallions on the thali motif card.
+        "wedding_04" to RectF(360f, 410f, 720f, 530f),
         // Below mango-toran band on the gopuram doorway card.
         "housewarming_03" to RectF(350f, 360f, 730f, 530f)
     )
