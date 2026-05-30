@@ -71,7 +71,8 @@ import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.ZoneId
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -896,6 +897,9 @@ private fun DatePickerField(
     }
 
     if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = parseDateToMillis(date, selectedLanguage)
+        )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
@@ -922,15 +926,31 @@ private fun DatePickerField(
 }
 
 private fun formatDate(dateMillis: Long, language: InvitationLanguage): String {
-    val locale = when (language) {
+    val locale = dateLocale(language)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", locale)
+    return Instant.ofEpochMilli(dateMillis)
+        .atZone(ZoneOffset.UTC)
+        .toLocalDate()
+        .format(formatter)
+}
+
+private fun parseDateToMillis(date: String, language: InvitationLanguage): Long? {
+    if (date.isBlank()) return null
+    val locale = dateLocale(language)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", locale)
+    return runCatching {
+        LocalDate.parse(date.trim(), formatter)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+    }.getOrNull()
+}
+
+private fun dateLocale(language: InvitationLanguage): Locale {
+    return when (language) {
         InvitationLanguage.TAMIL -> Locale.forLanguageTag("ta-IN")
         InvitationLanguage.ENGLISH -> Locale.ENGLISH
     }
-    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", locale)
-    return Instant.ofEpochMilli(dateMillis)
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate()
-        .format(formatter)
 }
 
 @Composable
