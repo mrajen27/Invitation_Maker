@@ -56,7 +56,12 @@ enum class InvitationLanguage(
     val editorOccasionHelper: String,
     val editorNameHelper: String,
     val editorOccasionPlaceholder: String,
-    val editorNamePlaceholder: String
+    val editorNamePlaceholder: String,
+    val editorPhotoCropTitle: String,
+    val editorPhotoCropHint: String,
+    val editorPhotoCropConfirm: String,
+    val editorPhotoCropError: String,
+    val editorAdjustPhoto: String
 ) {
     ENGLISH(
         displayName = "English",
@@ -84,7 +89,7 @@ enum class InvitationLanguage(
         editorPreviewTitle = "Generated preview",
         editorPhotoSectionTitle = "Photo template option",
         editorPhotoSectionHint = "Add a family, couple, or ceremony photo to the invitation card.",
-        editorPhotoTips = "Tip: Works best with 1–3 people, faces centred. Wide group photos fit better than tall close-ups. Tap Generate to preview before sharing.",
+        editorPhotoTips = "Tip: After upload, pinch and drag to fit faces in the frame. Tap Adjust crop anytime. Generate to preview before sharing.",
         editorUploadPhoto = "Upload photo",
         editorChangePhoto = "Change photo",
         editorRemovePhoto = "Remove",
@@ -114,7 +119,12 @@ enum class InvitationLanguage(
         editorOccasionHelper = "You can type in Tamil. Max %d characters on the card.",
         editorNameHelper = "Examples: Kavin, Karthik & Meena. Max %d characters.",
         editorOccasionPlaceholder = "Kavin's First Birthday",
-        editorNamePlaceholder = "Karthik & Meena"
+        editorNamePlaceholder = "Karthik & Meena",
+        editorPhotoCropTitle = "Adjust photo",
+        editorPhotoCropHint = "Pinch to zoom and drag to position faces inside the frame.",
+        editorPhotoCropConfirm = "Use photo",
+        editorPhotoCropError = "Unable to prepare this photo. Try another image.",
+        editorAdjustPhoto = "Adjust crop"
     ),
     TAMIL(
         displayName = "தமிழ்",
@@ -142,7 +152,7 @@ enum class InvitationLanguage(
         editorPreviewTitle = "உருவாக்கிய முன்னோட்டம்",
         editorPhotoSectionTitle = "புகைப்பட விருப்பம்",
         editorPhotoSectionHint = "குடும்பம், தம்பதி அல்லது விழா புகைப்படத்தை அழைப்பிதழில் சேர்க்கலாம்.",
-        editorPhotoTips = "நினைவூட்டல்: 1–3 பேர், முகங்கள் நடுவில் இருக்கும் புகைப்படம் சிறப்பாக இருக்கும். அகன்ற குழு புகைப்படம் நெருக்கமான portrait-ஐ விட நன்று. பகிர்வதற்கு முன் உருவாக்கு என்பதை அழுத்தி முன்னோட்டம் பாருங்கள்.",
+        editorPhotoTips = "நினைவூட்டல்: புகைப்படம் சேர்த்த பிறகு pinch/drag செய்து முகங்களை சட்டத்தில் வைக்கவும். Adjust crop-ஐ எப்போது வேண்டுமானாலும் அழுத்தலாம். பகிர்வதற்கு முன் உருவாக்கு என்பதை அழுத்தவும்.",
         editorUploadPhoto = "புகைப்படம் சேர்",
         editorChangePhoto = "புகைப்படம் மாற்று",
         editorRemovePhoto = "நீக்கு",
@@ -172,6 +182,11 @@ enum class InvitationLanguage(
         editorOccasionHelper = "தமிழில் விழா தலைப்பை எழுதலாம். அழைப்பிதழில் அதிகபட்சம் %d எழுத்துகள்.",
         editorNameHelper = "தமிழ் பெயர் எழுதலாம். அதிகபட்சம் %d எழுத்துகள்.",
         editorOccasionPlaceholder = "கவின் முதல் பிறந்தநாள்",
-        editorNamePlaceholder = "கார்த்திக் & மீனா"
+        editorNamePlaceholder = "கார்த்திக் & மீனா",
+        editorPhotoCropTitle = "புகைப்படத்தை சரி செய்",
+        editorPhotoCropHint = "சுருக்கி/zoom செய்து, முகங்கள் சட்டத்துக்குள் இருக்க drag செய்யுங்கள்.",
+        editorPhotoCropConfirm = "புகைப்படம் சேர்",
+        editorPhotoCropError = "இந்த புகைப்படத்தை தயார் செய்ய முடியவில்லை. வேறு படம் முயற்சிக்கவும்.",
+        editorAdjustPhoto = "crop சரி செய்"
     )
 }

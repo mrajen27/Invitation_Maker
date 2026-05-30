@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.vaangainvite.core.image.InvitationImageGenerator
+import com.vaangainvite.core.image.PhotoCropTransform
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
@@ -30,7 +31,10 @@ data class InviteUiState(
     val selectedTemplate: InvitationTemplate? = null,
     val selectedLanguage: InvitationLanguage = InvitationLanguage.ENGLISH,
     val details: InvitationDetails = InvitationDetails(),
+    val originalPhotoUri: Uri? = null,
     val uploadedPhotoUri: Uri? = null,
+    val photoCropTransform: PhotoCropTransform? = null,
+    val cropSourceUri: Uri? = null,
     val generatedBitmap: Bitmap? = null,
     val cachedImageUri: Uri? = null,
     val statusMessage: String? = null
@@ -104,25 +108,67 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         updateDetails { copy(message = message.take(maxLength)) }
     }
 
-    fun updateUploadedPhoto(uri: Uri?) {
+    fun beginPhotoCrop(sourceUri: Uri) {
         _uiState.update { current ->
-            val hasPhoto = uri != null
             current.copy(
-                uploadedPhotoUri = uri,
-                details = if (hasPhoto) {
-                    current.details.clampedForCard(hasUploadedPhoto = true)
-                } else {
-                    current.details
-                },
-                generatedBitmap = null,
-                cachedImageUri = null,
-                statusMessage = if (uri == null) {
-                    "Photo removed"
-                } else {
-                    "Photo added. Your message will appear at the bottom of the card."
-                }
+                cropSourceUri = sourceUri,
+                statusMessage = null
             )
         }
+    }
+
+    fun confirmPhotoCrop(croppedUri: Uri, transform: PhotoCropTransform, originalUri: Uri) {
+        _uiState.update { current ->
+            current.copy(
+                originalPhotoUri = originalUri,
+                uploadedPhotoUri = croppedUri,
+                photoCropTransform = transform,
+                cropSourceUri = null,
+                details = current.details.clampedForCard(hasUploadedPhoto = true),
+                generatedBitmap = null,
+                cachedImageUri = null,
+                statusMessage = "Photo cropped. Tap Generate to preview your invitation."
+            )
+        }
+    }
+
+    fun requestAdjustPhotoCrop() {
+        val state = _uiState.value
+        val source = state.originalPhotoUri ?: state.uploadedPhotoUri ?: return
+        _uiState.update { current ->
+            current.copy(
+                cropSourceUri = source,
+                statusMessage = null
+            )
+        }
+    }
+
+    fun clearCropSession() {
+        _uiState.update { current ->
+            current.copy(cropSourceUri = null)
+        }
+    }
+
+    fun removeUploadedPhoto() {
+        _uiState.update { current ->
+            current.copy(
+                originalPhotoUri = null,
+                uploadedPhotoUri = null,
+                photoCropTransform = null,
+                cropSourceUri = null,
+                generatedBitmap = null,
+                cachedImageUri = null,
+                statusMessage = "Photo removed"
+            )
+        }
+    }
+
+    fun updateUploadedPhoto(uri: Uri?) {
+        if (uri == null) {
+            removeUploadedPhoto()
+            return
+        }
+        beginPhotoCrop(uri)
     }
 
     fun selectLanguage(language: InvitationLanguage) {
