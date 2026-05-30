@@ -38,8 +38,8 @@ internal object InvitationLayout {
      */
     private val templateTextZones = mapOf(
         "wedding_02" to TextZoneSpec(
-            left = 250f,
-            right = 830f,
+            left = 210f,
+            right = 870f,
             topNoPhoto = 478f,
             topWithPhoto = 528f,
             bottom = 1180f,
