@@ -11,7 +11,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 
 /**
  * Picks a scale-to-fill source [Rect] for drawing an uploaded photo into [targetFrame].
- * Uses on-device face detection when a face is found; otherwise top-aligned crop.
+ * Uses on-device face detection when faces are found; otherwise top-aligned crop.
  */
 internal object PhotoCropHelper {
 
@@ -20,13 +20,13 @@ internal object PhotoCropHelper {
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
             .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
             .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
-            .setMinFaceSize(0.12f)
+            .setMinFaceSize(0.08f)
             .build()
         FaceDetection.getClient(options)
     }
 
     fun cropSource(bitmap: Bitmap, targetFrame: RectF): Rect {
-        val faceBounds = detectPrimaryFaceBounds(bitmap)
+        val faceBounds = detectFaceFocusBounds(bitmap)
         return if (faceBounds != null) {
             faceAwareCropSource(bitmap, targetFrame, faceBounds)
         } else {
@@ -34,7 +34,11 @@ internal object PhotoCropHelper {
         }
     }
 
-    private fun detectPrimaryFaceBounds(bitmap: Bitmap): RectF? {
+    /**
+     * Returns a padded focus region around one face, or the union of all detected faces
+     * for group photos so people on the sides are not cut off.
+     */
+    private fun detectFaceFocusBounds(bitmap: Bitmap): RectF? {
         val maxSide = 640
         val largestSide = maxOf(bitmap.width, bitmap.height)
         val scale = if (largestSide > maxSide) maxSide.toFloat() / largestSide else 1f
@@ -54,14 +58,25 @@ internal object PhotoCropHelper {
 
             val scaleX = bitmap.width.toFloat() / detectBitmap.width
             val scaleY = bitmap.height.toFloat() / detectBitmap.height
-            val primary = faces.maxBy { it.boundingBox.width() * it.boundingBox.height() }
-            val box = primary.boundingBox
-            RectF(
-                box.left * scaleX,
-                box.top * scaleY,
-                box.right * scaleX,
-                box.bottom * scaleY
-            )
+            val faceBoxes = faces.map { face ->
+                val box = face.boundingBox
+                RectF(
+                    box.left * scaleX,
+                    box.top * scaleY,
+                    box.right * scaleX,
+                    box.bottom * scaleY
+                )
+            }
+
+            val focus = if (faceBoxes.size == 1) {
+                faceBoxes.first()
+            } else {
+                faceBoxes.drop(1).fold(faceBoxes.first()) { union, box ->
+                    RectF(union).apply { union(box) }
+                }
+            }
+
+            paddedFaceFocus(focus, bitmap.width, bitmap.height, isGroupPhoto = faceBoxes.size > 1)
         } catch (_: Exception) {
             null
         } finally {
@@ -71,17 +86,30 @@ internal object PhotoCropHelper {
         }
     }
 
-    private fun faceAwareCropSource(bitmap: Bitmap, target: RectF, face: RectF): Rect {
-        val targetAspect = target.width() / target.height()
-
-        val padX = face.width() * 0.4f
-        val padTop = face.height() * 0.55f
-        val padBottom = face.height() * 0.35f
-        val focus = RectF(
+    private fun paddedFaceFocus(
+        face: RectF,
+        bitmapWidth: Int,
+        bitmapHeight: Int,
+        isGroupPhoto: Boolean
+    ): RectF {
+        val padX = face.width() * if (isGroupPhoto) 0.35f else 0.4f
+        val padTop = face.height() * if (isGroupPhoto) 0.45f else 0.55f
+        val padBottom = face.height() * if (isGroupPhoto) 0.3f else 0.35f
+        return RectF(
             (face.left - padX).coerceAtLeast(0f),
             (face.top - padTop).coerceAtLeast(0f),
-            (face.right + padX).coerceAtMost(bitmap.width.toFloat()),
-            (face.bottom + padBottom).coerceAtMost(bitmap.height.toFloat())
+            (face.right + padX).coerceAtMost(bitmapWidth.toFloat()),
+            (face.bottom + padBottom).coerceAtMost(bitmapHeight.toFloat())
+        )
+    }
+
+    private fun faceAwareCropSource(bitmap: Bitmap, target: RectF, face: RectF): Rect {
+        val targetAspect = target.width() / target.height()
+        val focus = RectF(
+            face.left.coerceAtLeast(0f),
+            face.top.coerceAtLeast(0f),
+            face.right.coerceAtMost(bitmap.width.toFloat()),
+            face.bottom.coerceAtMost(bitmap.height.toFloat())
         )
 
         var cropW: Float
@@ -103,10 +131,8 @@ internal object PhotoCropHelper {
             cropW = cropH * targetAspect
         }
 
-        // Keep the face in the upper portion of the frame (room for hair / forehead).
-        val faceAnchorY = face.top - padTop * 0.35f
         var left = focus.centerX() - cropW / 2f
-        var top = faceAnchorY
+        var top = focus.centerY() - cropH * 0.42f
 
         left = left.coerceIn(0f, bitmap.width - cropW)
         top = top.coerceIn(0f, bitmap.height - cropH)

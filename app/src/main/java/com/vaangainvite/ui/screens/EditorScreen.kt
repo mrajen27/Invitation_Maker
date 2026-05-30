@@ -414,6 +414,11 @@ private fun PhotoUploadSection(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
+            Text(
+                text = selectedLanguage.editorPhotoTips,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(onClick = onChoosePhoto) {
                     Text(text = if (hasPhoto) selectedLanguage.editorChangePhoto else selectedLanguage.editorUploadPhoto)
