@@ -346,35 +346,16 @@ class InvitationImageGenerator(private val context: Context) {
             return InvitationRenderReport()
         }
 
-        val messageTruncated = if (hasUploadedPhoto) {
-            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground, template.id)
-            drawMessageBottomAnchored(
-                canvas = canvas,
-                text = messageText,
-                paint = messagePaint,
-                messageSafe = messageSafe,
-                maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                lineSpacing = 5f
-            )
-        } else {
-            // Last detail row adds betweenDetails; use exactly 10px before the message.
-            blockTop -= InvitationLayout.Spacing.betweenDetails
-            blockTop += InvitationLayout.Spacing.beforeMessageNoPhoto
-            val truncated = wrapText(messageText, messagePaint, maxTextWidth)
-                .size > InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
-            drawCenteredLines(
-                canvas = canvas,
-                text = messageText,
-                paint = messagePaint,
-                topY = blockTop,
-                maxWidth = maxTextWidth,
-                lineSpacing = 5f,
-                maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                horizontalBounds = zone,
-                maxBottomY = zone.bottom - 8f
-            )
-            truncated
-        }
+        val messageTruncated = drawAdditionalMessage(
+            canvas = canvas,
+            text = messageText,
+            paint = messagePaint,
+            blockTopAfterLastDetail = blockTop,
+            zone = zone,
+            maxTextWidth = maxTextWidth,
+            maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+            lineSpacing = 5f
+        )
         return InvitationRenderReport(
             messageShown = true,
             messageTruncated = messageTruncated
@@ -382,35 +363,48 @@ class InvitationImageGenerator(private val context: Context) {
     }
 
     /**
-     * Pins the additional message to the bottom safe band so it still appears when a photo
-     * pushes event details lower on the card.
+     * Places the additional message 10px below the last detail row (phone).
+     * Uses flow layout so it never overlaps date/time/venue/phone — bottom-anchoring
+     * caused overlap on compact templates like Temple Mandapam with a photo.
      */
-    private fun drawMessageBottomAnchored(
+    private fun drawAdditionalMessage(
         canvas: Canvas,
         text: String,
         paint: Paint,
-        messageSafe: RectF,
+        blockTopAfterLastDetail: Float,
+        zone: RectF,
+        maxTextWidth: Float,
         maxLines: Int,
         lineSpacing: Float
     ): Boolean {
-        val maxWidth = messageSafe.width() - 48f
-        val wrapped = wrapText(text, paint, maxWidth)
+        val messageStartY = blockTopAfterLastDetail -
+            InvitationLayout.Spacing.betweenDetails +
+            InvitationLayout.Spacing.beforeMessageNoPhoto
+        val maxBottomY = zone.bottom - 8f
+        val wrapped = wrapText(text, paint, maxTextWidth)
         val truncated = wrapped.size > maxLines
-        val lines = wrapped.limitLines(maxLines, paint, maxWidth)
+        val lines = wrapped.limitLines(maxLines, paint, maxTextWidth)
         if (lines.isEmpty()) return false
 
         val fm = paint.fontMetrics
-        var baseline = messageSafe.bottom - 14f - fm.descent
-        for (line in lines.asReversed()) {
-            val fittedLine = fitLineToWidth(line, paint, maxWidth)
-            canvas.drawText(
-                fittedLine,
-                centeredX(fittedLine, paint, messageSafe),
-                baseline,
-                paint
-            )
-            baseline -= lineHeight(paint, lineSpacing)
+        val messageHeight = lines.size * lineHeight(paint, lineSpacing) - fm.descent
+        val topY = if (messageStartY + messageHeight <= maxBottomY) {
+            messageStartY
+        } else {
+            (maxBottomY - messageHeight).coerceAtLeast(messageStartY)
         }
+
+        drawCenteredLines(
+            canvas = canvas,
+            text = text,
+            paint = paint,
+            topY = topY,
+            maxWidth = maxTextWidth,
+            lineSpacing = lineSpacing,
+            maxLines = maxLines,
+            horizontalBounds = zone,
+            maxBottomY = maxBottomY
+        )
         return truncated
     }
 
@@ -662,7 +656,7 @@ class InvitationImageGenerator(private val context: Context) {
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
-                if (baseline - fm.ascent >= maxBottomY) return@forEach
+                if (baseline + fm.descent > maxBottomY) return@forEach
                 val fittedLine = fitLineToWidth(line, paint, maxWidth)
                 val x = centeredX(fittedLine, paint, horizontalBounds)
                 canvas.drawText(fittedLine, x, baseline, paint)

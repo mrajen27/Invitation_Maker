@@ -42,8 +42,8 @@ internal object InvitationLayout {
             right = 870f,
             topNoPhoto = 478f,
             topWithPhoto = 528f,
-            bottom = 1180f,
-            messageBottom = 1080f,
+            bottom = 1240f,
+            messageBottom = 1200f,
             topInset = 8f
         ),
         "wedding_04" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 288f, topWithPhoto = 492f),
