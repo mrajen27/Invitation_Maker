@@ -62,12 +62,12 @@ internal object InvitationLayout {
             right = 860f,
             // Upper cream panel — garland ends ~y300; previous start (532) left a large empty gap.
             topNoPhoto = 328f,
-            topWithPhoto = 528f,
+            topWithPhoto = 496f,
             // Vase panel stays wide until ~y1160; 915 was clipping the additional message.
             bottom = 1140f,
             messageBottom = 1100f,
-            topInset = 8f,
-            photoTextGap = 12f
+            topInset = 4f,
+            photoTextGap = 6f
         ),
         "housewarming_03" to TextZoneSpec(
             left = 220f,
@@ -88,7 +88,7 @@ internal object InvitationLayout {
         // Below sacred-knot medallions on the thali motif card.
         "wedding_04" to RectF(360f, 410f, 720f, 530f),
         // Narrow upper cream panel on the peacock crest card.
-        "wedding_05" to RectF(420f, 380f, 660f, 520f),
+        "wedding_05" to RectF(420f, 360f, 660f, 490f),
         // Below mango-toran band on the gopuram doorway card.
         "housewarming_03" to RectF(350f, 360f, 730f, 530f)
     )
