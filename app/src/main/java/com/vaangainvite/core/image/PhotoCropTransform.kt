@@ -97,14 +97,11 @@ data class PhotoCropTransform(
     }
 
     companion object {
-        fun targetAspectRatio(templateId: String = ""): Float {
-            val frame = InvitationLayout.photoFrame(templateId)
-            return frame.width() / frame.height()
-        }
+        val targetAspectRatio: Float =
+            InvitationLayout.photoFrame().width() / InvitationLayout.photoFrame().height()
 
-        fun autoDetect(bitmap: Bitmap, templateId: String = ""): PhotoCropTransform {
-            val frame = InvitationLayout.photoFrame(templateId)
-            val src = PhotoCropHelper.cropSource(bitmap, frame)
+        fun autoDetect(bitmap: Bitmap): PhotoCropTransform {
+            val src = PhotoCropHelper.cropSource(bitmap, InvitationLayout.photoFrame())
             return PhotoCropTransform(
                 srcLeft = src.left.toFloat(),
                 srcTop = src.top.toFloat(),

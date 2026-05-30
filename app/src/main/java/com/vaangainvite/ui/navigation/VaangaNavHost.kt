@@ -94,7 +94,6 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
 
             PhotoCropScreen(
                 sourceUri = sourceUri,
-                templateId = state.selectedTemplate?.id.orEmpty(),
                 language = state.selectedLanguage,
                 initialTransform = state.photoCropTransform?.takeIf {
                     state.originalPhotoUri == sourceUri
