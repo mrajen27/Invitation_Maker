@@ -55,6 +55,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun PhotoCropScreen(
     sourceUri: Uri,
+    templateId: String,
     language: InvitationLanguage,
     initialTransform: PhotoCropTransform?,
     onConfirm: (Uri, PhotoCropTransform) -> Unit,
@@ -67,11 +68,11 @@ fun PhotoCropScreen(
     var isSaving by remember { mutableStateOf(false) }
     var loadError by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(sourceUri, initialTransform) {
+    LaunchedEffect(sourceUri, templateId, initialTransform) {
         runCatching {
             withContext(Dispatchers.Default) {
                 val loaded = PhotoBitmapLoader.load(context, sourceUri)
-                val initial = initialTransform ?: PhotoCropTransform.autoDetect(loaded)
+                val initial = initialTransform ?: PhotoCropTransform.autoDetect(loaded, templateId)
                 loaded to initial
             }
         }.onSuccess { (loadedBitmap, initialCrop) ->
@@ -136,7 +137,7 @@ fun PhotoCropScreen(
                 else -> {
                     val imageBitmap = bitmap!!.asImageBitmap()
                     val cropTransform = transform!!
-                    val frameAspect = PhotoCropTransform.targetAspectRatio
+                    val frameAspect = PhotoCropTransform.targetAspectRatio(templateId)
                     val currentBitmap by rememberUpdatedState(bitmap)
                     val currentTransform by rememberUpdatedState(transform)
 

@@ -29,7 +29,9 @@ internal object InvitationLayout {
         val topWithPhoto: Float,
         val bottom: Float = 1240f,
         val messageBottom: Float = 1160f,
-        val topInset: Float = 4f
+        val topInset: Float = 4f,
+        /** Gap between photo frame bottom and first text line when a photo is uploaded. */
+        val photoTextGap: Float = 22f
     )
 
     /**
@@ -58,11 +60,14 @@ internal object InvitationLayout {
         "wedding_05" to TextZoneSpec(
             left = 220f,
             right = 860f,
-            topNoPhoto = 532f,
-            topWithPhoto = 545f,
-            bottom = 915f,
-            messageBottom = 880f,
-            topInset = 10f
+            // Upper cream panel — garland ends ~y300; previous start (532) left a large empty gap.
+            topNoPhoto = 328f,
+            topWithPhoto = 528f,
+            // Vase panel stays wide until ~y1160; 915 was clipping the additional message.
+            bottom = 1140f,
+            messageBottom = 1100f,
+            topInset = 8f,
+            photoTextGap = 12f
         ),
         "housewarming_03" to TextZoneSpec(
             left = 220f,
@@ -148,7 +153,8 @@ internal object InvitationLayout {
             return zone.top + inset
         }
         val frameBottom = photoFrame(templateId).bottom
-        return maxOf(zone.top, frameBottom + 22f) + inset
+        val photoGap = spec?.photoTextGap ?: 22f
+        return maxOf(zone.top, frameBottom + photoGap) + inset
     }
 
     /** Narrower frosted panel for vector / painted backgrounds. */
