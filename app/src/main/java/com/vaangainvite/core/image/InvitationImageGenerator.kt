@@ -63,7 +63,7 @@ class InvitationImageGenerator(private val context: Context) {
         }
 
         val textZone = if (usesPhotoBackground) {
-            InvitationLayout.photoTextZone(hasUploadedPhoto)
+            InvitationLayout.photoTextZone(template.id, hasUploadedPhoto)
         } else {
             InvitationLayout.classicTextZone(hasUploadedPhoto)
         }
@@ -256,7 +256,8 @@ class InvitationImageGenerator(private val context: Context) {
             blockTop,
             maxTextWidth,
             4f,
-            maxLines = 1
+            maxLines = 1,
+            horizontalBounds = zone
         ) + InvitationLayout.Spacing.afterIntro
 
         blockTop = drawCenteredLines(
@@ -266,7 +267,8 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             maxWidth = maxTextWidth,
             lineSpacing = 4f,
-            maxLines = 2
+            maxLines = 2,
+            horizontalBounds = zone
         ) + InvitationLayout.Spacing.afterOccasion
 
         blockTop = drawCenteredLines(
@@ -276,8 +278,19 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             maxWidth = maxTextWidth,
             lineSpacing = 2f,
-            maxLines = 2
+            maxLines = 2,
+            horizontalBounds = zone
         ) + if (compactLayout) 6f else InvitationLayout.Spacing.afterName
+
+        val detailEntries = buildList {
+            add(details.date.ifBlank { language.fallbackDate } to 1)
+            add(details.time.ifBlank { language.fallbackTime } to 1)
+            add(details.venue.ifBlank { language.fallbackVenue } to InvitationDetails.VENUE_MAX_LINES)
+            if (details.mobileNumber.isNotBlank()) {
+                add(details.mobileNumber to 1)
+            }
+        }
+        val detailLayout = computeDetailColumnLayout(bodyPaint, zone, detailEntries)
 
         blockTop = drawDetailWithIcon(
             canvas = canvas,
@@ -285,7 +298,7 @@ class InvitationImageGenerator(private val context: Context) {
             value = details.date.ifBlank { language.fallbackDate },
             paint = bodyPaint,
             topY = blockTop,
-            zone = zone,
+            layout = detailLayout,
             iconTint = palette.iconTint,
             maxLines = 1
         )
@@ -295,7 +308,7 @@ class InvitationImageGenerator(private val context: Context) {
             value = details.time.ifBlank { language.fallbackTime },
             paint = bodyPaint,
             topY = blockTop,
-            zone = zone,
+            layout = detailLayout,
             iconTint = palette.iconTint,
             maxLines = 1
         )
@@ -305,7 +318,7 @@ class InvitationImageGenerator(private val context: Context) {
             value = details.venue.ifBlank { language.fallbackVenue },
             paint = bodyPaint,
             topY = blockTop,
-            zone = zone,
+            layout = detailLayout,
             iconTint = palette.iconTint,
             maxLines = InvitationDetails.VENUE_MAX_LINES
         )
@@ -316,7 +329,7 @@ class InvitationImageGenerator(private val context: Context) {
                 value = details.mobileNumber,
                 paint = bodyPaint,
                 topY = blockTop,
-                zone = zone,
+                layout = detailLayout,
                 iconTint = palette.iconTint,
                 maxLines = 1
             )
@@ -328,7 +341,7 @@ class InvitationImageGenerator(private val context: Context) {
         }
 
         val messageTruncated = if (hasUploadedPhoto) {
-            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
+            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground, template.id)
             drawMessageBottomAnchored(
                 canvas = canvas,
                 text = messageText,
@@ -428,26 +441,66 @@ class InvitationImageGenerator(private val context: Context) {
         )
     }
 
+    private data class DetailColumnLayout(
+        val iconLeft: Float,
+        val textStartX: Float,
+        val maxLineWidth: Float,
+        val iconSize: Float = 36f,
+        val iconGap: Float = 14f
+    )
+
+    /**
+     * Centers detail text under the honoree name and hangs icons to the left,
+     * instead of centering the icon+text block (which shifts copy to the right).
+     */
+    private fun computeDetailColumnLayout(
+        paint: Paint,
+        zone: RectF,
+        entries: List<Pair<String, Int>>
+    ): DetailColumnLayout {
+        val iconSize = 36f
+        val iconGap = 14f
+        val iconReserve = iconSize + iconGap + 8f
+        val maxLineWidth = zone.width() - 40f - iconReserve
+        var widest = 0f
+        entries.forEach { (value, maxLines) ->
+            wrapText(value, paint, maxLineWidth)
+                .limitLines(maxLines, paint, maxLineWidth)
+                .forEach { line ->
+                    val fitted = fitLineToWidth(line, paint, maxLineWidth)
+                    widest = maxOf(widest, paint.measureText(fitted))
+                }
+        }
+        var textStartX = zone.centerX() - widest / 2f
+        var iconLeft = textStartX - iconSize - iconGap
+        val minIconLeft = zone.left + 8f
+        if (iconLeft < minIconLeft) {
+            val shift = minIconLeft - iconLeft
+            iconLeft += shift
+            textStartX += shift
+        }
+        return DetailColumnLayout(
+            iconLeft = iconLeft,
+            textStartX = textStartX,
+            maxLineWidth = maxLineWidth,
+            iconSize = iconSize,
+            iconGap = iconGap
+        )
+    }
+
     private fun drawDetailWithIcon(
         canvas: Canvas,
         iconResId: Int,
         value: String,
         paint: Paint,
         topY: Float,
-        zone: RectF,
+        layout: DetailColumnLayout,
         iconTint: Int,
         maxLines: Int
     ): Float {
-        val iconSize = 36f
-        val gap = 14f
-        val maxLineWidth = zone.width() - iconSize - gap - 24f
-        val rawLines = wrapText(value, paint, maxLineWidth)
-        val lines = rawLines.limitLines(maxLines, paint, maxLineWidth)
-        val fittedLines = lines.map { fitLineToWidth(it, paint, maxLineWidth) }
-        val maxTextWidth = fittedLines.maxOfOrNull { paint.measureText(it) } ?: 0f
-        val blockWidth = iconSize + gap + maxTextWidth
-        val blockLeft = zone.centerX() - blockWidth / 2f
-        val textStartX = blockLeft + iconSize + gap
+        val rawLines = wrapText(value, paint, layout.maxLineWidth)
+        val lines = rawLines.limitLines(maxLines, paint, layout.maxLineWidth)
+        val fittedLines = lines.map { fitLineToWidth(it, paint, layout.maxLineWidth) }
 
         val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)?.mutate()) {
             "Missing detail icon"
@@ -460,14 +513,14 @@ class InvitationImageGenerator(private val context: Context) {
             if (index == 0) {
                 val iconTop = (baseline + fm.ascent - 4f).toInt()
                 icon.setBounds(
-                    blockLeft.toInt(),
+                    layout.iconLeft.toInt(),
                     iconTop,
-                    (blockLeft + iconSize).toInt(),
-                    iconTop + iconSize.toInt()
+                    (layout.iconLeft + layout.iconSize).toInt(),
+                    iconTop + layout.iconSize.toInt()
                 )
                 icon.draw(canvas)
             }
-            canvas.drawText(line, textStartX, baseline, paint)
+            canvas.drawText(line, layout.textStartX, baseline, paint)
             baseline += lineHeight(paint, InvitationLayout.Spacing.betweenDetails)
         }
         return baseline - fm.descent + InvitationLayout.Spacing.betweenDetails
