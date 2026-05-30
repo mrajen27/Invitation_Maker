@@ -1,11 +1,14 @@
 package com.vaangainvite.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.vaangainvite.ui.screens.EditorScreen
 import com.vaangainvite.ui.screens.HomeScreen
 import com.vaangainvite.ui.screens.PhotoCropScreen
@@ -49,13 +52,22 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
             EditorScreen(
                 viewModel = viewModel,
                 onBack = navController::popBackStack,
-                onNavigateToPhotoCrop = {
-                    navController.navigate(Routes.PHOTO_CROP)
+                onNavigateToPhotoCrop = { sourceUri ->
+                    val encodedUri = Uri.encode(sourceUri.toString())
+                    navController.navigate("${Routes.PHOTO_CROP}?sourceUri=$encodedUri")
                 }
             )
         }
-        composable(Routes.PHOTO_CROP) {
-            val sourceUri = state.cropSourceUri
+        composable(
+            route = "${Routes.PHOTO_CROP}?sourceUri={sourceUri}",
+            arguments = listOf(
+                navArgument("sourceUri") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val encodedUri = backStackEntry.arguments?.getString("sourceUri")
+            val sourceUri = encodedUri?.let { Uri.parse(Uri.decode(it)) }
             if (sourceUri != null) {
                 PhotoCropScreen(
                     sourceUri = sourceUri,

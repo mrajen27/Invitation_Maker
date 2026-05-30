@@ -127,7 +127,7 @@ private val QuickInviteMessages = listOf(
 fun EditorScreen(
     viewModel: InviteViewModel,
     onBack: () -> Unit,
-    onNavigateToPhotoCrop: () -> Unit
+    onNavigateToPhotoCrop: (android.net.Uri) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -147,7 +147,7 @@ fun EditorScreen(
     ) { uri ->
         if (uri != null) {
             viewModel.beginPhotoCrop(uri)
-            onNavigateToPhotoCrop()
+            onNavigateToPhotoCrop(uri)
         }
     }
 
@@ -212,8 +212,11 @@ fun EditorScreen(
                     )
                 },
                 onAdjustPhoto = {
-                    viewModel.requestAdjustPhotoCrop()
-                    onNavigateToPhotoCrop()
+                    val sourceUri = state.originalPhotoUri ?: state.uploadedPhotoUri
+                    if (sourceUri != null) {
+                        viewModel.requestAdjustPhotoCrop()
+                        onNavigateToPhotoCrop(sourceUri)
+                    }
                 },
                 onRemovePhoto = {
                     viewModel.removeUploadedPhoto()
