@@ -19,7 +19,7 @@ internal object InvitationLayout {
         const val betweenDetails = 6f
         const val beforeMessage = 16f
         /** Gap between venue block and message when no photo is on the card. */
-        const val beforeMessageNoPhoto = 18f
+        const val beforeMessageNoPhoto = 10f
     }
 
     private data class TextZoneSpec(
@@ -38,8 +38,8 @@ internal object InvitationLayout {
      */
     private val templateTextZones = mapOf(
         "wedding_02" to TextZoneSpec(
-            left = 250f,
-            right = 830f,
+            left = 210f,
+            right = 870f,
             topNoPhoto = 478f,
             topWithPhoto = 528f,
             bottom = 1180f,
