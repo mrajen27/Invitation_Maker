@@ -18,20 +18,44 @@ internal object InvitationLayout {
         const val afterName = 12f
         const val betweenDetails = 6f
         const val beforeMessage = 16f
-        /** Extra gap between venue block and message when no photo is on the card. */
-        const val beforeMessageNoPhoto = 40f
+        /** Gap between venue block and message when no photo is on the card. */
+        const val beforeMessageNoPhoto = 28f
     }
+
+    private data class TextZoneSpec(
+        val left: Float,
+        val right: Float,
+        val topNoPhoto: Float,
+        val topWithPhoto: Float,
+        val bottom: Float = 1240f
+    )
+
+    /**
+     * Per-template safe areas measured from WebP cream panels (1080×1350).
+     * Temple / arch templates need a lower start so intro text clears the frame.
+     */
+    private val templateTextZones = mapOf(
+        "wedding_02" to TextZoneSpec(left = 210f, right = 870f, topNoPhoto = 438f, topWithPhoto = 508f),
+        "wedding_04" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 288f, topWithPhoto = 492f),
+        "wedding_05" to TextZoneSpec(left = 468f, right = 612f, topNoPhoto = 368f, topWithPhoto = 492f),
+        "housewarming_03" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 252f, topWithPhoto = 492f),
+        "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
+        "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
+    )
 
     /**
      * Horizontal + bottom inset for the additional message on photo WebP templates
      * (peacock/pillar side art and bottom mandap/gold motifs).
      */
-    fun photoMessageSafeArea(): RectF = RectF(
-        300f,
-        0f,
-        780f,
-        1160f
-    )
+    fun photoMessageSafeArea(templateId: String): RectF {
+        val zone = photoTextZone(templateId, hasUploadedPhoto = false)
+        return RectF(
+            zone.left + 40f,
+            0f,
+            zone.right - 40f,
+            1160f
+        )
+    }
 
     fun classicMessageSafeArea(): RectF = RectF(
         250f,
@@ -40,12 +64,21 @@ internal object InvitationLayout {
         1070f
     )
 
-    fun messageSafeArea(usesPhotoBackground: Boolean): RectF {
-        return if (usesPhotoBackground) photoMessageSafeArea() else classicMessageSafeArea()
+    fun messageSafeArea(usesPhotoBackground: Boolean, templateId: String): RectF {
+        return if (usesPhotoBackground) photoMessageSafeArea(templateId) else classicMessageSafeArea()
     }
 
     /** Center column for photo-style WebP backgrounds (no overlay box). */
-    fun photoTextZone(hasUploadedPhoto: Boolean): RectF {
+    fun photoTextZone(templateId: String, hasUploadedPhoto: Boolean): RectF {
+        val spec = templateTextZones[templateId]
+        if (spec != null) {
+            return RectF(
+                spec.left,
+                if (hasUploadedPhoto) spec.topWithPhoto else spec.topNoPhoto,
+                spec.right,
+                spec.bottom
+            )
+        }
         return RectF(
             220f,
             if (hasUploadedPhoto) 492f else 368f,
