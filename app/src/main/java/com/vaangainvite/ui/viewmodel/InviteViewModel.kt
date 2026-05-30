@@ -11,6 +11,7 @@ import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.clampedForCard
+import com.vaangainvite.data.model.normalizeVenue
 import com.vaangainvite.data.model.messageMaxLength
 import com.vaangainvite.data.model.validationError
 import com.vaangainvite.data.model.InvitationLanguage
@@ -95,7 +96,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun updateVenue(venue: String) = updateDetails {
-        copy(venue = venue.take(InvitationDetails.VENUE_MAX_LENGTH))
+        copy(venue = normalizeVenue(venue))
     }
 
     fun updateMobileNumber(mobileNumber: String) = updateDetails {

@@ -468,15 +468,17 @@ private fun LimitedOutlinedTextField(
     helperText: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     readOnly: Boolean = false,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    lengthOf: (String) -> Int = { it.length }
 ) {
     var lengthError by remember { mutableStateOf<String?>(null) }
     val isError = lengthError != null
+    val currentLength = lengthOf(value)
 
     OutlinedTextField(
         value = value,
         onValueChange = { newValue ->
-            if (newValue.length <= maxLength) {
+            if (lengthOf(newValue) <= maxLength) {
                 lengthError = null
                 onValueChange(newValue)
             } else {
@@ -510,7 +512,7 @@ private fun LimitedOutlinedTextField(
                     )
                 }
                 Text(
-                    text = "${value.length}/$maxLength",
+                    text = "$currentLength/$maxLength",
                     style = MaterialTheme.typography.labelMedium,
                     color = if (isError) {
                         MaterialTheme.colorScheme.error
@@ -600,8 +602,10 @@ private fun EditorFields(
             singleLine = false,
             minLines = InvitationDetails.VENUE_MAX_LINES,
             maxLines = InvitationDetails.VENUE_MAX_LINES,
+            lengthOf = { it.replace("\n", "").length },
             helperText = selectedLanguage.editorVenueHelper.format(
                 InvitationDetails.VENUE_MAX_LINES,
+                InvitationDetails.VENUE_MAX_CHARS_PER_LINE,
                 InvitationDetails.VENUE_MAX_LENGTH
             )
         )
