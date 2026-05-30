@@ -8,11 +8,42 @@ import android.media.ExifInterface
 import android.net.Uri
 
 internal object PhotoBitmapLoader {
+    private const val MAX_LOAD_DIMENSION = 2048
+
     fun load(context: Context, uri: Uri): Bitmap {
-        val bitmap = context.contentResolver.openInputStream(uri)?.use { input ->
-            BitmapFactory.decodeStream(input)
+        val resolver = context.contentResolver
+        val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        resolver.openInputStream(uri)?.use { input ->
+            BitmapFactory.decodeStream(input, null, boundsOptions)
         } ?: error("Unable to open photo")
+
+        val sampleSize = calculateInSampleSize(
+            width = boundsOptions.outWidth,
+            height = boundsOptions.outHeight,
+            maxDimension = MAX_LOAD_DIMENSION
+        )
+        val decodeOptions = BitmapFactory.Options().apply {
+            inSampleSize = sampleSize
+        }
+        val bitmap = resolver.openInputStream(uri)?.use { input ->
+            BitmapFactory.decodeStream(input, null, decodeOptions)
+        } ?: error("Unable to decode photo")
         return correctOrientation(bitmap, uri, context)
+    }
+
+    private fun calculateInSampleSize(
+        width: Int,
+        height: Int,
+        maxDimension: Int
+    ): Int {
+        if (width <= 0 || height <= 0) return 1
+        var sampleSize = 1
+        var halfWidth = width / 2
+        var halfHeight = height / 2
+        while (halfWidth / sampleSize >= maxDimension || halfHeight / sampleSize >= maxDimension) {
+            sampleSize *= 2
+        }
+        return sampleSize
     }
 
     private fun correctOrientation(bitmap: Bitmap, uri: Uri, context: Context): Bitmap {
@@ -52,6 +83,10 @@ internal object PhotoBitmapLoader {
             bitmap.height,
             matrix,
             true
-        )
+        ).also {
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
     }
 }
