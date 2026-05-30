@@ -56,11 +56,12 @@ fun InvitationDetails.validationError(hasUploadedPhoto: Boolean = false): String
 }
 
 /**
- * Keeps venue to two lines with at most [VENUE_MAX_CHARS_PER_LINE] characters each.
- * Overflow from line 1 rolls into line 2 when the user types without pressing Enter.
+ * Keeps venue to two lines with at most [InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE] characters each.
+ * Overflow from line 1 rolls into line 2 only when the user does not press Enter.
  */
 fun normalizeVenue(raw: String): String {
     val normalized = raw.replace("\r\n", "\n")
+    val hasExplicitBreak = normalized.contains('\n')
     val explicitLines = normalized.split("\n", limit = InvitationFieldLimits.VENUE_MAX_LINES + 1)
     val line1Source = explicitLines.getOrElse(0) { "" }
     val line2Source = buildString {
@@ -73,9 +74,18 @@ fun normalizeVenue(raw: String): String {
         }
     }
 
-    val line1 = line1Source.take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
-    val line2 = (line1Source.drop(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE) + line2Source)
-        .take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
+    if (hasExplicitBreak) {
+        val line1 = line1Source.take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
+        val line2 = line2Source.take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
+        return when {
+            line2.isNotEmpty() -> "$line1\n$line2"
+            normalized.endsWith("\n") || explicitLines.size >= 2 -> "$line1\n"
+            else -> line1
+        }
+    }
 
+    val line1 = line1Source.take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
+    val line2 = line1Source.drop(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
+        .take(InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE)
     return if (line2.isEmpty()) line1 else "$line1\n$line2"
 }
