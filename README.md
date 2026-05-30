@@ -69,7 +69,7 @@ Command line build:
 
 ## Google Play release (signed AAB)
 
-Google Play requires a signed Android App Bundle (`.aab`). CI builds one via the **Build Signed Release AAB** workflow (`.github/workflows/android-release-aab.yml`).
+Google Play requires a signed Android App Bundle (`.aab`). CI builds one via the **Build Signed Release AAB** workflow (`.github/workflows/android-release-aab.yml`). If signing secrets are not configured yet, the workflow still builds an **unsigned** release AAB so you can verify the project compiles; add the secrets below before uploading to Play Console.
 
 ### One-time signing key
 
