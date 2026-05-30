@@ -55,7 +55,15 @@ internal object InvitationLayout {
             messageBottom = 1160f,
             topInset = 10f
         ),
-        "wedding_05" to TextZoneSpec(left = 468f, right = 612f, topNoPhoto = 368f, topWithPhoto = 492f),
+        "wedding_05" to TextZoneSpec(
+            left = 390f,
+            right = 690f,
+            topNoPhoto = 555f,
+            topWithPhoto = 548f,
+            bottom = 1080f,
+            messageBottom = 1040f,
+            topInset = 8f
+        ),
         "housewarming_03" to TextZoneSpec(
             left = 220f,
             right = 860f,
@@ -74,6 +82,8 @@ internal object InvitationLayout {
         "wedding_02" to RectF(360f, 308f, 720f, 498f),
         // Below sacred-knot medallions on the thali motif card.
         "wedding_04" to RectF(360f, 410f, 720f, 530f),
+        // Narrow upper cream panel on the peacock crest card.
+        "wedding_05" to RectF(420f, 380f, 660f, 520f),
         // Below mango-toran band on the gopuram doorway card.
         "housewarming_03" to RectF(350f, 360f, 730f, 530f)
     )
