@@ -395,7 +395,7 @@ class InvitationImageGenerator(private val context: Context) {
         val topY = if (messageStartY + messageHeight <= maxBottomY) {
             messageStartY
         } else {
-            (maxBottomY - messageHeight).coerceAtLeast(messageStartY)
+            (maxBottomY - messageHeight).coerceAtMost(messageStartY)
         }
 
         drawCenteredLines(
