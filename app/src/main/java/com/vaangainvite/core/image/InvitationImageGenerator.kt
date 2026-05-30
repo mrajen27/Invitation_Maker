@@ -585,7 +585,7 @@ class InvitationImageGenerator(private val context: Context) {
         canvas.clipPath(path)
         canvas.drawBitmap(
             photoBitmap,
-            PhotoCropHelper.cropSource(photoBitmap, frame),
+            null,
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )

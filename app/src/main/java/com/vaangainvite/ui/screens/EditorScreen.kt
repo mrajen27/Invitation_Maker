@@ -126,7 +126,8 @@ private val QuickInviteMessages = listOf(
 @Composable
 fun EditorScreen(
     viewModel: InviteViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToPhotoCrop: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -145,7 +146,8 @@ fun EditorScreen(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            viewModel.updateUploadedPhoto(uri)
+            viewModel.beginPhotoCrop(uri)
+            onNavigateToPhotoCrop()
         }
     }
 
@@ -209,8 +211,12 @@ fun EditorScreen(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 },
+                onAdjustPhoto = {
+                    viewModel.requestAdjustPhotoCrop()
+                    onNavigateToPhotoCrop()
+                },
                 onRemovePhoto = {
-                    viewModel.updateUploadedPhoto(null)
+                    viewModel.removeUploadedPhoto()
                 }
             )
 
@@ -379,6 +385,7 @@ private fun PhotoUploadSection(
     hasMessage: Boolean,
     selectedLanguage: InvitationLanguage,
     onChoosePhoto: () -> Unit,
+    onAdjustPhoto: () -> Unit,
     onRemovePhoto: () -> Unit
 ) {
     Card(
@@ -424,6 +431,9 @@ private fun PhotoUploadSection(
                     Text(text = if (hasPhoto) selectedLanguage.editorChangePhoto else selectedLanguage.editorUploadPhoto)
                 }
                 if (hasPhoto) {
+                    FilledTonalButton(onClick = onAdjustPhoto) {
+                        Text(text = selectedLanguage.editorAdjustPhoto)
+                    }
                     TextButton(onClick = onRemovePhoto) {
                         Text(text = selectedLanguage.editorRemovePhoto)
                     }

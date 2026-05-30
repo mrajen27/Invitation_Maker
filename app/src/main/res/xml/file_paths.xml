@@ -3,4 +3,7 @@
     <cache-path
         name="shared_invites"
         path="shared_invites/" />
+    <cache-path
+        name="cropped_photos"
+        path="cropped_photos/" />
 </paths>
