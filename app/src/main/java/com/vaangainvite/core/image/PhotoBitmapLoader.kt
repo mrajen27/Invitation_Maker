@@ -6,16 +6,33 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import androidx.core.content.FileProvider
+import java.io.ByteArrayInputStream
+import java.io.File
 
 internal object PhotoBitmapLoader {
     private const val MAX_LOAD_DIMENSION = 2048
 
+    /**
+     * Copy a gallery picker URI into app cache while read permission is still active.
+     * Crop and export steps then read a stable local file instead of reopening picker URIs.
+     */
+    fun cachePickerUri(context: Context, sourceUri: Uri): Uri {
+        val bytes = readBytes(context, sourceUri)
+        val directory = File(context.cacheDir, "picked_photos").apply { mkdirs() }
+        val file = File(directory, "pick_${System.currentTimeMillis()}.jpg")
+        file.writeBytes(bytes)
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+    }
+
     fun load(context: Context, uri: Uri): Bitmap {
-        val resolver = context.contentResolver
+        val bytes = readBytes(context, uri)
         val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        resolver.openInputStream(uri)?.use { input ->
-            BitmapFactory.decodeStream(input, null, boundsOptions)
-        } ?: error("Unable to open photo")
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, boundsOptions)
 
         val sampleSize = calculateInSampleSize(
             width = boundsOptions.outWidth,
@@ -25,10 +42,19 @@ internal object PhotoBitmapLoader {
         val decodeOptions = BitmapFactory.Options().apply {
             inSampleSize = sampleSize
         }
-        val bitmap = resolver.openInputStream(uri)?.use { input ->
-            BitmapFactory.decodeStream(input, null, decodeOptions)
-        } ?: error("Unable to decode photo")
-        return correctOrientation(bitmap, uri, context)
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions)
+            ?: error("Unable to decode photo")
+        return correctOrientation(bitmap, bytes)
+    }
+
+    private fun readBytes(context: Context, uri: Uri): ByteArray {
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            val bytes = input.readBytes()
+            if (bytes.isNotEmpty()) {
+                return bytes
+            }
+        }
+        error("Unable to open photo")
     }
 
     private fun calculateInSampleSize(
@@ -46,14 +72,12 @@ internal object PhotoBitmapLoader {
         return sampleSize
     }
 
-    private fun correctOrientation(bitmap: Bitmap, uri: Uri, context: Context): Bitmap {
+    private fun correctOrientation(bitmap: Bitmap, bytes: ByteArray): Bitmap {
         val orientation = runCatching {
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                ExifInterface(input).getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL
-                )
-            } ?: ExifInterface.ORIENTATION_NORMAL
+            ExifInterface(ByteArrayInputStream(bytes)).getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
         }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
 
         val matrix = Matrix()

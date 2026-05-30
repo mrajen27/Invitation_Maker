@@ -63,6 +63,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vaangainvite.core.image.PhotoBitmapLoader
 import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
@@ -146,8 +147,14 @@ fun EditorScreen(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            viewModel.beginPhotoCrop(uri)
-            onNavigateToPhotoCrop(uri)
+            runCatching {
+                PhotoBitmapLoader.cachePickerUri(context, uri)
+            }.onSuccess { cachedUri ->
+                viewModel.beginPhotoCrop(cachedUri)
+                onNavigateToPhotoCrop(cachedUri)
+            }.onFailure {
+                viewModel.setStatusMessage(state.selectedLanguage.editorPhotoCropError)
+            }
         }
     }
 
