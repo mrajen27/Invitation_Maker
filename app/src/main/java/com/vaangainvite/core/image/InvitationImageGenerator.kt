@@ -50,7 +50,7 @@ class InvitationImageGenerator(private val context: Context) {
             drawUploadedPhoto(
                 canvas = canvas,
                 uploadedPhotoUri = uploadedPhotoUri,
-                frame = InvitationLayout.photoFrame()
+                frame = InvitationLayout.photoFrame(template.id)
             )
         } else {
             val classicZone = InvitationLayout.classicTextZone(expectsPhoto)
@@ -75,7 +75,8 @@ class InvitationImageGenerator(private val context: Context) {
             language = language,
             zone = textZone,
             hasUploadedPhoto = hasUploadedPhoto,
-            usesPhotoBackground = usesPhotoBackground
+            usesPhotoBackground = usesPhotoBackground,
+            textStartY = InvitationLayout.textStartY(template.id, hasUploadedPhoto)
         )
 
         return InvitationBitmapResult(bitmap = bitmap, renderReport = renderReport)
@@ -196,7 +197,8 @@ class InvitationImageGenerator(private val context: Context) {
         language: InvitationLanguage,
         zone: RectF,
         hasUploadedPhoto: Boolean,
-        usesPhotoBackground: Boolean
+        usesPhotoBackground: Boolean,
+        textStartY: Float
     ): InvitationRenderReport {
         val palette = invitationTextPalette(template, language, usesPhotoBackground)
         val tamilTypeface = tamilTypeface()
@@ -213,13 +215,17 @@ class InvitationImageGenerator(private val context: Context) {
         val hasUserMessage = userMessage.isNotBlank()
         val compactLayout = hasUploadedPhoto && hasUserMessage
 
-        val introPaint = textPaint(palette.introColor, 32f, serif, palette.strongShadow)
-        val occasionPaint = textPaint(palette.primaryColor, 46f, serif, palette.strongShadow)
+        val introSize = if (template.id == "wedding_02" && hasUploadedPhoto) 28f else 32f
+        val occasionSize = if (template.id == "wedding_02" && hasUploadedPhoto) 40f else 46f
+
+        val introPaint = textPaint(palette.introColor, introSize, serif, palette.strongShadow)
+        val occasionPaint = textPaint(palette.primaryColor, occasionSize, serif, palette.strongShadow)
         val namePaint = textPaint(
             palette.primaryColor,
             when {
                 compactLayout && usesPhotoBackground -> 52f
-                hasUploadedPhoto && usesPhotoBackground -> 58f
+                hasUploadedPhoto && usesPhotoBackground -> 54f
+                template.id == "wedding_02" && usesPhotoBackground -> 62f
                 usesPhotoBackground -> 70f
                 hasUploadedPhoto -> 60f
                 else -> 72f
@@ -246,7 +252,7 @@ class InvitationImageGenerator(private val context: Context) {
             palette.strongShadow
         )
 
-        var blockTop = zone.top + 4f
+        var blockTop = textStartY
         val maxTextWidth = zone.width() - 40f
 
         blockTop = drawCenteredLines(

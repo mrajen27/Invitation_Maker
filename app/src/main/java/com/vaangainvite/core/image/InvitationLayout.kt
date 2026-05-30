@@ -27,15 +27,25 @@ internal object InvitationLayout {
         val right: Float,
         val topNoPhoto: Float,
         val topWithPhoto: Float,
-        val bottom: Float = 1240f
+        val bottom: Float = 1240f,
+        val messageBottom: Float = 1160f,
+        val topInset: Float = 4f
     )
 
     /**
      * Per-template safe areas measured from WebP cream panels (1080×1350).
-     * Temple / arch templates need a lower start so intro text clears the frame.
+     * Temple Mandapam has a deep arch — text must start below the inner gold lip.
      */
     private val templateTextZones = mapOf(
-        "wedding_02" to TextZoneSpec(left = 210f, right = 870f, topNoPhoto = 438f, topWithPhoto = 508f),
+        "wedding_02" to TextZoneSpec(
+            left = 250f,
+            right = 830f,
+            topNoPhoto = 478f,
+            topWithPhoto = 528f,
+            bottom = 1180f,
+            messageBottom = 1080f,
+            topInset = 8f
+        ),
         "wedding_04" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 288f, topWithPhoto = 492f),
         "wedding_05" to TextZoneSpec(left = 468f, right = 612f, topNoPhoto = 368f, topWithPhoto = 492f),
         "housewarming_03" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 252f, topWithPhoto = 492f),
@@ -43,17 +53,29 @@ internal object InvitationLayout {
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
     )
 
+    private val templatePhotoFrames = mapOf(
+        // Lower/wider slot inside the temple arch cream panel.
+        "wedding_02" to RectF(360f, 308f, 720f, 498f)
+    )
+
+    fun photoFrame(templateId: String = ""): RectF {
+        return templatePhotoFrames[templateId] ?: defaultPhotoFrame()
+    }
+
+    fun defaultPhotoFrame(): RectF = RectF(390f, 292f, 690f, 478f)
+
     /**
-     * Horizontal + bottom inset for the additional message on photo WebP templates
-     * (peacock/pillar side art and bottom mandap/gold motifs).
+     * Horizontal + bottom inset for the additional message on photo WebP templates.
      */
     fun photoMessageSafeArea(templateId: String): RectF {
         val zone = photoTextZone(templateId, hasUploadedPhoto = false)
+        val spec = templateTextZones[templateId]
+        val bottom = spec?.messageBottom ?: 1160f
         return RectF(
-            zone.left + 40f,
+            zone.left + 32f,
             0f,
-            zone.right - 40f,
-            1160f
+            zone.right - 32f,
+            bottom
         )
     }
 
@@ -87,7 +109,17 @@ internal object InvitationLayout {
         )
     }
 
-    fun photoFrame(): RectF = RectF(390f, 292f, 690f, 478f)
+    /** First line top Y, kept below photo frame and arch artwork when needed. */
+    fun textStartY(templateId: String, hasUploadedPhoto: Boolean): Float {
+        val zone = photoTextZone(templateId, hasUploadedPhoto)
+        val spec = templateTextZones[templateId]
+        val inset = spec?.topInset ?: 4f
+        if (!hasUploadedPhoto) {
+            return zone.top + inset
+        }
+        val frameBottom = photoFrame(templateId).bottom
+        return maxOf(zone.top, frameBottom + 22f) + inset
+    }
 
     /** Narrower frosted panel for vector / painted backgrounds. */
     fun classicTextZone(hasUploadedPhoto: Boolean): RectF {
