@@ -332,12 +332,7 @@ class InvitationImageGenerator(private val context: Context) {
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
             value = details.venue.ifBlank { language.fallbackVenue },
-            paint = scaledPaintForWrappedText(
-                template = bodyPaint,
-                text = details.venue.ifBlank { language.fallbackVenue },
-                maxLineWidth = zone.width() - 74f,
-                maxLines = InvitationDetails.VENUE_MAX_LINES
-            ),
+            paint = bodyPaint,
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
@@ -686,30 +681,6 @@ class InvitationImageGenerator(private val context: Context) {
             truncateToWidth(overflow, paint, maxWidth)
         }
         return head + lastLine
-    }
-
-    /**
-     * Shrinks copy slightly so long venue/address text fits in the allowed line count.
-     */
-    private fun scaledPaintForWrappedText(
-        template: Paint,
-        text: String,
-        maxLineWidth: Float,
-        maxLines: Int,
-        minTextSize: Float = 20f
-    ): Paint {
-        if (text.isBlank()) return template
-
-        var size = template.textSize
-        while (size >= minTextSize) {
-            val paint = Paint(template).apply { textSize = size }
-            val lines = wrapText(text, paint, maxLineWidth)
-            val fits = lines.size <= maxLines &&
-                lines.all { paint.measureText(it) <= maxLineWidth }
-            if (fits) return paint
-            size -= 0.5f
-        }
-        return Paint(template).apply { textSize = minTextSize }
     }
 
     private fun splitLongToken(token: String, paint: Paint, maxWidth: Float): List<String> {
