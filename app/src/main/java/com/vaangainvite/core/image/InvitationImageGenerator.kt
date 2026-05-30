@@ -327,16 +327,33 @@ class InvitationImageGenerator(private val context: Context) {
             return InvitationRenderReport()
         }
 
-        val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
-        val lineSpacing = 5f
-        val messageTruncated = drawMessageBottomAnchored(
-            canvas = canvas,
-            text = messageText,
-            paint = messagePaint,
-            messageSafe = messageSafe,
-            maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-            lineSpacing = lineSpacing
-        )
+        val messageTruncated = if (hasUploadedPhoto) {
+            val messageSafe = InvitationLayout.messageSafeArea(usesPhotoBackground)
+            drawMessageBottomAnchored(
+                canvas = canvas,
+                text = messageText,
+                paint = messagePaint,
+                messageSafe = messageSafe,
+                maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                lineSpacing = 5f
+            )
+        } else {
+            blockTop += InvitationLayout.Spacing.beforeMessageNoPhoto
+            val truncated = wrapText(messageText, messagePaint, maxTextWidth)
+                .size > InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
+            drawCenteredLines(
+                canvas = canvas,
+                text = messageText,
+                paint = messagePaint,
+                topY = blockTop,
+                maxWidth = maxTextWidth,
+                lineSpacing = 5f,
+                maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                horizontalBounds = zone,
+                maxBottomY = zone.bottom - 8f
+            )
+            truncated
+        }
         return InvitationRenderReport(
             messageShown = true,
             messageTruncated = messageTruncated
@@ -424,7 +441,14 @@ class InvitationImageGenerator(private val context: Context) {
         val iconSize = 36f
         val gap = 14f
         val maxLineWidth = zone.width() - iconSize - gap - 24f
-        val lines = wrapText(value, paint, maxLineWidth).limitLines(maxLines, paint, maxLineWidth)
+        val rawLines = wrapText(value, paint, maxLineWidth)
+        val lines = rawLines.limitLines(maxLines, paint, maxLineWidth)
+        val fittedLines = lines.map { fitLineToWidth(it, paint, maxLineWidth) }
+        val maxTextWidth = fittedLines.maxOfOrNull { paint.measureText(it) } ?: 0f
+        val blockWidth = iconSize + gap + maxTextWidth
+        val blockLeft = zone.centerX() - blockWidth / 2f
+        val textStartX = blockLeft + iconSize + gap
+
         val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)?.mutate()) {
             "Missing detail icon"
         }
@@ -432,25 +456,18 @@ class InvitationImageGenerator(private val context: Context) {
         val fm = paint.fontMetrics
         var baseline = topY - fm.ascent
 
-        lines.forEachIndexed { index, line ->
+        fittedLines.forEachIndexed { index, line ->
             if (index == 0) {
-                val lineWidth = paint.measureText(line)
-                val rowWidth = iconSize + gap + lineWidth
-                val rowLeft = zone.centerX() - rowWidth / 2f
                 val iconTop = (baseline + fm.ascent - 4f).toInt()
                 icon.setBounds(
-                    rowLeft.toInt(),
+                    blockLeft.toInt(),
                     iconTop,
-                    (rowLeft + iconSize).toInt(),
+                    (blockLeft + iconSize).toInt(),
                     iconTop + iconSize.toInt()
                 )
                 icon.draw(canvas)
-                val fittedLine = fitLineToWidth(line, paint, maxLineWidth)
-                canvas.drawText(fittedLine, rowLeft + iconSize + gap, baseline, paint)
-            } else {
-                val fittedLine = fitLineToWidth(line, paint, maxLineWidth)
-                canvas.drawText(fittedLine, centeredX(fittedLine, paint), baseline, paint)
             }
+            canvas.drawText(line, textStartX, baseline, paint)
             baseline += lineHeight(paint, InvitationLayout.Spacing.betweenDetails)
         }
         return baseline - fm.descent + InvitationLayout.Spacing.betweenDetails

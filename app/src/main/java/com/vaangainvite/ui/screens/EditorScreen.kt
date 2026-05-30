@@ -72,6 +72,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 private data class QuickInviteMessage(
     val id: String,
@@ -86,6 +87,18 @@ private enum class QuickMessageTone(val label: String) {
     FORMAL("Formal"),
     CASUAL("Casual"),
     BLESSING("Blessing")
+}
+
+private fun QuickMessageTone.localizedLabel(language: InvitationLanguage): String {
+    return when (language) {
+        InvitationLanguage.ENGLISH -> label
+        InvitationLanguage.TAMIL -> when (this) {
+            QuickMessageTone.ALL -> "அனைத்தும்"
+            QuickMessageTone.FORMAL -> "முறையான"
+            QuickMessageTone.CASUAL -> "சாதாரண"
+            QuickMessageTone.BLESSING -> "ஆசீர்வாதம்"
+        }
+    }
 }
 
 private val QuickInviteMessages = listOf(
@@ -146,10 +159,10 @@ fun EditorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Edit invitation") },
+                title = { Text(text = state.selectedLanguage.editorScreenTitle) },
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text(text = "Back")
+                        Text(text = state.selectedLanguage.editorBackButton)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -190,6 +203,7 @@ fun EditorScreen(
             PhotoUploadSection(
                 hasPhoto = state.uploadedPhotoUri != null,
                 hasMessage = state.details.message.isNotBlank(),
+                selectedLanguage = state.selectedLanguage,
                 onChoosePhoto = {
                     photoPickerLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -219,12 +233,12 @@ fun EditorScreen(
                 onClick = viewModel::generateInvitation,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Generate invitation image")
+                Text(text = state.selectedLanguage.editorGenerateButton)
             }
 
             state.generatedBitmap?.let { bitmap ->
                 Text(
-                    text = "Generated preview",
+                    text = state.selectedLanguage.editorPreviewTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -259,12 +273,13 @@ fun EditorScreen(
                     modifier = Modifier.weight(1f),
                     enabled = state.selectedTemplate != null
                 ) {
-                    Text(text = "Save")
+                    Text(text = state.selectedLanguage.editorSaveButton)
                 }
             }
 
             ShareActions(
                 enabled = state.selectedTemplate != null,
+                selectedLanguage = state.selectedLanguage,
                 onShareChat = {
                     scope.launch {
                         val imageUri = viewModel.getOrCreateShareImageUri()
@@ -305,12 +320,13 @@ fun EditorScreen(
 @Composable
 private fun ShareActions(
     enabled: Boolean,
+    selectedLanguage: InvitationLanguage,
     onShareChat: () -> Unit,
     onShareStatus: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
-            text = "Easy WhatsApp sharing",
+            text = selectedLanguage.editorShareTitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -328,7 +344,7 @@ private fun ShareActions(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "WhatsApp")
                     Text(
-                        text = "Chat",
+                        text = selectedLanguage.editorShareChat,
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
@@ -343,14 +359,14 @@ private fun ShareActions(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "WhatsApp")
                     Text(
-                        text = "Status",
+                        text = selectedLanguage.editorShareStatus,
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
         }
         Text(
-            text = "If WhatsApp is not installed, the Android share sheet opens automatically.",
+            text = selectedLanguage.editorShareFallbackHint,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -361,6 +377,7 @@ private fun ShareActions(
 private fun PhotoUploadSection(
     hasPhoto: Boolean,
     hasMessage: Boolean,
+    selectedLanguage: InvitationLanguage,
     onChoosePhoto: () -> Unit,
     onRemovePhoto: () -> Unit
 ) {
@@ -376,29 +393,34 @@ private fun PhotoUploadSection(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = "Photo template option",
+                text = selectedLanguage.editorPhotoSectionTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = when {
-                    hasPhoto && hasMessage ->
+                    hasPhoto && hasMessage -> if (selectedLanguage == InvitationLanguage.TAMIL) {
+                        "புகைப்படம் சேர்க்கப்பட்டது. கூடுதல் செய்தி அழைப்பிதழின் கீழ்ப்பகுதியில், அலங்காரத்துக்கு மேலே காட்டப்படும்."
+                    } else {
                         "Photo selected. Your additional message is placed at the bottom of the card, above the decoration."
-                    hasPhoto ->
+                    }
+                    hasPhoto -> if (selectedLanguage == InvitationLanguage.TAMIL) {
+                        "புகைப்படம் சேர்க்கப்பட்டது. உருவாக்கப்படும் அழைப்பிதழில் காட்டப்படும்."
+                    } else {
                         "Photo selected. It will appear inside the generated invitation card."
-                    else ->
-                        "Upload a family, couple, child, or ceremony photo to include in the invitation."
+                    }
+                    else -> selectedLanguage.editorPhotoSectionHint
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(onClick = onChoosePhoto) {
-                    Text(text = if (hasPhoto) "Change photo" else "Upload photo")
+                    Text(text = if (hasPhoto) selectedLanguage.editorChangePhoto else selectedLanguage.editorUploadPhoto)
                 }
                 if (hasPhoto) {
                     TextButton(onClick = onRemovePhoto) {
-                        Text(text = "Remove")
+                        Text(text = selectedLanguage.editorRemovePhoto)
                     }
                 }
             }
@@ -500,7 +522,7 @@ private fun EditorFields(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
-            text = "Invitation details",
+            text = selectedLanguage.editorDetailsTitle,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -512,43 +534,36 @@ private fun EditorFields(
             value = details.occasionTitle,
             onValueChange = onOccasionTitleChanged,
             maxLength = InvitationDetails.OCCASION_MAX_LENGTH,
-            label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "விழா தலைப்பு" else "Occasion / Event title") },
+            label = { Text(selectedLanguage.editorOccasionLabel) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
-                Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கவின் முதல் பிறந்தநாள்" else "Kavin's First Birthday")
+                Text(selectedLanguage.editorOccasionPlaceholder)
             },
-            helperText = if (selectedLanguage == InvitationLanguage.TAMIL) {
-                "தமிழில் விழா தலைப்பை எழுதலாம். அழைப்பிதழில் அதிகபட்சம் ${InvitationDetails.OCCASION_MAX_LENGTH} எழுத்துகள்."
-            } else {
-                "You can type in Tamil. Max ${InvitationDetails.OCCASION_MAX_LENGTH} characters on the card."
-            }
+            helperText = selectedLanguage.editorOccasionHelper.format(InvitationDetails.OCCASION_MAX_LENGTH)
         )
         LimitedOutlinedTextField(
             value = details.name,
             onValueChange = onNameChanged,
             maxLength = InvitationDetails.NAME_MAX_LENGTH,
-            label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "அழைப்பிதழில் பெயர்" else "Name on invitation") },
+            label = { Text(selectedLanguage.editorNameLabel) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
-                Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கார்த்திக் & மீனா" else "Karthik & Meena")
+                Text(selectedLanguage.editorNamePlaceholder)
             },
-            helperText = if (selectedLanguage == InvitationLanguage.TAMIL) {
-                "தமிழ் பெயர் எழுதலாம். அதிகபட்சம் ${InvitationDetails.NAME_MAX_LENGTH} எழுத்துகள்."
-            } else {
-                "Examples: Kavin, Karthik & Meena. Max ${InvitationDetails.NAME_MAX_LENGTH} characters."
-            }
+            helperText = selectedLanguage.editorNameHelper.format(InvitationDetails.NAME_MAX_LENGTH)
         )
         DatePickerField(
             date = details.date,
+            selectedLanguage = selectedLanguage,
             onDateSelected = onDateChanged
         )
         LimitedOutlinedTextField(
             value = details.time,
             onValueChange = onTimeChanged,
             maxLength = InvitationDetails.TIME_MAX_LENGTH,
-            label = { Text("Time") },
+            label = { Text(selectedLanguage.timeLabel) },
             modifier = Modifier.fillMaxWidth(),
-            helperText = "Max ${InvitationDetails.TIME_MAX_LENGTH} characters (e.g. 7:00 PM)."
+            helperText = selectedLanguage.editorTimeHelper.format(InvitationDetails.TIME_MAX_LENGTH)
         )
         LimitedOutlinedTextField(
             value = details.venue,
@@ -559,21 +574,20 @@ private fun EditorFields(
             singleLine = false,
             minLines = InvitationDetails.VENUE_MAX_LINES,
             maxLines = InvitationDetails.VENUE_MAX_LINES,
-            helperText = if (selectedLanguage == InvitationLanguage.TAMIL) {
-                "அழைப்பிதழில் ${InvitationDetails.VENUE_MAX_LINES} வரிகள் வரை. அதிகபட்சம் ${InvitationDetails.VENUE_MAX_LENGTH} எழுத்துகள்."
-            } else {
-                "Wraps to ${InvitationDetails.VENUE_MAX_LINES} lines on the card. Max ${InvitationDetails.VENUE_MAX_LENGTH} characters."
-            }
+            helperText = selectedLanguage.editorVenueHelper.format(
+                InvitationDetails.VENUE_MAX_LINES,
+                InvitationDetails.VENUE_MAX_LENGTH
+            )
         )
         LimitedOutlinedTextField(
             value = details.mobileNumber,
             onValueChange = onMobileNumberChanged,
             maxLength = InvitationDetails.MOBILE_MAX_LENGTH,
-            label = { Text("Mobile number for queries") },
+            label = { Text(selectedLanguage.mobileLabel) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("+91 98765 43210") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            helperText = "Max ${InvitationDetails.MOBILE_MAX_LENGTH} characters."
+            helperText = selectedLanguage.editorMobileHelper.format(InvitationDetails.MOBILE_MAX_LENGTH)
         )
         InviteMessageSection(
             message = details.message,
@@ -593,11 +607,7 @@ private fun InviteMessageSection(
     hasUploadedPhoto: Boolean,
     onMessageChanged: (String) -> Unit
 ) {
-    val maxMessageChars = if (hasUploadedPhoto) {
-        InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO
-    } else {
-        InvitationFieldLimits.MESSAGE_MAX_LENGTH
-    }
+    val maxMessageChars = InvitationFieldLimits.MESSAGE_MAX_LENGTH
     var selectedQuickMessageId by remember { mutableStateOf<String?>(null) }
     var selectedTone by remember { mutableStateOf(QuickMessageTone.ALL) }
     val quickMessages = remember(selectedLanguage, selectedCategoryId, selectedTone) {
@@ -612,12 +622,12 @@ private fun InviteMessageSection(
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                text = "Additional message",
+                text = selectedLanguage.editorMessageSectionTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Tap a quick message or type your own. Emojis are welcome.",
+                text = selectedLanguage.editorMessageHint,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -632,8 +642,10 @@ private fun InviteMessageSection(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "With a photo, your message is shown at the bottom of the invitation " +
-                        "(max $maxMessageChars characters, ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines).",
+                    text = selectedLanguage.editorPhotoWithMessageHint.format(
+                        maxMessageChars,
+                        InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
+                    ),
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -643,6 +655,7 @@ private fun InviteMessageSection(
 
         MessageToneFilters(
             selectedTone = selectedTone,
+            selectedLanguage = selectedLanguage,
             onToneSelected = { tone ->
                 selectedTone = tone
                 selectedQuickMessageId = null
@@ -667,7 +680,7 @@ private fun InviteMessageSection(
                 onMessageChanged(updatedMessage)
             },
             maxLength = maxMessageChars,
-            label = { Text("Message to guests") },
+            label = { Text(selectedLanguage.editorMessageFieldLabel) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = false,
             minLines = 3,
@@ -677,17 +690,23 @@ private fun InviteMessageSection(
                 keyboardType = KeyboardType.Text
             ),
             helperText = if (hasUploadedPhoto) {
-                "Placed at the bottom of the card so it stays visible with your photo."
+                selectedLanguage.editorMessageHelperWithPhoto
             } else {
-                "Stays inside the card art (max ${InvitationDetails.MESSAGE_MAX_LINES_ON_CARD} lines)."
+                selectedLanguage.editorMessageHelperNoPhoto.format(
+                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
+                )
             }
         )
 
         ImageSafeMessageCounter(
             characterCount = message.length,
-            maxLength = maxMessageChars
+            maxLength = maxMessageChars,
+            selectedLanguage = selectedLanguage
         )
-        InviteMessagePreview(message = message)
+        InviteMessagePreview(
+            message = message,
+            selectedLanguage = selectedLanguage
+        )
     }
 }
 
@@ -721,6 +740,7 @@ private fun QuickMessageChips(
 @Composable
 private fun MessageToneFilters(
     selectedTone: QuickMessageTone,
+    selectedLanguage: InvitationLanguage,
     onToneSelected: (QuickMessageTone) -> Unit
 ) {
     LazyRow(
@@ -736,7 +756,7 @@ private fun MessageToneFilters(
             FilterChip(
                 selected = tone == selectedTone,
                 onClick = { onToneSelected(tone) },
-                label = { Text(text = tone.label) },
+                label = { Text(text = tone.localizedLabel(selectedLanguage)) },
                 modifier = Modifier.animateContentSize()
             )
         }
@@ -746,7 +766,8 @@ private fun MessageToneFilters(
 @Composable
 private fun ImageSafeMessageCounter(
     characterCount: Int,
-    maxLength: Int
+    maxLength: Int,
+    selectedLanguage: InvitationLanguage
 ) {
     val isAtLimit = characterCount >= maxLength
     val counterColor = if (isAtLimit) {
@@ -755,9 +776,9 @@ private fun ImageSafeMessageCounter(
         MaterialTheme.colorScheme.onSurfaceVariant
     }
     val guidance = if (isAtLimit) {
-        "Character limit reached. Shorten the message so it stays above the bottom design."
+        selectedLanguage.editorMessageAtLimit
     } else {
-        "Good length for a clean invitation image."
+        selectedLanguage.editorMessageGoodLength
     }
 
     Row(
@@ -780,9 +801,12 @@ private fun ImageSafeMessageCounter(
 }
 
 @Composable
-private fun InviteMessagePreview(message: String) {
+private fun InviteMessagePreview(
+    message: String,
+    selectedLanguage: InvitationLanguage
+) {
     val previewMessage = message.ifBlank {
-        "Your invitation message preview will appear here."
+        selectedLanguage.editorMessagePreviewEmpty
     }
 
     Card(
@@ -799,7 +823,7 @@ private fun InviteMessagePreview(message: String) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Live invite message preview",
+                text = selectedLanguage.editorMessagePreviewTitle,
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 fontWeight = FontWeight.Bold
@@ -819,6 +843,7 @@ private fun InviteMessagePreview(message: String) {
 @Composable
 private fun DatePickerField(
     date: String,
+    selectedLanguage: InvitationLanguage,
     onDateSelected: (String) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
@@ -828,18 +853,18 @@ private fun DatePickerField(
         OutlinedTextField(
             value = date,
             onValueChange = {},
-            label = { Text("Date") },
+            label = { Text(selectedLanguage.dateLabel) },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
-            placeholder = { Text("Pick function date") },
+            placeholder = { Text(selectedLanguage.editorDatePlaceholder) },
             trailingIcon = {
                 TextButton(onClick = { showDatePicker = true }) {
-                    Text(text = "Pick")
+                    Text(text = selectedLanguage.editorDatePickButton)
                 }
             }
         )
         Text(
-            text = "Use the date picker to avoid typing mistakes.",
+            text = selectedLanguage.editorDateHelper,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -852,17 +877,17 @@ private fun DatePickerField(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            onDateSelected(formatDate(millis))
+                            onDateSelected(formatDate(millis, selectedLanguage))
                         }
                         showDatePicker = false
                     }
                 ) {
-                    Text(text = "OK")
+                    Text(text = selectedLanguage.editorDialogOk)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(text = "Cancel")
+                    Text(text = selectedLanguage.editorDialogCancel)
                 }
             }
         ) {
@@ -871,8 +896,12 @@ private fun DatePickerField(
     }
 }
 
-private fun formatDate(dateMillis: Long): String {
-    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+private fun formatDate(dateMillis: Long, language: InvitationLanguage): String {
+    val locale = when (language) {
+        InvitationLanguage.TAMIL -> Locale.forLanguageTag("ta-IN")
+        InvitationLanguage.ENGLISH -> Locale.ENGLISH
+    }
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", locale)
     return Instant.ofEpochMilli(dateMillis)
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
@@ -886,7 +915,7 @@ private fun LanguageSelector(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            text = "Invitation language",
+            text = selectedLanguage.editorLanguageSectionTitle,
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -900,7 +929,7 @@ private fun LanguageSelector(
             }
         }
         Text(
-            text = "Choose Tamil to render invitation headings and labels in Tamil. You can type names and messages in Tamil using your phone keyboard.",
+            text = selectedLanguage.editorLanguageHint,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

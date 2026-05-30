@@ -10,19 +10,14 @@ object InvitationFieldLimits {
     const val TIME_MAX_LENGTH = 18
     const val VENUE_MAX_LENGTH = 99
     const val MOBILE_MAX_LENGTH = 18
-    /** Fits ~2 lines in the bottom safe area without overlapping art. */
-    const val MESSAGE_MAX_LENGTH = 80
-    /** Tighter limit when a photo uses more vertical space on the card. */
+    /** Fits ~2 lines in the message area without overlapping art. */
+    const val MESSAGE_MAX_LENGTH = 60
     const val MESSAGE_MAX_LENGTH_WITH_PHOTO = 60
     const val MESSAGE_MAX_LINES_ON_CARD = 2
 }
 
-fun InvitationDetails.messageMaxLength(hasUploadedPhoto: Boolean): Int {
-    return if (hasUploadedPhoto) {
-        InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO
-    } else {
-        InvitationFieldLimits.MESSAGE_MAX_LENGTH
-    }
+fun InvitationDetails.messageMaxLength(@Suppress("UNUSED_PARAMETER") hasUploadedPhoto: Boolean): Int {
+    return InvitationFieldLimits.MESSAGE_MAX_LENGTH
 }
 
 fun InvitationDetails.clampedForCard(hasUploadedPhoto: Boolean = false): InvitationDetails {

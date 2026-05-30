@@ -18,6 +18,8 @@ internal object InvitationLayout {
         const val afterName = 12f
         const val betweenDetails = 6f
         const val beforeMessage = 16f
+        /** Extra gap between venue block and message when no photo is on the card. */
+        const val beforeMessageNoPhoto = 40f
     }
 
     /**
