@@ -332,7 +332,12 @@ class InvitationImageGenerator(private val context: Context) {
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
             value = details.venue.ifBlank { language.fallbackVenue },
-            paint = bodyPaint,
+            paint = scaledPaintForWrappedText(
+                template = bodyPaint,
+                text = details.venue.ifBlank { language.fallbackVenue },
+                maxLineWidth = zone.width() - 74f,
+                maxLines = InvitationDetails.VENUE_MAX_LINES
+            ),
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
@@ -484,7 +489,13 @@ class InvitationImageGenerator(private val context: Context) {
         val maxLineWidth = zone.width() - iconSize - gap - 24f
         val rawLines = wrapText(value, paint, maxLineWidth)
         val lines = rawLines.limitLines(maxLines, paint, maxLineWidth)
-        val fittedLines = lines.map { fitLineToWidth(it, paint, maxLineWidth) }
+        val fittedLines = lines.map { line ->
+            if (paint.measureText(line) <= maxLineWidth) {
+                line
+            } else {
+                truncateToWidth(line, paint, maxLineWidth)
+            }
+        }
 
         val icon = requireNotNull(ContextCompat.getDrawable(context, iconResId)?.mutate()) {
             "Missing detail icon"
@@ -659,11 +670,46 @@ class InvitationImageGenerator(private val context: Context) {
         maxWidth: Float
     ): List<String> {
         if (maxLines <= 0) return emptyList()
-        if (size <= maxLines) return this
+        if (isEmpty()) return this
 
-        val visibleLines = take(maxLines).toMutableList()
-        visibleLines[maxLines - 1] = truncateToWidth(visibleLines.last(), paint, maxWidth)
-        return visibleLines
+        val normalized = map { line ->
+            if (paint.measureText(line) <= maxWidth) line else truncateToWidth(line, paint, maxWidth)
+        }
+
+        if (normalized.size <= maxLines) return normalized
+
+        val head = normalized.take(maxLines - 1)
+        val overflow = drop(maxLines - 1).joinToString(" ")
+        val lastLine = if (paint.measureText(overflow) <= maxWidth) {
+            overflow
+        } else {
+            truncateToWidth(overflow, paint, maxWidth)
+        }
+        return head + lastLine
+    }
+
+    /**
+     * Shrinks copy slightly so long venue/address text fits in the allowed line count.
+     */
+    private fun scaledPaintForWrappedText(
+        template: Paint,
+        text: String,
+        maxLineWidth: Float,
+        maxLines: Int,
+        minTextSize: Float = 20f
+    ): Paint {
+        if (text.isBlank()) return template
+
+        var size = template.textSize
+        while (size >= minTextSize) {
+            val paint = Paint(template).apply { textSize = size }
+            val lines = wrapText(text, paint, maxLineWidth)
+            val fits = lines.size <= maxLines &&
+                lines.all { paint.measureText(it) <= maxLineWidth }
+            if (fits) return paint
+            size -= 0.5f
+        }
+        return Paint(template).apply { textSize = minTextSize }
     }
 
     private fun splitLongToken(token: String, paint: Paint, maxWidth: Float): List<String> {
