@@ -2,8 +2,10 @@ package com.vaangainvite.ui.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,6 +24,12 @@ private object Routes {
     const val PHOTO_CROP = "photo_crop"
 }
 
+private fun NavController.returnFromPhotoCrop() {
+    if (!popBackStack(Routes.EDITOR, inclusive = false)) {
+        popBackStack()
+    }
+}
+
 @Composable
 fun VaangaNavHost(viewModel: InviteViewModel) {
     val navController = rememberNavController()
@@ -35,7 +43,9 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
             HomeScreen(
                 viewModel = viewModel,
                 onCategorySelected = {
-                    navController.navigate(Routes.TEMPLATES)
+                    navController.navigate(Routes.TEMPLATES) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -44,7 +54,9 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
                 viewModel = viewModel,
                 onBack = navController::popBackStack,
                 onTemplateSelected = {
-                    navController.navigate(Routes.EDITOR)
+                    navController.navigate(Routes.EDITOR) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -54,7 +66,9 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
                 onBack = navController::popBackStack,
                 onNavigateToPhotoCrop = { sourceUri ->
                     val encodedUri = Uri.encode(sourceUri.toString())
-                    navController.navigate("${Routes.PHOTO_CROP}?sourceUri=$encodedUri")
+                    navController.navigate("${Routes.PHOTO_CROP}?sourceUri=$encodedUri") {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -67,30 +81,36 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
             )
         ) { backStackEntry ->
             val encodedUri = backStackEntry.arguments?.getString("sourceUri")
-            val sourceUri = encodedUri?.let { Uri.parse(Uri.decode(it)) }
-            if (sourceUri != null) {
-                PhotoCropScreen(
-                    sourceUri = sourceUri,
-                    language = state.selectedLanguage,
-                    initialTransform = state.photoCropTransform?.takeIf {
-                        state.originalPhotoUri == sourceUri
-                    },
-                    onConfirm = { croppedUri, transform ->
-                        viewModel.confirmPhotoCrop(
-                            croppedUri = croppedUri,
-                            transform = transform,
-                            originalUri = state.originalPhotoUri ?: sourceUri
-                        )
-                        navController.popBackStack()
-                    },
-                    onCancel = {
-                        viewModel.clearCropSession()
-                        navController.popBackStack()
-                    }
-                )
-            } else {
-                navController.popBackStack()
+            val sourceUri = encodedUri
+                ?.takeIf { it.isNotBlank() }
+                ?.let { Uri.parse(Uri.decode(it)) }
+
+            if (sourceUri == null) {
+                LaunchedEffect(Unit) {
+                    navController.returnFromPhotoCrop()
+                }
+                return@composable
             }
+
+            PhotoCropScreen(
+                sourceUri = sourceUri,
+                language = state.selectedLanguage,
+                initialTransform = state.photoCropTransform?.takeIf {
+                    state.originalPhotoUri == sourceUri
+                },
+                onConfirm = { croppedUri, transform ->
+                    viewModel.confirmPhotoCrop(
+                        croppedUri = croppedUri,
+                        transform = transform,
+                        originalUri = state.originalPhotoUri ?: sourceUri
+                    )
+                    navController.returnFromPhotoCrop()
+                },
+                onCancel = {
+                    viewModel.clearCropSession()
+                    navController.returnFromPhotoCrop()
+                }
+            )
         }
     }
 }

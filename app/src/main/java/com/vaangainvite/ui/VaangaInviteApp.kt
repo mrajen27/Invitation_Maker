@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,19 +40,22 @@ import kotlinx.coroutines.delay
 fun VaangaInviteApp(
     viewModel: InviteViewModel = viewModel()
 ) {
-    var showSplash by remember { mutableStateOf(true) }
+    var showSplash by rememberSaveable { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-        delay(1200)
-        showSplash = false
+    LaunchedEffect(showSplash) {
+        if (showSplash) {
+            delay(1200)
+            showSplash = false
+        }
     }
 
     VaangaInviteTheme {
         Surface {
-            if (showSplash) {
-                TraditionalLoadingScreen()
-            } else {
+            Box(modifier = Modifier.fillMaxSize()) {
                 VaangaNavHost(viewModel = viewModel)
+                if (showSplash) {
+                    TraditionalLoadingScreen()
+                }
             }
         }
     }
