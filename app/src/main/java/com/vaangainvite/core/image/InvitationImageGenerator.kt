@@ -213,16 +213,26 @@ class InvitationImageGenerator(private val context: Context) {
 
         val userMessage = details.message.trim()
         val hasUserMessage = userMessage.isNotBlank()
-        val compactLayout = hasUploadedPhoto && hasUserMessage
+        val isPeacockVase = template.id == "wedding_05"
+        val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase
 
-        val introSize = if (template.id == "wedding_02" && hasUploadedPhoto) 28f else 32f
-        val occasionSize = if (template.id == "wedding_02" && hasUploadedPhoto) 40f else 46f
+        val introSize = when {
+            isPeacockVase -> 28f
+            template.id == "wedding_02" && hasUploadedPhoto -> 28f
+            else -> 32f
+        }
+        val occasionSize = when {
+            isPeacockVase -> 38f
+            template.id == "wedding_02" && hasUploadedPhoto -> 40f
+            else -> 46f
+        }
 
         val introPaint = textPaint(palette.introColor, introSize, serif, palette.strongShadow)
         val occasionPaint = textPaint(palette.primaryColor, occasionSize, serif, palette.strongShadow)
         val namePaint = textPaint(
             palette.primaryColor,
             when {
+                isPeacockVase -> 54f
                 compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 54f
                 template.id == "wedding_02" && usesPhotoBackground -> 62f
@@ -235,7 +245,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            if (compactLayout) 24f else 28f,
+            if (compactLayout || isPeacockVase) 24f else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -286,7 +296,11 @@ class InvitationImageGenerator(private val context: Context) {
             lineSpacing = 2f,
             maxLines = 2,
             horizontalBounds = zone
-        ) + if (compactLayout) 6f else InvitationLayout.Spacing.afterName
+        ) + when {
+            compactLayout && !isPeacockVase -> 6f
+            isPeacockVase -> 8f
+            else -> InvitationLayout.Spacing.afterName
+        }
 
         blockTop = drawDetailWithIcon(
             canvas = canvas,

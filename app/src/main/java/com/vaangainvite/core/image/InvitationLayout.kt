@@ -56,13 +56,13 @@ internal object InvitationLayout {
             topInset = 10f
         ),
         "wedding_05" to TextZoneSpec(
-            left = 390f,
-            right = 690f,
-            topNoPhoto = 555f,
-            topWithPhoto = 548f,
-            bottom = 1080f,
-            messageBottom = 1040f,
-            topInset = 8f
+            left = 220f,
+            right = 860f,
+            topNoPhoto = 532f,
+            topWithPhoto = 545f,
+            bottom = 915f,
+            messageBottom = 880f,
+            topInset = 10f
         ),
         "housewarming_03" to TextZoneSpec(
             left = 220f,
