@@ -638,6 +638,7 @@ private fun InviteMessageSection(
     onMessageChanged: (String) -> Unit
 ) {
     val maxMessageChars = InvitationFieldLimits.MESSAGE_MAX_LENGTH
+    val messageCharCount = message.replace("\n", "").length
     var selectedQuickMessageId by remember { mutableStateOf<String?>(null) }
     var selectedTone by remember { mutableStateOf(QuickMessageTone.ALL) }
     val quickMessages = remember(selectedLanguage, selectedCategoryId, selectedTone) {
@@ -673,8 +674,9 @@ private fun InviteMessageSection(
             ) {
                 Text(
                     text = selectedLanguage.editorPhotoWithMessageHint.format(
-                        maxMessageChars,
-                        InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
+                        InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                        InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
+                        maxMessageChars
                     ),
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall,
@@ -713,23 +715,30 @@ private fun InviteMessageSection(
             label = { Text(selectedLanguage.editorMessageFieldLabel) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = false,
-            minLines = 3,
-            maxLines = 4,
+            minLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+            maxLines = InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+            lengthOf = { it.replace("\n", "").length },
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text
             ),
             helperText = if (hasUploadedPhoto) {
-                selectedLanguage.editorMessageHelperWithPhoto
+                selectedLanguage.editorMessageHelperWithPhoto.format(
+                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                    InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
+                    maxMessageChars
+                )
             } else {
                 selectedLanguage.editorMessageHelperNoPhoto.format(
-                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD
+                    InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
+                    InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
+                    maxMessageChars
                 )
             }
         )
 
         ImageSafeMessageCounter(
-            characterCount = message.length,
+            characterCount = messageCharCount,
             maxLength = maxMessageChars,
             selectedLanguage = selectedLanguage
         )

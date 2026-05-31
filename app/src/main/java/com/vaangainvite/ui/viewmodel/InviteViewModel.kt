@@ -11,8 +11,8 @@ import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.clampedForCard
+import com.vaangainvite.data.model.normalizeMessage
 import com.vaangainvite.data.model.normalizeVenue
-import com.vaangainvite.data.model.messageMaxLength
 import com.vaangainvite.data.model.validationError
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
@@ -104,9 +104,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun updateMessage(message: String) {
-        val hasPhoto = _uiState.value.uploadedPhotoUri != null
-        val maxLength = _uiState.value.details.messageMaxLength(hasPhoto)
-        updateDetails { copy(message = message.take(maxLength)) }
+        updateDetails { copy(message = normalizeMessage(message)) }
     }
 
     fun beginPhotoCrop(sourceUri: Uri) {
