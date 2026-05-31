@@ -21,5 +21,6 @@ data class InvitationDetails(
         const val MOBILE_MAX_LENGTH = InvitationFieldLimits.MOBILE_MAX_LENGTH
         const val MESSAGE_MAX_LENGTH = InvitationFieldLimits.MESSAGE_MAX_LENGTH
         const val MESSAGE_MAX_LINES_ON_CARD = InvitationFieldLimits.MESSAGE_MAX_LINES_ON_CARD
+        const val MESSAGE_MAX_CHARS_PER_LINE = InvitationFieldLimits.MESSAGE_MAX_CHARS_PER_LINE
     }
 }
