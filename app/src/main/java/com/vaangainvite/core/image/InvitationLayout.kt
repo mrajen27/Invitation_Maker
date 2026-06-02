@@ -94,10 +94,12 @@ internal object InvitationLayout {
     )
 
     fun photoFrame(templateId: String = ""): RectF {
-        return templatePhotoFrames[templateId] ?: defaultPhotoFrame()
+        return templatePhotoFrames[templateId]
+            ?: InvitationPhotoPlacement.specFor(templateId).bounds
     }
 
-    fun defaultPhotoFrame(): RectF = RectF(390f, 292f, 690f, 478f)
+    fun defaultPhotoFrame(): RectF =
+        InvitationPhotoPlacement.specFor("engagement_01").bounds
 
     /**
      * Horizontal + bottom inset for the additional message on photo WebP templates.

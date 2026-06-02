@@ -79,7 +79,7 @@ fun TemplateSelectionScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = if (state.templates.size <= 5) {
-                        "Pick one of ${state.templates.size} curated designs. Add a photo for a taller portrait frame on the card."
+                        "Pick one of ${state.templates.size} curated designs. Add a photo — it sits in the top medallion on the card."
                     } else {
                         "Each category includes ${state.templates.size} local designs you can save or share."
                     },

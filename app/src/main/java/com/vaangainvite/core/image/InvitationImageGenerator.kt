@@ -9,8 +9,10 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RadialGradient
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.media.ExifInterface
 import android.net.Uri
@@ -55,29 +57,13 @@ class InvitationImageGenerator(private val context: Context) {
 
         drawTemplateBackground(canvas, template, imageWidth, imageHeight)
 
-        val usesPhotoBackground = template.usesPhotoBackground()
-        val expectsPhoto = uploadedPhotoUri != null
-        val hasUploadedPhoto = if (usesPhotoBackground) {
-            drawUploadedPhoto(
-                canvas = canvas,
-                uploadedPhotoUri = uploadedPhotoUri,
-                frame = InvitationLayout.photoFrame(template.id)
-            )
-        } else {
-            val classicZone = InvitationLayout.classicTextZone(expectsPhoto)
-            drawFrostedCard(canvas, classicZone)
-            drawUploadedPhoto(
-                canvas = canvas,
-                uploadedPhotoUri = uploadedPhotoUri,
-                frame = RectF(370f, classicZone.top + 16f, 710f, classicZone.top + 236f)
-            )
-        }
+        val hasUploadedPhoto = drawUploadedPhoto(
+            canvas = canvas,
+            uploadedPhotoUri = uploadedPhotoUri,
+            templateId = template.id
+        )
 
-        val textZone = if (usesPhotoBackground) {
-            InvitationLayout.photoTextZone(template.id, hasUploadedPhoto)
-        } else {
-            InvitationLayout.classicTextZone(hasUploadedPhoto)
-        }
+        val textZone = InvitationLayout.photoTextZone(template.id, hasUploadedPhoto)
 
         val renderReport = drawInvitationText(
             canvas = canvas,
@@ -86,7 +72,7 @@ class InvitationImageGenerator(private val context: Context) {
             language = language,
             zone = textZone,
             hasUploadedPhoto = hasUploadedPhoto,
-            usesPhotoBackground = usesPhotoBackground,
+            usesPhotoBackground = true,
             textStartY = InvitationLayout.textStartY(template.id, hasUploadedPhoto)
         )
 
@@ -564,7 +550,7 @@ class InvitationImageGenerator(private val context: Context) {
     private fun drawUploadedPhoto(
         canvas: Canvas,
         uploadedPhotoUri: Uri?,
-        frame: RectF
+        templateId: String
     ): Boolean {
         if (uploadedPhotoUri == null) return false
 
@@ -575,36 +561,97 @@ class InvitationImageGenerator(private val context: Context) {
         }.getOrNull()?.let { bitmap ->
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
-        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.argb(70, 0, 0, 0)
-        }
-        val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(247, 201, 72)
-            style = Paint.Style.STROKE
-            strokeWidth = 10f
-        }
 
-        canvas.drawRoundRect(
-            RectF(frame.left + 8f, frame.top + 10f, frame.right + 8f, frame.bottom + 10f),
-            34f,
-            34f,
-            shadowPaint
-        )
+        val placement = InvitationPhotoPlacement.specFor(templateId)
+        val frame = placement.bounds
+        val clipPath = InvitationPhotoPlacement.clipPath(placement)
 
-        val path = Path().apply {
-            addRoundRect(frame, 32f, 32f, Path.Direction.CW)
-        }
+        drawPhotoMedallionShadow(canvas, clipPath, frame)
+
         canvas.save()
-        canvas.clipPath(path)
+        canvas.clipPath(clipPath)
         canvas.drawBitmap(
             photoBitmap,
-            null,
+            centeredCropSource(photoBitmap, frame),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
+        drawPhotoEdgeVignette(canvas, frame)
         canvas.restore()
-        canvas.drawRoundRect(frame, 32f, 32f, borderPaint)
+
+        when (placement.border) {
+            InvitationPhotoPlacement.Border.INNER_GLOW -> drawPhotoInnerGlow(canvas, clipPath)
+            InvitationPhotoPlacement.Border.ARTWORK_FRAME -> drawPhotoSoftHighlight(canvas, clipPath)
+        }
         return true
+    }
+
+    private fun drawPhotoMedallionShadow(canvas: Canvas, clipPath: Path, frame: RectF) {
+        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(55, 30, 20, 40)
+            style = Paint.Style.FILL
+        }
+        canvas.save()
+        canvas.translate(0f, 10f)
+        canvas.drawPath(clipPath, shadowPaint)
+        canvas.restore()
+        val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(35, 0, 0, 0)
+            style = Paint.Style.STROKE
+            strokeWidth = 14f
+        }
+        canvas.drawPath(clipPath, rim)
+    }
+
+    /** Gentle falloff so faces blend into ornate frames (no gold pill box). */
+    private fun drawPhotoEdgeVignette(canvas: Canvas, frame: RectF) {
+        val cx = frame.centerX()
+        val cy = frame.centerY()
+        val radius = maxOf(frame.width(), frame.height()) * 0.58f
+        val vignette = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            shader = RadialGradient(
+                cx,
+                cy,
+                radius,
+                intArrayOf(Color.TRANSPARENT, Color.argb(48, 40, 28, 36)),
+                floatArrayOf(0.62f, 1f),
+                Shader.TileMode.CLAMP
+            )
+        }
+        canvas.drawRect(frame, vignette)
+    }
+
+    private fun drawPhotoSoftHighlight(canvas: Canvas, clipPath: Path) {
+        val highlight = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(90, 255, 252, 245)
+            style = Paint.Style.STROKE
+            strokeWidth = 3f
+        }
+        canvas.drawPath(clipPath, highlight)
+    }
+
+    private fun drawPhotoInnerGlow(canvas: Canvas, clipPath: Path) {
+        val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(120, 255, 248, 220)
+            style = Paint.Style.STROKE
+            strokeWidth = 4f
+        }
+        canvas.drawPath(clipPath, glow)
+    }
+
+    private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
+        val bitmapAspect = bitmap.width.toFloat() / bitmap.height.toFloat()
+        val targetAspect = target.width() / target.height()
+
+        return if (bitmapAspect > targetAspect) {
+            val sourceWidth = (bitmap.height * targetAspect).toInt().coerceAtMost(bitmap.width)
+            val left = (bitmap.width - sourceWidth) / 2
+            Rect(left, 0, left + sourceWidth, bitmap.height)
+        } else {
+            val sourceHeight = (bitmap.width / targetAspect).toInt().coerceAtMost(bitmap.height)
+            val top = (bitmap.height - sourceHeight) / 2
+            Rect(0, top, bitmap.width, top + sourceHeight)
+        }
     }
 
     private fun correctBitmapOrientation(bitmap: Bitmap, uploadedPhotoUri: Uri): Bitmap {
