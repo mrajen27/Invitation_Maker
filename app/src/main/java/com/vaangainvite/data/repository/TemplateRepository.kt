@@ -817,40 +817,40 @@ InvitationTemplate(
         photoTemplate(
             id = "naming_01",
             categoryId = "naming",
-            title = "Cradle Blessing",
-            description = "Warm traditional lamps, garland, and gold frame.",
+            title = "Palna & Marigold",
+            description = "Brass cradle, diyas, kolam — classic Namakaranam look.",
             resId = R.drawable.bg_naming_01,
             primaryColor = 0xFF6D4C41.toInt()
         ),
         photoTemplate(
             id = "naming_02",
             categoryId = "naming",
-            title = "Sky Blessing",
-            description = "Soft blue clouds with balloons and stars.",
+            title = "Peacock Lotus",
+            description = "Royal peacock feathers and lotus — temple elegance.",
             resId = R.drawable.bg_naming_02,
-            primaryColor = 0xFF1976D2.toInt()
+            primaryColor = 0xFF00695C.toInt()
         ),
         photoTemplate(
             id = "naming_03",
             categoryId = "naming",
-            title = "Marigold Lamp",
-            description = "Auspicious yellow marigold and temple arch.",
+            title = "Kalash Toran",
+            description = "Banana-leaf toran, kalash, marigold — auspicious ritual.",
             resId = R.drawable.bg_naming_03,
             primaryColor = 0xFFEF6C00.toInt()
         ),
         photoTemplate(
             id = "naming_04",
             categoryId = "naming",
-            title = "Dream Moon",
-            description = "Pink celestial clouds, stars, and soft garland.",
+            title = "Moon & Jasmine",
+            description = "Crescent moon, stars, jasmine — celestial blessing.",
             resId = R.drawable.bg_naming_04,
             primaryColor = 0xFFD81B60.toInt()
         ),
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Fresh Wreath",
-            description = "Minimal green wreath on a clean cream card.",
+            title = "Tulsi Wreath",
+            description = "Minimal tulsi and jasmine wreath — calm modern card.",
             resId = R.drawable.bg_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
         ),
