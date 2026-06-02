@@ -27,15 +27,15 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
 
 ## Adding event templates
 
-Engagement / Naming / Baby Shower use **printable photo-card backgrounds** (florals, balloons, lanterns — like the reference samples), not simple vector frames. Backgrounds are WebP assets in `app/src/main/res/drawable-nodpi/`.
+Engagement / Naming / Baby Shower use **printable photo-card backgrounds** (florals, balloons, lanterns — like the reference samples), not simple vector frames. Backgrounds are full-bleed WebP assets in `app/src/main/res/drawable-nodpi/` (1080×1350, typically 90–250 KB each).
 
-To regenerate backgrounds after editing `InvitationBackgroundPainter`:
+To replace a background, add a designed `*_source.png` under `tools/bg_sources/` and run:
 
 ```bash
-./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.ReferenceBackgroundExportTest"
+python3 tools/convert_photo_backgrounds.py
 ```
 
-Then register new IDs in `TemplateRepository.kt`.
+`InvitationBackgroundPainter` remains for previews/tests only; shipped engagement/naming/baby-shower cards use the WebP assets above. Register new template IDs in `TemplateRepository.kt`.
 
 ## Project structure
 
