@@ -1,20 +1,28 @@
-# Naming ceremony sample images
+# Naming ceremony template previews
 
-| File | Description |
-|------|-------------|
-| `naming_01_sample.png` | **Palna & Marigold** — horizontal oval at top, **full golden cradle** visible bottom-left, kolam floor. Text only (empty oval). |
-| `naming_01_with_photo.png` | Same card with sample baby photo in the horizontal oval. |
+These match the five **Naming Ceremony** designs shown in chat (branch `cursor/new-event-templates-6153`).
 
-**Note:** `naming_01` uses the original artwork with the complete palna; a later redesign had cropped the cradle at the left edge — that version was reverted.
+| ID | Title | Preview file |
+|----|-------|----------------|
+| `naming_01` | Palna & Marigold | `naming_01_sample.png` |
+| `naming_02` | Peacock Lotus | `naming_02_sample.png` |
+| `naming_03` | Kalash Toran | `naming_03_sample.png` |
+| `naming_04` | Moon & Jasmine | `naming_04_sample.png` |
+| `naming_05` | Tulsi Wreath | `naming_05_sample.png` |
+
+Each PNG is a filled invite (no photo) on the matching `bg_naming_*.webp` artwork.
 
 Regenerate:
 
 ```bash
 PREVIEW_OUTPUT_DIR=docs/samples ./gradlew testDebugUnitTest \
   --tests "com.vaangainvite.core.image.NamingCeremonyPreviewExportTest"
+# then rename naming_XX.png → naming_XX_sample.png
+```
 
+With photo (`naming_01` only):
+
+```bash
 PREVIEW_OUTPUT_DIR=docs/samples ./gradlew testDebugUnitTest \
   --tests "com.vaangainvite.core.image.NamingFullSampleExportTest"
 ```
-
-Copy `NamingCeremonyPreviewExportTest` output `naming_01.png` to `naming_01_sample.png` if you only run the first command.

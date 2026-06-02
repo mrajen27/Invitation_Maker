@@ -818,7 +818,7 @@ InvitationTemplate(
             id = "naming_01",
             categoryId = "naming",
             title = "Palna & Marigold",
-            description = "Full golden palna, horizontal oval photo, kolam floor.",
+            description = "Brass cradle, diyas, kolam, marigold garlands.",
             resId = R.drawable.bg_naming_01,
             primaryColor = 0xFF6D4C41.toInt()
         ),
@@ -826,7 +826,7 @@ InvitationTemplate(
             id = "naming_02",
             categoryId = "naming",
             title = "Peacock Lotus",
-            description = "Royal peacock feathers and lotus — temple elegance.",
+            description = "Peacock feathers, lotus, teal & gold temple feel.",
             resId = R.drawable.bg_naming_02,
             primaryColor = 0xFF00695C.toInt()
         ),
@@ -834,7 +834,7 @@ InvitationTemplate(
             id = "naming_03",
             categoryId = "naming",
             title = "Kalash Toran",
-            description = "Banana-leaf toran, kalash, marigold — auspicious ritual.",
+            description = "Banana-leaf toran, kalash, marigold, gopuram.",
             resId = R.drawable.bg_naming_03,
             primaryColor = 0xFFEF6C00.toInt()
         ),
@@ -842,7 +842,7 @@ InvitationTemplate(
             id = "naming_04",
             categoryId = "naming",
             title = "Moon & Jasmine",
-            description = "Crescent moon, stars, jasmine — celestial blessing.",
+            description = "Crescent moon, stars, jasmine (celestial blessing).",
             resId = R.drawable.bg_naming_04,
             primaryColor = 0xFFD81B60.toInt()
         ),
@@ -850,7 +850,7 @@ InvitationTemplate(
             id = "naming_05",
             categoryId = "naming",
             title = "Tulsi Wreath",
-            description = "Minimal tulsi and jasmine wreath — calm modern card.",
+            description = "Minimal tulsi & jasmine wreath, lots of cream space.",
             resId = R.drawable.bg_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
         ),
