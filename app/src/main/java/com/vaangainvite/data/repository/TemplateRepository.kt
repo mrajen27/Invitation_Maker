@@ -33,19 +33,19 @@ class TemplateRepository {
         InvitationCategory(
             id = "engagement",
             title = "Engagement",
-            description = "Romantic floral and gold frames for engagement celebrations.",
+            description = "Printable floral and gold engagement cards with photo space.",
             accentColor = 0xFFC2185B.toInt()
         ),
         InvitationCategory(
             id = "naming",
             title = "Naming Ceremony",
-            description = "Soft pastels and traditional motifs for naming day invites.",
+            description = "Traditional and pastel naming-day printable cards.",
             accentColor = 0xFF1976D2.toInt()
         ),
         InvitationCategory(
             id = "babyshower",
             title = "Baby Shower",
-            description = "Playful pastel cards to welcome the little one.",
+            description = "Cute balloon and pastel baby-shower printable cards.",
             accentColor = 0xFFE91E63.toInt()
         )
     )
@@ -772,129 +772,151 @@ InvitationTemplate(
     primaryColor = 0xFF6A1B9A.toInt()
 ),
 
-        InvitationTemplate(
+        photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Blush Rose Gold",
-            description = "Traditional arch frame in blush pink and gold, like grihapravesam cards.",
-            drawableResId = R.drawable.template_engagement_01,
+            title = "Pink Floral Gold",
+            description = "Blush roses and gold oval frame — classic engagement look.",
+            resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFFC2185B.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Sage Garden",
-            description = "Temple-arch housewarming layout in fresh green and cream.",
-            drawableResId = R.drawable.template_engagement_02,
+            title = "Garden Florals",
+            description = "Sage green botanical border with cream panel.",
+            resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFF388E3C.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Lantern Glow",
-            description = "Pillar-bordered card in teal and marigold gold.",
-            drawableResId = R.drawable.template_engagement_03,
-            primaryColor = 0xFF00695C.toInt()
+            title = "Lantern Evening",
+            description = "Teal night sky with gold lanterns and florals.",
+            resId = R.drawable.bg_engagement_03,
+            primaryColor = 0xFFFFB74D.toInt(),
+            usesLightText = true
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
             title = "Lavender Bloom",
-            description = "Corner-gem panel layout in lilac and gold.",
-            drawableResId = R.drawable.template_engagement_04,
+            description = "Soft lilac watercolor florals and gold trim.",
+            resId = R.drawable.bg_engagement_04,
             primaryColor = 0xFF8E24AA.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Golden Toran",
-            description = "Mandala frame in marigold yellow and cream.",
-            drawableResId = R.drawable.template_engagement_05,
+            title = "Garden Lanterns",
+            description = "Greenery, white roses, and hanging lantern accents.",
+            resId = R.drawable.bg_engagement_05,
             primaryColor = 0xFFF57F17.toInt()
         ),
 
-        InvitationTemplate(
+        photoTemplate(
             id = "naming_01",
             categoryId = "naming",
             title = "Cradle Blessing",
-            description = "Warm traditional arch frame for naming day.",
-            drawableResId = R.drawable.template_naming_01,
+            description = "Warm traditional lamps, garland, and gold frame.",
+            resId = R.drawable.bg_naming_01,
             primaryColor = 0xFF6D4C41.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "naming_02",
             categoryId = "naming",
             title = "Sky Blessing",
-            description = "Temple-arch layout in soft blue and white.",
-            drawableResId = R.drawable.template_naming_02,
+            description = "Soft blue clouds with balloons and stars.",
+            resId = R.drawable.bg_naming_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "naming_03",
             categoryId = "naming",
             title = "Marigold Lamp",
-            description = "Split-band auspicious layout in marigold yellow.",
-            drawableResId = R.drawable.template_naming_03,
+            description = "Auspicious yellow marigold and temple arch.",
+            resId = R.drawable.bg_naming_03,
             primaryColor = 0xFFEF6C00.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "naming_04",
             categoryId = "naming",
             title = "Dream Moon",
-            description = "Oval photo frame layout in gentle pink.",
-            drawableResId = R.drawable.template_naming_04,
+            description = "Pink celestial clouds, stars, and soft garland.",
+            resId = R.drawable.bg_naming_04,
             primaryColor = 0xFFD81B60.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "naming_05",
             categoryId = "naming",
             title = "Fresh Wreath",
-            description = "Garland leaf frame in fresh green and cream.",
-            drawableResId = R.drawable.template_naming_05,
+            description = "Minimal green wreath on a clean cream card.",
+            resId = R.drawable.bg_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
         ),
 
-        InvitationTemplate(
+        photoTemplate(
             id = "babyshower_01",
             categoryId = "babyshower",
             title = "Pink Balloons",
-            description = "Classic arch frame in cheerful pink and gold.",
-            drawableResId = R.drawable.template_babyshower_01,
+            description = "Cheerful pink balloons and confetti on cream.",
+            resId = R.drawable.bg_babyshower_01,
             primaryColor = 0xFFE91E63.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "babyshower_02",
             categoryId = "babyshower",
-            title = "Blue Elephant",
-            description = "Temple-arch layout in baby blue and cream.",
-            drawableResId = R.drawable.template_babyshower_02,
+            title = "Blue Celebration",
+            description = "Baby blue balloons and soft cloud accents.",
+            resId = R.drawable.bg_babyshower_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "babyshower_03",
             categoryId = "babyshower",
-            title = "Teddy Blocks",
-            description = "Gopuram home motif in warm neutral cream.",
-            drawableResId = R.drawable.template_babyshower_03,
+            title = "Teddy & Blocks",
+            description = "Neutral cream card with playful gift accents.",
+            resId = R.drawable.bg_babyshower_03,
             primaryColor = 0xFF6D4C41.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "babyshower_04",
             categoryId = "babyshower",
-            title = "Lavender Bunny",
-            description = "Corner-gem panel in soft lavender.",
-            drawableResId = R.drawable.template_babyshower_04,
+            title = "Lavender Stars",
+            description = "Lilac whimsical garland and star motifs.",
+            resId = R.drawable.bg_babyshower_04,
             primaryColor = 0xFF9C27B0.toInt()
         ),
-        InvitationTemplate(
+        photoTemplate(
             id = "babyshower_05",
             categoryId = "babyshower",
             title = "Boho Neutral",
-            description = "Mandala frame in earthy neutral tones.",
-            drawableResId = R.drawable.template_babyshower_05,
+            description = "Earthy boho pampas tones with a soft rainbow arc.",
+            resId = R.drawable.bg_babyshower_05,
             primaryColor = 0xFF8D6E63.toInt()
         )
     )
+
+    private fun photoTemplate(
+        id: String,
+        categoryId: String,
+        title: String,
+        description: String,
+        resId: Int,
+        primaryColor: Int,
+        usesLightText: Boolean = false
+    ): InvitationTemplate {
+        return InvitationTemplate(
+            id = id,
+            categoryId = categoryId,
+            title = title,
+            description = description,
+            drawableResId = resId,
+            backgroundResId = resId,
+            primaryColor = primaryColor,
+            usesLightText = usesLightText
+        )
+    }
 
     fun templatesForCategory(categoryId: String): List<InvitationTemplate> {
         return templates.filter { it.categoryId == categoryId }

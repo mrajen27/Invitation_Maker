@@ -27,10 +27,12 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
 
 ## Adding event templates
 
-Engagement / Naming / Baby Shower cards reuse the same layout families as Housewarming (arch, gopuram, pillars, corner panel, mandala, etc.) with category colour palettes. To regenerate after editing colours:
+Engagement / Naming / Baby Shower use **printable photo-card backgrounds** (florals, balloons, lanterns — like the reference samples), not simple vector frames. Backgrounds are WebP assets in `app/src/main/res/drawable-nodpi/`.
+
+To regenerate backgrounds after editing `InvitationBackgroundPainter`:
 
 ```bash
-python3 tools/generate_event_templates.py
+./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.ReferenceBackgroundExportTest"
 ```
 
 Then register new IDs in `TemplateRepository.kt`.

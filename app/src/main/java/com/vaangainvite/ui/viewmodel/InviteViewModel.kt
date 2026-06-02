@@ -202,12 +202,13 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         }
 
         return runCatching {
-            val bitmap = imageGenerator.createInvitationBitmap(
+            val result = imageGenerator.createInvitationBitmap(
                 template = template,
                 details = state.details.clampedForCard(hasUploadedPhoto),
                 language = state.selectedLanguage,
                 uploadedPhotoUri = state.uploadedPhotoUri
             )
+            val bitmap = result.bitmap
             val uri = imageGenerator.saveBitmapToCache(bitmap)
             bitmap to uri
         }.fold(

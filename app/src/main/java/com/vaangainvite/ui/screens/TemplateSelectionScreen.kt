@@ -118,7 +118,7 @@ private fun TemplateCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = template.drawableResId),
+                painter = painterResource(id = template.previewResId()),
                 contentDescription = template.title,
                 modifier = Modifier
                     .width(96.dp)
