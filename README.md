@@ -27,7 +27,7 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
 
 ## Adding event templates
 
-Curated Engagement / Naming / Baby Shower cards live under `app/src/main/res/drawable/template_*.xml`. To regenerate or tweak vector decorations:
+Engagement / Naming / Baby Shower cards reuse the same layout families as Housewarming (arch, gopuram, pillars, corner panel, mandala, etc.) with category colour palettes. To regenerate after editing colours:
 
 ```bash
 python3 tools/generate_event_templates.py

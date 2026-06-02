@@ -776,7 +776,7 @@ InvitationTemplate(
             id = "engagement_01",
             categoryId = "engagement",
             title = "Blush Rose Gold",
-            description = "Soft pink frame with rose-gold ring motif for engagement invites.",
+            description = "Traditional arch frame in blush pink and gold, like grihapravesam cards.",
             drawableResId = R.drawable.template_engagement_01,
             primaryColor = 0xFFC2185B.toInt()
         ),
@@ -784,7 +784,7 @@ InvitationTemplate(
             id = "engagement_02",
             categoryId = "engagement",
             title = "Sage Garden",
-            description = "Fresh green botanical frame for an elegant garden engagement.",
+            description = "Temple-arch housewarming layout in fresh green and cream.",
             drawableResId = R.drawable.template_engagement_02,
             primaryColor = 0xFF388E3C.toInt()
         ),
@@ -792,7 +792,7 @@ InvitationTemplate(
             id = "engagement_03",
             categoryId = "engagement",
             title = "Lantern Glow",
-            description = "Teal and gold festive frame inspired by evening engagement decor.",
+            description = "Pillar-bordered card in teal and marigold gold.",
             drawableResId = R.drawable.template_engagement_03,
             primaryColor = 0xFF00695C.toInt()
         ),
@@ -800,7 +800,7 @@ InvitationTemplate(
             id = "engagement_04",
             categoryId = "engagement",
             title = "Lavender Bloom",
-            description = "Lilac floral accents for a dreamy engagement announcement.",
+            description = "Corner-gem panel layout in lilac and gold.",
             drawableResId = R.drawable.template_engagement_04,
             primaryColor = 0xFF8E24AA.toInt()
         ),
@@ -808,7 +808,7 @@ InvitationTemplate(
             id = "engagement_05",
             categoryId = "engagement",
             title = "Golden Toran",
-            description = "Marigold-gold traditional frame for engagement celebrations.",
+            description = "Mandala frame in marigold yellow and cream.",
             drawableResId = R.drawable.template_engagement_05,
             primaryColor = 0xFFF57F17.toInt()
         ),
@@ -817,7 +817,7 @@ InvitationTemplate(
             id = "naming_01",
             categoryId = "naming",
             title = "Cradle Blessing",
-            description = "Warm traditional frame for naming ceremony invitations.",
+            description = "Warm traditional arch frame for naming day.",
             drawableResId = R.drawable.template_naming_01,
             primaryColor = 0xFF6D4C41.toInt()
         ),
@@ -825,7 +825,7 @@ InvitationTemplate(
             id = "naming_02",
             categoryId = "naming",
             title = "Sky Blessing",
-            description = "Soft blue clouds for a gentle naming day invite.",
+            description = "Temple-arch layout in soft blue and white.",
             drawableResId = R.drawable.template_naming_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
@@ -833,7 +833,7 @@ InvitationTemplate(
             id = "naming_03",
             categoryId = "naming",
             title = "Marigold Lamp",
-            description = "Auspicious yellow marigold tones for traditional naming day.",
+            description = "Split-band auspicious layout in marigold yellow.",
             drawableResId = R.drawable.template_naming_03,
             primaryColor = 0xFFEF6C00.toInt()
         ),
@@ -841,7 +841,7 @@ InvitationTemplate(
             id = "naming_04",
             categoryId = "naming",
             title = "Dream Moon",
-            description = "Pink starry frame for a sweet naming ceremony.",
+            description = "Oval photo frame layout in gentle pink.",
             drawableResId = R.drawable.template_naming_04,
             primaryColor = 0xFFD81B60.toInt()
         ),
@@ -849,7 +849,7 @@ InvitationTemplate(
             id = "naming_05",
             categoryId = "naming",
             title = "Fresh Wreath",
-            description = "Minimal green wreath frame for a clean naming invite.",
+            description = "Garland leaf frame in fresh green and cream.",
             drawableResId = R.drawable.template_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
         ),
@@ -858,7 +858,7 @@ InvitationTemplate(
             id = "babyshower_01",
             categoryId = "babyshower",
             title = "Pink Balloons",
-            description = "Playful pink frame for a cheerful baby shower.",
+            description = "Classic arch frame in cheerful pink and gold.",
             drawableResId = R.drawable.template_babyshower_01,
             primaryColor = 0xFFE91E63.toInt()
         ),
@@ -866,7 +866,7 @@ InvitationTemplate(
             id = "babyshower_02",
             categoryId = "babyshower",
             title = "Blue Elephant",
-            description = "Soft blue frame with elephant motif for baby shower.",
+            description = "Temple-arch layout in baby blue and cream.",
             drawableResId = R.drawable.template_babyshower_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
@@ -874,7 +874,7 @@ InvitationTemplate(
             id = "babyshower_03",
             categoryId = "babyshower",
             title = "Teddy Blocks",
-            description = "Neutral cream frame with playful baby shower accents.",
+            description = "Gopuram home motif in warm neutral cream.",
             drawableResId = R.drawable.template_babyshower_03,
             primaryColor = 0xFF6D4C41.toInt()
         ),
@@ -882,7 +882,7 @@ InvitationTemplate(
             id = "babyshower_04",
             categoryId = "babyshower",
             title = "Lavender Bunny",
-            description = "Lilac whimsical frame for a cozy baby shower.",
+            description = "Corner-gem panel in soft lavender.",
             drawableResId = R.drawable.template_babyshower_04,
             primaryColor = 0xFF9C27B0.toInt()
         ),
@@ -890,7 +890,7 @@ InvitationTemplate(
             id = "babyshower_05",
             categoryId = "babyshower",
             title = "Boho Neutral",
-            description = "Earthy boho frame for a modern baby shower invite.",
+            description = "Mandala frame in earthy neutral tones.",
             drawableResId = R.drawable.template_babyshower_05,
             primaryColor = 0xFF8D6E63.toInt()
         )
