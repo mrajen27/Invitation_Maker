@@ -817,42 +817,43 @@ InvitationTemplate(
         photoTemplate(
             id = "naming_01",
             categoryId = "naming",
-            title = "Palna & Marigold",
-            description = "Brass cradle, diyas, kolam, marigold garlands.",
+            title = "Heritage Silk",
+            description = "Deep red and gold silk border with blessing motif.",
             resId = R.drawable.bg_naming_01,
-            primaryColor = 0xFF6D4C41.toInt()
+            primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "naming_02",
             categoryId = "naming",
-            title = "Peacock Lotus",
-            description = "Peacock feathers, lotus, teal & gold temple feel.",
+            title = "Gentle Elephant",
+            description = "Watercolor elephant, soft pastels, scalloped photo.",
             resId = R.drawable.bg_naming_02,
-            primaryColor = 0xFF00695C.toInt()
+            primaryColor = 0xFF8D6E63.toInt()
         ),
         photoTemplate(
             id = "naming_03",
             categoryId = "naming",
-            title = "Kalash Toran",
-            description = "Banana-leaf toran, kalash, marigold, gopuram.",
+            title = "Sacred Earth",
+            description = "Sandalwood tones, rice border, diya and kumkum.",
             resId = R.drawable.bg_naming_03,
-            primaryColor = 0xFFEF6C00.toInt()
+            primaryColor = 0xFF795548.toInt()
         ),
         photoTemplate(
             id = "naming_04",
             categoryId = "naming",
-            title = "Moon & Jasmine",
-            description = "Crescent moon, stars, jasmine (celestial blessing).",
+            title = "Indigo Night",
+            description = "Silver paisley on indigo — elegant evening card.",
             resId = R.drawable.bg_naming_04,
-            primaryColor = 0xFFD81B60.toInt()
+            primaryColor = 0xFF1A237E.toInt(),
+            usesLightText = true
         ),
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Tulsi Wreath",
-            description = "Minimal tulsi & jasmine wreath, lots of cream space.",
+            title = "Garden Roses",
+            description = "Watercolor roses on cream — fresh spring naming.",
             resId = R.drawable.bg_naming_05,
-            primaryColor = 0xFF2E7D32.toInt()
+            primaryColor = 0xFFC2185B.toInt()
         ),
 
         photoTemplate(

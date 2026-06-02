@@ -95,16 +95,16 @@ internal object InvitationPhotoPlacement {
         "engagement_04" to Spec(RectF(400f, 175f, 680f, 520f), Mask.HEX_MEDALLION),
         "engagement_05" to Spec(RectF(408f, 188f, 672f, 508f), Mask.CEREMONY_ARCH),
 
-        // Naming — each mask matched to redesigned Namakaranam artwork
-        "naming_01" to Spec(RectF(378f, 158f, 702f, 478f), Mask.MEDALLION_CIRCLE),
-        "naming_02" to Spec(
-            bounds = RectF(368f, 148f, 712f, 492f),
+        // Naming — masks tuned to refreshed artwork set
+        "naming_01" to Spec(RectF(384f, 162f, 696f, 476f), Mask.MEDALLION_CIRCLE),
+        "naming_02" to Spec(RectF(320f, 148f, 760f, 438f), Mask.LANDSCAPE_OVAL),
+        "naming_03" to Spec(RectF(348f, 138f, 732f, 468f), Mask.CEREMONY_ARCH),
+        "naming_04" to Spec(
+            bounds = RectF(372f, 152f, 708f, 488f),
             mask = Mask.PORTRAIT_OVAL,
             border = Border.INNER_GLOW
         ),
-        "naming_03" to Spec(RectF(342f, 142f, 738f, 472f), Mask.CEREMONY_ARCH),
-        "naming_04" to Spec(RectF(386f, 165f, 694f, 473f), Mask.MEDALLION_CIRCLE),
-        "naming_05" to Spec(RectF(402f, 172f, 678f, 448f), Mask.HEX_MEDALLION),
+        "naming_05" to Spec(RectF(390f, 168f, 690f, 468f), Mask.MEDALLION_CIRCLE),
 
         // Baby shower — circles inside top rings / scallops
         "babyshower_01" to Spec(RectF(384f, 162f, 696f, 474f), Mask.MEDALLION_CIRCLE),

@@ -81,47 +81,49 @@ internal object InvitationLayout {
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
         "naming_01" to TextZoneSpec(
-            left = 200f,
-            right = 880f,
-            topNoPhoto = 500f,
-            topWithPhoto = 518f,
-            bottom = 1230f,
-            messageBottom = 1180f,
-            photoTextGap = 14f
-        ),
-        "naming_02" to TextZoneSpec(
-            left = 230f,
-            right = 850f,
-            topNoPhoto = 520f,
-            topWithPhoto = 528f,
-            bottom = 1240f,
-            photoTextGap = 10f
-        ),
-        "naming_03" to TextZoneSpec(
             left = 210f,
             right = 870f,
-            topNoPhoto = 488f,
-            topWithPhoto = 512f,
-            bottom = 1220f,
-            messageBottom = 1170f,
+            topNoPhoto = 492f,
+            topWithPhoto = 508f,
+            bottom = 1240f,
+            messageBottom = 1185f,
+            photoTextGap = 12f
+        ),
+        "naming_02" to TextZoneSpec(
+            left = 220f,
+            right = 860f,
+            topNoPhoto = 448f,
+            topWithPhoto = 468f,
+            bottom = 1250f,
+            messageBottom = 1195f,
+            photoTextGap = 14f
+        ),
+        "naming_03" to TextZoneSpec(
+            left = 200f,
+            right = 880f,
+            topNoPhoto = 478f,
+            topWithPhoto = 502f,
+            bottom = 1210f,
+            messageBottom = 1155f,
             topInset = 6f
         ),
         "naming_04" to TextZoneSpec(
             left = 220f,
             right = 860f,
-            topNoPhoto = 478f,
-            topWithPhoto = 508f,
+            topNoPhoto = 502f,
+            topWithPhoto = 522f,
             bottom = 1240f,
-            photoTextGap = 12f
+            messageBottom = 1185f,
+            photoTextGap = 10f
         ),
         "naming_05" to TextZoneSpec(
-            left = 240f,
-            right = 840f,
-            topNoPhoto = 455f,
-            topWithPhoto = 488f,
+            left = 230f,
+            right = 850f,
+            topNoPhoto = 472f,
+            topWithPhoto = 498f,
             bottom = 1260f,
-            messageBottom = 1210f,
-            photoTextGap = 16f
+            messageBottom = 1205f,
+            photoTextGap = 14f
         ),
     )
 
