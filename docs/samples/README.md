@@ -2,8 +2,10 @@
 
 | File | Description |
 |------|-------------|
-| `naming_01_sample.png` | **Template preview** — all text filled, empty top ring (matches in-app look before photo upload). |
-| `naming_01_with_photo.png` | Same fields with a sample baby photo in the top medallion. |
+| `naming_01_sample.png` | **Palna & Marigold** — horizontal oval at top, **full golden cradle** visible bottom-left, kolam floor. Text only (empty oval). |
+| `naming_01_with_photo.png` | Same card with sample baby photo in the horizontal oval. |
+
+**Note:** `naming_01` uses the original artwork with the complete palna; a later redesign had cropped the cradle at the left edge — that version was reverted.
 
 Regenerate:
 

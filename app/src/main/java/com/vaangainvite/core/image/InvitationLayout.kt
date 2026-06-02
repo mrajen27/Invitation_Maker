@@ -82,12 +82,12 @@ internal object InvitationLayout {
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
         "naming_01" to TextZoneSpec(
             left = 200f,
-            right = 880f,
-            topNoPhoto = 500f,
-            topWithPhoto = 518f,
-            bottom = 1230f,
-            messageBottom = 1180f,
-            photoTextGap = 14f
+            right = 740f,
+            topNoPhoto = 455f,
+            topWithPhoto = 468f,
+            bottom = 1040f,
+            messageBottom = 1000f,
+            photoTextGap = 12f
         ),
         "naming_02" to TextZoneSpec(
             left = 230f,

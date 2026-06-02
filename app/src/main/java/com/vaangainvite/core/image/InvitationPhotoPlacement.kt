@@ -95,8 +95,8 @@ internal object InvitationPhotoPlacement {
         "engagement_04" to Spec(RectF(400f, 175f, 680f, 520f), Mask.HEX_MEDALLION),
         "engagement_05" to Spec(RectF(408f, 188f, 672f, 508f), Mask.CEREMONY_ARCH),
 
-        // Naming — each mask matched to new artwork (not baby-shower shapes)
-        "naming_01" to Spec(RectF(378f, 158f, 702f, 478f), Mask.MEDALLION_CIRCLE),
+        // Naming — masks aligned to each background artwork
+        "naming_01" to Spec(RectF(285f, 208f, 795f, 448f), Mask.LANDSCAPE_OVAL),
         "naming_02" to Spec(
             bounds = RectF(368f, 148f, 712f, 492f),
             mask = Mask.PORTRAIT_OVAL,

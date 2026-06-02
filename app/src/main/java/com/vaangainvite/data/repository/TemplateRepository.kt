@@ -818,7 +818,7 @@ InvitationTemplate(
             id = "naming_01",
             categoryId = "naming",
             title = "Palna & Marigold",
-            description = "Brass cradle, diyas, kolam — classic Namakaranam look.",
+            description = "Full golden palna, horizontal oval photo, kolam floor.",
             resId = R.drawable.bg_naming_01,
             primaryColor = 0xFF6D4C41.toInt()
         ),
