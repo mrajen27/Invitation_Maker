@@ -38,7 +38,7 @@ class NamingFullSampleExportTest {
             name = "Baby Aadhya",
             date = "Sunday, 2 February 2025",
             time = "11:00 AM",
-            venue = "Our Residence\n12, Temple Street\nCoimbatore 641001",
+            venue = "Our Residence\nCoimbatore",
             mobileNumber = "+91 94440 11223",
             message = "Bless our little one on this sacred day."
         )
@@ -50,7 +50,7 @@ class NamingFullSampleExportTest {
             language = InvitationLanguage.ENGLISH,
             uploadedPhotoUri = photoUri
         ).bitmap
-        File(outputDir, "naming_01_complete_sample.png").outputStream().use { out ->
+        File(outputDir, "naming_01_with_photo.png").outputStream().use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
         bitmap.recycle()
