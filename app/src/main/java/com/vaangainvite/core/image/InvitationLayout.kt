@@ -117,13 +117,13 @@ internal object InvitationLayout {
             photoTextGap = 10f
         ),
         "naming_05" to TextZoneSpec(
-            left = 230f,
-            right = 850f,
-            topNoPhoto = 472f,
-            topWithPhoto = 498f,
-            bottom = 1260f,
-            messageBottom = 1205f,
-            photoTextGap = 14f
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 488f,
+            topWithPhoto = 512f,
+            bottom = 1220f,
+            messageBottom = 1165f,
+            photoTextGap = 12f
         ),
     )
 

@@ -104,7 +104,7 @@ internal object InvitationPhotoPlacement {
             mask = Mask.PORTRAIT_OVAL,
             border = Border.INNER_GLOW
         ),
-        "naming_05" to Spec(RectF(390f, 168f, 690f, 468f), Mask.MEDALLION_CIRCLE),
+        "naming_05" to Spec(RectF(382f, 155f, 698f, 471f), Mask.MEDALLION_CIRCLE),
 
         // Baby shower — circles inside top rings / scallops
         "babyshower_01" to Spec(RectF(384f, 162f, 696f, 474f), Mask.MEDALLION_CIRCLE),

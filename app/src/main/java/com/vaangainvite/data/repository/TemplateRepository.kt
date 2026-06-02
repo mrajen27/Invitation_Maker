@@ -850,10 +850,10 @@ InvitationTemplate(
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Garden Roses",
-            description = "Watercolor roses on cream — fresh spring naming.",
+            title = "Marigold Kolam",
+            description = "Marigold toran, mango leaves, kolam floor, brass diyas.",
             resId = R.drawable.bg_naming_05,
-            primaryColor = 0xFFC2185B.toInt()
+            primaryColor = 0xFFEF6C00.toInt()
         ),
 
         photoTemplate(
