@@ -124,7 +124,7 @@ private fun Header() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Pick a category, choose a local template, add details, then save or share on WhatsApp.",
+                text = "Pick a category (birthday, wedding, engagement, naming, baby shower, and more), choose a design, add details, then save or share on WhatsApp.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = HomeGold
             )

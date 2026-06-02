@@ -9,9 +9,12 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
   - Wedding
   - Housewarming
   - Puberty Ceremony
+  - Engagement
+  - Naming Ceremony
+  - Baby Shower
 - Traditional splash/loading screen with spinner to avoid a blank white startup screen.
 - Traditional home screen background with toran, kolam, and floral motifs.
-- Template selection screen backed by local vector assets, with 20 more varied designs per MVP category.
+- Template selection screen backed by local vector assets (20 designs for core categories; 5 curated designs each for Engagement, Naming Ceremony, and Baby Shower).
 - Invitation editor with fields for name on invitation, occasion/event title, date picker, time, venue, mobile number for queries/location help, and an additional message.
 - Quick additional-message chips with English/Tamil suggestions, category-specific messages, tone filters, emoji-friendly input, image-safe character guidance, and a live message preview card.
 - English/Tamil invitation language selector for generated card headings and labels.
@@ -21,6 +24,16 @@ Vaanga Invite is a Kotlin and Jetpack Compose Android app for creating South Ind
 - Share generated invitations to WhatsApp Chat or WhatsApp Status, with a fallback Android share sheet if WhatsApp is not installed.
 - Material 3 UI built with Jetpack Compose.
 - MVVM architecture with repository-backed templates and a ViewModel-driven UI state.
+
+## Adding event templates
+
+Curated Engagement / Naming / Baby Shower cards live under `app/src/main/res/drawable/template_*.xml`. To regenerate or tweak vector decorations:
+
+```bash
+python3 tools/generate_event_templates.py
+```
+
+Then register new IDs in `TemplateRepository.kt`.
 
 ## Project structure
 

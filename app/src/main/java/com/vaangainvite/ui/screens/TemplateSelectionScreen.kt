@@ -78,7 +78,11 @@ fun TemplateSelectionScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Each category includes 20 local designs that can be exported as shareable images.",
+                    text = if (state.templates.size <= 5) {
+                        "Pick one of ${state.templates.size} curated designs. Add a photo for a taller portrait frame on the card."
+                    } else {
+                        "Each category includes ${state.templates.size} local designs you can save or share."
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

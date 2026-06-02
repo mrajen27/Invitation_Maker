@@ -159,7 +159,7 @@ class InvitationImageGenerator(private val context: Context) {
             textSize = if (hasUploadedPhoto) 24f else 27f,
             typeface = bodyTypeface
         )
-        var y = if (hasUploadedPhoto) 600f else 390f
+        var y = if (hasUploadedPhoto) 605f else 390f
         y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 4f, maxLines = 1)
         y += 6f
         y = drawCenteredLines(
@@ -229,7 +229,8 @@ class InvitationImageGenerator(private val context: Context) {
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
 
-        val frame = RectF(405f, 350f, 675f, 570f)
+        // Taller portrait frame so uploaded photos can show roughly half-body.
+        val frame = RectF(350f, 285f, 730f, 575f)
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
