@@ -7,8 +7,13 @@ import androidx.lifecycle.AndroidViewModel
 import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
+import com.vaangainvite.data.model.clampedForCard
+import com.vaangainvite.data.model.normalizeMessage
+import com.vaangainvite.data.model.normalizeVenue
+import com.vaangainvite.data.model.validationError
 import com.vaangainvite.data.repository.TemplateRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,19 +71,33 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun updateOccasionTitle(occasionTitle: String) = updateDetails { copy(occasionTitle = occasionTitle) }
+    fun updateOccasionTitle(occasionTitle: String) = updateDetails {
+        copy(occasionTitle = occasionTitle.take(InvitationDetails.OCCASION_MAX_LENGTH))
+    }
 
-    fun updateName(name: String) = updateDetails { copy(name = name) }
+    fun updateName(name: String) = updateDetails {
+        copy(name = name.take(InvitationDetails.NAME_MAX_LENGTH))
+    }
 
-    fun updateDate(date: String) = updateDetails { copy(date = date) }
+    fun updateDate(date: String) = updateDetails {
+        copy(date = date.take(InvitationDetails.DATE_MAX_LENGTH))
+    }
 
-    fun updateTime(time: String) = updateDetails { copy(time = time) }
+    fun updateTime(time: String) = updateDetails {
+        copy(time = time.take(InvitationDetails.TIME_MAX_LENGTH))
+    }
 
-    fun updateVenue(venue: String) = updateDetails { copy(venue = venue) }
+    fun updateVenue(venue: String) = updateDetails {
+        copy(venue = normalizeVenue(venue))
+    }
 
-    fun updateMobileNumber(mobileNumber: String) = updateDetails { copy(mobileNumber = mobileNumber) }
+    fun updateMobileNumber(mobileNumber: String) = updateDetails {
+        copy(mobileNumber = mobileNumber.take(InvitationDetails.MOBILE_MAX_LENGTH))
+    }
 
-    fun updateMessage(message: String) = updateDetails { copy(message = message) }
+    fun updateMessage(message: String) = updateDetails {
+        copy(message = normalizeMessage(message))
+    }
 
     fun updateUploadedPhoto(uri: Uri?) {
         _uiState.update { current ->
@@ -174,10 +193,18 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             return null
         }
 
+        val hasUploadedPhoto = state.uploadedPhotoUri != null
+        state.details.validationError(hasUploadedPhoto)?.let { errorMessage ->
+            _uiState.update { current ->
+                current.copy(statusMessage = errorMessage)
+            }
+            return null
+        }
+
         return runCatching {
             val bitmap = imageGenerator.createInvitationBitmap(
                 template = template,
-                details = state.details,
+                details = state.details.clampedForCard(hasUploadedPhoto),
                 language = state.selectedLanguage,
                 uploadedPhotoUri = state.uploadedPhotoUri
             )

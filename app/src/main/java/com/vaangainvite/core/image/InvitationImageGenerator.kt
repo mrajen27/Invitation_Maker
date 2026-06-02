@@ -22,14 +22,16 @@ import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import com.vaangainvite.R
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.data.model.InvitationTemplate
+import com.vaangainvite.data.model.clampedForCard
 import java.io.File
 import java.io.FileOutputStream
 
 class InvitationImageGenerator(private val context: Context) {
-    private val imageWidth = 1080
-    private val imageHeight = 1350
+    private val imageWidth = InvitationTextLayout.canvasWidth.toInt()
+    private val imageHeight = InvitationTextLayout.canvasHeight.toInt()
 
     fun createInvitationBitmap(
         template: InvitationTemplate,
@@ -37,6 +39,8 @@ class InvitationImageGenerator(private val context: Context) {
         language: InvitationLanguage,
         uploadedPhotoUri: Uri?
     ): Bitmap {
+        val hasUploadedPhoto = uploadedPhotoUri != null
+        val cardDetails = details.clampedForCard(hasUploadedPhoto)
         val bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
@@ -45,9 +49,15 @@ class InvitationImageGenerator(private val context: Context) {
             drawable.draw(canvas)
         } ?: canvas.drawColor(Color.rgb(255, 244, 230))
 
-        drawReadablePanel(canvas)
-        val hasUploadedPhoto = drawUploadedPhoto(canvas, uploadedPhotoUri)
-        drawInvitationText(canvas, template, details, language, hasUploadedPhoto)
+        drawReadablePanel(canvas, hasUploadedPhoto)
+        val photoDrawn = drawUploadedPhoto(canvas, uploadedPhotoUri)
+        drawInvitationText(
+            canvas = canvas,
+            template = template,
+            details = cardDetails,
+            language = language,
+            hasUploadedPhoto = photoDrawn
+        )
 
         return bitmap
     }
@@ -101,7 +111,8 @@ class InvitationImageGenerator(private val context: Context) {
         return uri
     }
 
-    private fun drawReadablePanel(canvas: Canvas) {
+    private fun drawReadablePanel(canvas: Canvas, hasPhoto: Boolean) {
+        val panel = InvitationTextLayout.frostedPanelBounds(hasPhoto)
         val panelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             alpha = 228
@@ -111,8 +122,6 @@ class InvitationImageGenerator(private val context: Context) {
             style = Paint.Style.STROKE
             strokeWidth = 8f
         }
-
-        val panel = RectF(150f, 330f, 930f, 1065f)
         canvas.drawRoundRect(panel, 36f, 36f, panelPaint)
         canvas.drawRoundRect(panel, 36f, 36f, borderPaint)
     }
@@ -124,6 +133,7 @@ class InvitationImageGenerator(private val context: Context) {
         language: InvitationLanguage,
         hasUploadedPhoto: Boolean
     ) {
+        val zone = InvitationTextLayout.textZone(hasUploadedPhoto)
         val primary = template.primaryColor
         val tamilTypeface = tamilTypeface()
         val headingTypeface = when (language) {
@@ -134,73 +144,178 @@ class InvitationImageGenerator(private val context: Context) {
             InvitationLanguage.TAMIL -> tamilTypeface
             InvitationLanguage.ENGLISH -> Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
         }
-        val titlePaint = textPaint(
-            color = primary,
-            textSize = if (hasUploadedPhoto) 46f else 52f,
-            typeface = headingTypeface
+
+        var scale = 1f
+        val basePaints = buildContentPaints(
+            primary = primary,
+            headingTypeface = headingTypeface,
+            bodyTypeface = bodyTypeface,
+            hasUploadedPhoto = hasUploadedPhoto,
+            scale = 1f
         )
-        val occasionPaint = textPaint(
-            color = primary,
-            textSize = if (hasUploadedPhoto) 32f else 36f,
-            typeface = headingTypeface
+        scale = InvitationTextLayout.contentScaleForZone(
+            estimatedHeight = InvitationTextLayout.estimateContentHeight(
+                details = details,
+                hasPhoto = hasUploadedPhoto,
+                hasMobile = details.mobileNumber.isNotBlank(),
+                paints = basePaints
+            ),
+            zone = zone,
+            hasPhoto = hasUploadedPhoto
         )
-        val headingPaint = textPaint(
-            color = Color.rgb(72, 50, 38),
-            textSize = if (hasUploadedPhoto) 28f else 32f,
-            typeface = headingTypeface
-        )
-        val bodyPaint = textPaint(
-            color = Color.rgb(38, 38, 38),
-            textSize = if (hasUploadedPhoto) 26f else 29f,
-            typeface = bodyTypeface
-        )
-        val messagePaint = textPaint(
-            color = Color.rgb(72, 50, 38),
-            textSize = if (hasUploadedPhoto) 24f else 27f,
-            typeface = bodyTypeface
-        )
-        var y = if (hasUploadedPhoto) 605f else 390f
-        y = drawCenteredLines(canvas, language.heading, headingPaint, y, 700f, 4f, maxLines = 1)
-        y += 6f
-        y = drawCenteredLines(
+        val paints = if (scale == 1f) {
+            basePaints
+        } else {
+            buildContentPaints(
+                primary = primary,
+                headingTypeface = headingTypeface,
+                bodyTypeface = bodyTypeface,
+                hasUploadedPhoto = hasUploadedPhoto,
+                scale = scale
+            )
+        }
+
+        val maxTextWidth = zone.width() - 32f
+        var blockTop = InvitationTextLayout.textStartY(hasUploadedPhoto)
+
+        blockTop = drawCenteredLines(
+            canvas = canvas,
+            text = language.heading,
+            paint = paints.headingPaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
+            lineSpacing = 4f,
+            maxLines = 1,
+            zone = zone
+        ) + InvitationTextLayout.Spacing.afterHeading
+
+        blockTop = drawCenteredLines(
             canvas = canvas,
             text = details.name.ifBlank { language.fallbackName },
-            paint = titlePaint,
-            startY = y,
-            maxWidth = 690f,
+            paint = paints.titlePaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
             lineSpacing = 4f,
-            maxLines = 2
-        )
-        y += 4f
-        y = drawCenteredLines(
+            maxLines = 2,
+            zone = zone
+        ) + InvitationTextLayout.Spacing.afterName
+
+        blockTop = drawCenteredLines(
             canvas = canvas,
             text = details.occasionTitle.ifBlank { defaultOccasionTitle(language) },
-            paint = occasionPaint,
-            startY = y,
-            maxWidth = 690f,
+            paint = paints.occasionPaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
             lineSpacing = 4f,
-            maxLines = 2
+            maxLines = 2,
+            zone = zone
+        ) + InvitationTextLayout.Spacing.afterOccasion
+
+        blockTop = drawDetailLine(
+            canvas = canvas,
+            label = language.dateLabel,
+            value = details.date.ifBlank { language.fallbackDate },
+            paint = paints.bodyPaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
+            maxLines = 1,
+            zone = zone
         )
-        y += 14f
-        y = drawDetailLine(canvas, language.dateLabel, details.date.ifBlank { language.fallbackDate }, bodyPaint, y, maxLines = 1)
-        y = drawDetailLine(canvas, language.timeLabel, details.time.ifBlank { language.fallbackTime }, bodyPaint, y, maxLines = 1)
-        y = drawDetailLine(canvas, language.venueLabel, details.venue.ifBlank { language.fallbackVenue }, bodyPaint, y, maxLines = 2)
+        blockTop = drawDetailLine(
+            canvas = canvas,
+            label = language.timeLabel,
+            value = details.time.ifBlank { language.fallbackTime },
+            paint = paints.bodyPaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
+            maxLines = 1,
+            zone = zone
+        )
+        blockTop = drawDetailLine(
+            canvas = canvas,
+            label = language.venueLabel,
+            value = details.venue.ifBlank { language.fallbackVenue },
+            paint = paints.bodyPaint,
+            startY = blockTop,
+            maxWidth = maxTextWidth,
+            maxLines = InvitationFieldLimits.VENUE_MAX_LINES,
+            zone = zone
+        )
         if (details.mobileNumber.isNotBlank()) {
-            y = drawDetailLine(canvas, contactLabel(language), details.mobileNumber, bodyPaint, y, maxLines = 1)
+            blockTop = drawDetailLine(
+                canvas = canvas,
+                label = contactLabel(language),
+                value = details.mobileNumber,
+                paint = paints.bodyPaint,
+                startY = blockTop,
+                maxWidth = maxTextWidth,
+                maxLines = 1,
+                zone = zone
+            )
         }
-        val messageLineSpacing = 8f
-        val messageTop = (y + 10f).coerceIn(if (hasUploadedPhoto) 900f else 840f, 965f)
-        val messageMaxLines = ((1040f - messageTop) / (messagePaint.fontSpacing + messageLineSpacing))
-            .toInt()
-            .coerceIn(1, 3)
+
+        val messageText = details.message.trim()
+        if (messageText.isBlank()) return
+
+        val messageLines = wrapText(messageText, paints.messagePaint, maxTextWidth.coerceAtMost(620f))
+            .limitLines(InvitationFieldLimits.MESSAGE_MAX_LINES_ON_CARD, paints.messagePaint, maxTextWidth)
+        if (messageLines.isEmpty()) return
+
+        val messageTop = InvitationTextLayout.messageTopY(
+            blockTopAfterLastDetail = blockTop,
+            paint = paints.messagePaint,
+            lineCount = messageLines.size,
+            lineSpacing = 8f,
+            zone = zone
+        )
+
         drawCenteredLines(
             canvas = canvas,
-            text = details.message.ifBlank { language.fallbackMessage },
-            paint = messagePaint,
+            text = messageText,
+            paint = paints.messagePaint,
             startY = messageTop,
-            maxWidth = 620f,
-            lineSpacing = messageLineSpacing,
-            maxLines = messageMaxLines
+            maxWidth = maxTextWidth.coerceAtMost(620f),
+            lineSpacing = 8f,
+            maxLines = InvitationFieldLimits.MESSAGE_MAX_LINES_ON_CARD,
+            zone = zone,
+            maxBottomY = zone.bottom - 6f
+        )
+    }
+
+    private fun buildContentPaints(
+        primary: Int,
+        headingTypeface: Typeface,
+        bodyTypeface: Typeface,
+        hasUploadedPhoto: Boolean,
+        scale: Float
+    ): InvitationTextLayout.ContentPaints {
+        fun scaled(size: Float) = size * scale
+        return InvitationTextLayout.ContentPaints(
+            headingPaint = textPaint(
+                color = Color.rgb(72, 50, 38),
+                textSize = scaled(if (hasUploadedPhoto) 28f else 32f),
+                typeface = headingTypeface
+            ),
+            titlePaint = textPaint(
+                color = primary,
+                textSize = scaled(if (hasUploadedPhoto) 46f else 52f),
+                typeface = headingTypeface
+            ),
+            occasionPaint = textPaint(
+                color = primary,
+                textSize = scaled(if (hasUploadedPhoto) 32f else 36f),
+                typeface = headingTypeface
+            ),
+            bodyPaint = textPaint(
+                color = Color.rgb(38, 38, 38),
+                textSize = scaled(if (hasUploadedPhoto) 26f else 29f),
+                typeface = bodyTypeface
+            ),
+            messagePaint = textPaint(
+                color = Color.rgb(72, 50, 38),
+                textSize = scaled(if (hasUploadedPhoto) 24f else 27f),
+                typeface = bodyTypeface
+            )
         )
     }
 
@@ -229,8 +344,7 @@ class InvitationImageGenerator(private val context: Context) {
             correctBitmapOrientation(bitmap, uploadedPhotoUri)
         } ?: return false
 
-        // Taller portrait frame so uploaded photos can show roughly half-body.
-        val frame = RectF(350f, 285f, 730f, 575f)
+        val frame = InvitationTextLayout.photoFrame
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -324,25 +438,28 @@ class InvitationImageGenerator(private val context: Context) {
         value: String,
         paint: Paint,
         startY: Float,
-        maxLines: Int = Int.MAX_VALUE
+        maxWidth: Float,
+        maxLines: Int,
+        zone: RectF
     ): Float {
         val labelPaint = Paint(paint).apply {
             typeface = Typeface.create(paint.typeface, Typeface.BOLD)
         }
         val labelText = "$label: "
         val combinedText = "$labelText$value"
-        val lines = wrapText(combinedText, paint, 650f)
-            .limitLines(maxLines, paint, 650f)
+        val lines = wrapText(combinedText, paint, maxWidth)
+            .limitLines(maxLines, paint, maxWidth)
         var y = startY
         lines.forEachIndexed { index, line ->
+            if (y > zone.bottom) return@forEachIndexed
             if (index == 0 && line.startsWith(labelText)) {
-                val x = centeredX(line, paint)
+                val x = centeredX(line, paint, zone)
                 canvas.drawText(labelText, x, y, labelPaint)
                 canvas.drawText(line.removePrefix(labelText), x + labelPaint.measureText(labelText), y, paint)
             } else {
-                canvas.drawText(line, centeredX(line, paint), y, paint)
+                canvas.drawText(line, centeredX(line, paint, zone), y, paint)
             }
-            y += paint.fontSpacing + 4f
+            y += paint.fontSpacing + InvitationTextLayout.Spacing.betweenDetails
         }
         return y + 4f
     }
@@ -354,15 +471,18 @@ class InvitationImageGenerator(private val context: Context) {
         startY: Float,
         maxWidth: Float,
         lineSpacing: Float,
-        maxLines: Int = Int.MAX_VALUE
+        maxLines: Int,
+        zone: RectF,
+        maxBottomY: Float = zone.bottom - 6f
     ): Float {
         var y = startY
         wrapText(text, paint, maxWidth)
             .limitLines(maxLines, paint, maxWidth)
             .forEach { line ->
-            canvas.drawText(line, centeredX(line, paint), y, paint)
-            y += paint.fontSpacing + lineSpacing
-        }
+                if (y > maxBottomY) return@forEach
+                canvas.drawText(line, centeredX(line, paint, zone), y, paint)
+                y += paint.fontSpacing + lineSpacing
+            }
         return y
     }
 
@@ -442,9 +562,9 @@ class InvitationImageGenerator(private val context: Context) {
             ?: Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
     }
 
-    private fun centeredX(text: String, paint: Paint): Float {
-        val bounds = Rect()
-        paint.getTextBounds(text, 0, text.length, bounds)
-        return (imageWidth - paint.measureText(text)) / 2f
+    private fun centeredX(text: String, paint: Paint, zone: RectF): Float {
+        val textWidth = paint.measureText(text)
+        val zoneWidth = zone.width()
+        return zone.left + (zoneWidth - textWidth) / 2f
     }
 }

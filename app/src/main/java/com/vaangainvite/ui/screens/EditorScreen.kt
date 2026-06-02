@@ -63,6 +63,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
+import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.InvitationLanguage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 import java.time.Instant
@@ -424,75 +425,68 @@ private fun EditorFields(
             selectedLanguage = selectedLanguage,
             onLanguageSelected = onLanguageSelected
         )
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = details.occasionTitle,
             onValueChange = onOccasionTitleChanged,
+            maxLength = InvitationDetails.OCCASION_MAX_LENGTH,
             label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "விழா தலைப்பு" else "Occasion / Event title") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             placeholder = {
                 Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கவின் முதல் பிறந்தநாள்" else "Kavin's First Birthday")
             },
-            supportingText = {
-                Text(
-                    text = if (selectedLanguage == InvitationLanguage.TAMIL) {
-                        "தமிழில் விழா தலைப்பை எழுதலாம். இது அழைப்பிதழ் எந்த விழாவுக்கானது என்பதை காட்டும்."
-                    } else {
-                        "You can type this in Tamil too. This tells guests what the invitation is for."
-                    }
-                )
+            helperText = if (selectedLanguage == InvitationLanguage.TAMIL) {
+                "தமிழில் விழா தலைப்பை எழுதலாம்."
+            } else {
+                "Shown on the card under the guest name."
             }
         )
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = details.name,
             onValueChange = onNameChanged,
+            maxLength = InvitationDetails.NAME_MAX_LENGTH,
             label = { Text(if (selectedLanguage == InvitationLanguage.TAMIL) "அழைப்பிதழில் பெயர்" else "Name on invitation") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             placeholder = {
                 Text(if (selectedLanguage == InvitationLanguage.TAMIL) "கார்த்திக் & மீனா" else "Karthik & Meena")
             },
-            supportingText = {
-                Text(
-                    text = if (selectedLanguage == InvitationLanguage.TAMIL) {
-                        "தமிழ் விசைப்பலகையை பயன்படுத்தி பெயரை தமிழில் எழுதலாம்."
-                    } else {
-                        "Examples: Kavin, Karthik & Meena, Ravi Family. Tamil names are supported."
-                    }
-                )
+            helperText = if (selectedLanguage == InvitationLanguage.TAMIL) {
+                "தமிழ் பெயர்களுக்கு ஆதரவு உள்ளது."
+            } else {
+                "Up to two lines on the card if the name is long."
             }
         )
         DatePickerField(
             date = details.date,
             onDateSelected = onDateChanged
         )
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = details.time,
             onValueChange = onTimeChanged,
+            maxLength = InvitationDetails.TIME_MAX_LENGTH,
             label = { Text("Time") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = details.venue,
             onValueChange = onVenueChanged,
+            maxLength = InvitationDetails.VENUE_MAX_LENGTH,
+            lengthOf = { it.replace("\n", "").length },
             label = { Text("Venue") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 2
+            singleLine = false,
+            minLines = 2,
+            maxLines = 2,
+            helperText = "Up to 2 lines, 30 characters each. Press Enter for a new line."
         )
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = details.mobileNumber,
             onValueChange = onMobileNumberChanged,
+            maxLength = InvitationDetails.MOBILE_MAX_LENGTH,
             label = { Text("Mobile number for queries") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             placeholder = { Text("+91 98765 43210") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone
-            ),
-            supportingText = {
-                Text(text = "Guests can call this number for location help or questions.")
-            }
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            helperText = "Optional. Shown on the card when filled."
         )
         InviteMessageSection(
             message = details.message,
@@ -552,7 +546,7 @@ private fun InviteMessageSection(
             }
         )
 
-        OutlinedTextField(
+        LimitedOutlinedTextField(
             value = message,
             onValueChange = { updatedMessage ->
                 if (selectedQuickMessage?.text != updatedMessage) {
@@ -560,20 +554,24 @@ private fun InviteMessageSection(
                 }
                 onMessageChanged(updatedMessage)
             },
+            maxLength = InvitationFieldLimits.MESSAGE_MAX_LENGTH,
+            lengthOf = { it.replace("\n", "").length },
             label = { Text("Message to guests") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            maxLines = 6,
+            singleLine = false,
+            minLines = 2,
+            maxLines = 3,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text
             ),
-            supportingText = {
-                Text(text = "This message appears on the generated invitation image. Emojis and Tamil text are supported.")
-            }
+            helperText = "Up to 2 lines on the card (30 characters each). Placed below venue so it won't overlap other text."
         )
 
-        ImageSafeMessageCounter(characterCount = message.length)
+        ImageSafeMessageCounter(
+            characterCount = message.replace("\n", "").length,
+            maxLength = InvitationFieldLimits.MESSAGE_MAX_LENGTH
+        )
         InviteMessagePreview(message = message)
     }
 }
@@ -631,20 +629,88 @@ private fun MessageToneFilters(
 }
 
 @Composable
+private fun LimitedOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    maxLength: Int,
+    modifier: Modifier = Modifier,
+    label: @Composable () -> Unit,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    maxLines: Int = 1,
+    placeholder: @Composable (() -> Unit)? = null,
+    helperText: String? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    lengthOf: (String) -> Int = { it.length }
+) {
+    var lengthError by remember { mutableStateOf<String?>(null) }
+    val isError = lengthError != null
+    val currentLength = lengthOf(value)
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = { newValue ->
+            if (lengthOf(newValue) <= maxLength) {
+                lengthError = null
+                onValueChange(newValue)
+            } else {
+                lengthError = "Maximum $maxLength characters allowed"
+            }
+        },
+        modifier = modifier,
+        label = label,
+        singleLine = singleLine,
+        minLines = minLines,
+        maxLines = maxLines,
+        placeholder = placeholder,
+        isError = isError,
+        keyboardOptions = keyboardOptions,
+        supportingText = {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                lengthError?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                helperText?.let { helper ->
+                    Text(
+                        text = helper,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Text(
+                    text = "$currentLength/$maxLength",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (isError) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    )
+}
+
+@Composable
 private fun ImageSafeMessageCounter(
     characterCount: Int,
-    recommendedMax: Int = 140
+    maxLength: Int
 ) {
-    val isLong = characterCount > recommendedMax
-    val counterColor = if (isLong) {
+    val isAtLimit = characterCount >= maxLength
+    val counterColor = if (isAtLimit) {
         MaterialTheme.colorScheme.error
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant
     }
-    val guidance = if (isLong) {
-        "Long messages may wrap too much on the invitation image."
+    val guidance = if (isAtLimit) {
+        "At card limit — extra text may be shortened on the image."
     } else {
-        "Good length for a clean invitation image."
+        "Fits the invitation card layout."
     }
 
     Row(
@@ -658,7 +724,7 @@ private fun ImageSafeMessageCounter(
             color = counterColor
         )
         Text(
-            text = "$characterCount/$recommendedMax",
+            text = "$characterCount/$maxLength",
             style = MaterialTheme.typography.labelMedium,
             color = counterColor,
             fontWeight = FontWeight.Bold

@@ -8,4 +8,19 @@ data class InvitationDetails(
     val venue: String = "",
     val mobileNumber: String = "",
     val message: String = ""
-)
+) {
+    companion object {
+        const val VENUE_MAX_LINES = InvitationFieldLimits.VENUE_MAX_LINES
+        const val VENUE_MAX_CHARS_PER_LINE = InvitationFieldLimits.VENUE_MAX_CHARS_PER_LINE
+
+        const val OCCASION_MAX_LENGTH = InvitationFieldLimits.OCCASION_MAX_LENGTH
+        const val NAME_MAX_LENGTH = InvitationFieldLimits.NAME_MAX_LENGTH
+        const val DATE_MAX_LENGTH = InvitationFieldLimits.DATE_MAX_LENGTH
+        const val TIME_MAX_LENGTH = InvitationFieldLimits.TIME_MAX_LENGTH
+        const val VENUE_MAX_LENGTH = InvitationFieldLimits.VENUE_MAX_LENGTH
+        const val MOBILE_MAX_LENGTH = InvitationFieldLimits.MOBILE_MAX_LENGTH
+        const val MESSAGE_MAX_LENGTH = InvitationFieldLimits.MESSAGE_MAX_LENGTH
+        const val MESSAGE_MAX_LINES_ON_CARD = InvitationFieldLimits.MESSAGE_MAX_LINES_ON_CARD
+        const val MESSAGE_MAX_CHARS_PER_LINE = InvitationFieldLimits.MESSAGE_MAX_CHARS_PER_LINE
+    }
+}
