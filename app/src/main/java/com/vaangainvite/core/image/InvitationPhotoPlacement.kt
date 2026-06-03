@@ -97,14 +97,10 @@ internal object InvitationPhotoPlacement {
 
         // Naming — masks tuned to refreshed artwork set
         "naming_01" to Spec(RectF(384f, 162f, 696f, 476f), Mask.MEDALLION_CIRCLE),
-        "naming_02" to Spec(RectF(320f, 148f, 760f, 438f), Mask.LANDSCAPE_OVAL),
-        "naming_03" to Spec(RectF(348f, 138f, 732f, 468f), Mask.CEREMONY_ARCH),
-        "naming_04" to Spec(
-            bounds = RectF(372f, 152f, 708f, 488f),
-            mask = Mask.PORTRAIT_OVAL,
-            border = Border.INNER_GLOW
-        ),
-        "naming_05" to Spec(RectF(382f, 155f, 698f, 471f), Mask.MEDALLION_CIRCLE),
+        "naming_02" to Spec(RectF(378f, 158f, 702f, 478f), Mask.MEDALLION_CIRCLE),
+        "naming_03" to Spec(RectF(342f, 142f, 738f, 472f), Mask.CEREMONY_ARCH),
+        "naming_04" to Spec(RectF(388f, 168f, 692f, 472f), Mask.MEDALLION_CIRCLE),
+        "naming_05" to Spec(RectF(392f, 172f, 688f, 468f), Mask.MEDALLION_CIRCLE),
 
         // Baby shower — circles inside top rings / scallops
         "babyshower_01" to Spec(RectF(384f, 162f, 696f, 474f), Mask.MEDALLION_CIRCLE),

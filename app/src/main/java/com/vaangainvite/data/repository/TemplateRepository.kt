@@ -825,35 +825,34 @@ InvitationTemplate(
         photoTemplate(
             id = "naming_02",
             categoryId = "naming",
-            title = "Gentle Elephant",
-            description = "Watercolor elephant, soft pastels, scalloped photo.",
+            title = "Gopuram Blessing",
+            description = "Tamil temple gopuram, bells, kolam — Kovil style.",
             resId = R.drawable.bg_naming_02,
-            primaryColor = 0xFF8D6E63.toInt()
+            primaryColor = 0xFFE65100.toInt()
         ),
         photoTemplate(
             id = "naming_03",
             categoryId = "naming",
-            title = "Sacred Earth",
-            description = "Sandalwood tones, rice border, diya and kumkum.",
+            title = "Temple Mandapam",
+            description = "Stone pillars, vilakku lamps, marigold toran.",
             resId = R.drawable.bg_naming_03,
-            primaryColor = 0xFF795548.toInt()
+            primaryColor = 0xFF6D4C41.toInt()
         ),
         photoTemplate(
             id = "naming_04",
             categoryId = "naming",
-            title = "Indigo Night",
-            description = "Silver paisley on indigo — elegant evening card.",
+            title = "Pastel Sky",
+            description = "Light blue and lavender clouds — soft and airy.",
             resId = R.drawable.bg_naming_04,
-            primaryColor = 0xFF1A237E.toInt(),
-            usesLightText = true
+            primaryColor = 0xFF5C6BC0.toInt()
         ),
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Marigold Kolam",
-            description = "Marigold toran, mango leaves, kolam floor, brass diyas.",
+            title = "Mint Blossom",
+            description = "Mint and blush pastels with jasmine corners.",
             resId = R.drawable.bg_naming_05,
-            primaryColor = 0xFFEF6C00.toInt()
+            primaryColor = 0xFF66BB6A.toInt()
         ),
 
         photoTemplate(

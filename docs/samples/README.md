@@ -1,11 +1,16 @@
-# Naming ceremony template previews (refreshed set)
+# Naming ceremony templates
 
-| ID | Title | File |
-|----|-------|------|
-| `naming_01` | Heritage Silk | `naming_01_sample.png` |
-| `naming_02` | Gentle Elephant | `naming_02_sample.png` |
-| `naming_03` | Sacred Earth | `naming_03_sample.png` |
-| `naming_04` | Indigo Night | `naming_04_sample.png` |
-| `naming_05` | Marigold Kolam | `naming_05_sample.png` |
+| ID | Title | Style |
+|----|-------|--------|
+| `naming_01` | Heritage Silk | **Kept** — red & gold heritage (user approved) |
+| `naming_02` | Gopuram Blessing | Tamil temple — gopuram, bells, kolam |
+| `naming_03` | Temple Mandapam | Tamil temple — pillars, vilakku, toran |
+| `naming_04` | Pastel Sky | Light pastel — blue/lavender clouds |
+| `naming_05` | Mint Blossom | Light pastel — mint, blush, jasmine |
 
-Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.NamingCeremonyPreviewExportTest"` then rename `naming_XX.png` → `naming_XX_sample.png`.
+Regenerate all previews:
+
+```bash
+PREVIEW_OUTPUT_DIR=docs/samples ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.NamingCeremonyPreviewExportTest"
+for i in 1 2 3 4 5; do mv -f docs/samples/naming_0${i}.png docs/samples/naming_0${i}_sample.png; done
+```

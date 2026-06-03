@@ -90,40 +90,40 @@ internal object InvitationLayout {
             photoTextGap = 12f
         ),
         "naming_02" to TextZoneSpec(
-            left = 220f,
-            right = 860f,
-            topNoPhoto = 448f,
-            topWithPhoto = 468f,
-            bottom = 1250f,
-            messageBottom = 1195f,
-            photoTextGap = 14f
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 495f,
+            topWithPhoto = 512f,
+            bottom = 1230f,
+            messageBottom = 1175f,
+            photoTextGap = 12f
         ),
         "naming_03" to TextZoneSpec(
             left = 200f,
             right = 880f,
-            topNoPhoto = 478f,
-            topWithPhoto = 502f,
-            bottom = 1210f,
-            messageBottom = 1155f,
+            topNoPhoto = 485f,
+            topWithPhoto = 508f,
+            bottom = 1215f,
+            messageBottom = 1160f,
             topInset = 6f
         ),
         "naming_04" to TextZoneSpec(
-            left = 220f,
-            right = 860f,
-            topNoPhoto = 502f,
-            topWithPhoto = 522f,
-            bottom = 1240f,
-            messageBottom = 1185f,
-            photoTextGap = 10f
+            left = 230f,
+            right = 850f,
+            topNoPhoto = 478f,
+            topWithPhoto = 500f,
+            bottom = 1260f,
+            messageBottom = 1210f,
+            photoTextGap = 14f
         ),
         "naming_05" to TextZoneSpec(
-            left = 210f,
-            right = 870f,
-            topNoPhoto = 488f,
-            topWithPhoto = 512f,
-            bottom = 1220f,
-            messageBottom = 1165f,
-            photoTextGap = 12f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 468f,
+            topWithPhoto = 492f,
+            bottom = 1265f,
+            messageBottom = 1215f,
+            photoTextGap = 14f
         ),
     )
 
