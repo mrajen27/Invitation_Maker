@@ -37,7 +37,7 @@ class TemplateRepository {
         InvitationCategory(
             id = "engagement",
             title = "Engagement",
-            description = "Five printable arch-top cards for your nischayadartha.",
+            description = "Five new designs — 3 traditional temple cards and 2 modern styles.",
             accentColor = 0xFFC2185B.toInt(),
             iconResId = R.drawable.ic_category_engagement
         )
@@ -214,47 +214,47 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement
+        // Engagement — 3 traditional + 2 modern (original designs)
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Banana Leaf Toran",
-            description = "Green toran, kalash, vilakku — arch photo on top.",
+            title = "Gopuram Gold",
+            description = "Maroon temple frame, marigold toran, kolam & kalash.",
             resId = R.drawable.bg_engagement_01,
-            primaryColor = 0xFF2E7D32.toInt()
+            primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Royale",
-            description = "Maroon marigolds, banana grove, auspicious kalash.",
+            title = "Jasmine Mandapam",
+            description = "Banana-leaf border, jasmine garlands, vilakku row.",
             resId = R.drawable.bg_engagement_02,
-            primaryColor = 0xFFB71C1C.toInt()
+            primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Cream Kolam Glow",
-            description = "Cream arch, bells, vilakku row, golden kalash.",
+            title = "Saffron Kolam",
+            description = "Saffron glow, temple bells, white kolam blessing.",
             resId = R.drawable.bg_engagement_03,
-            primaryColor = 0xFF8D6E63.toInt()
+            primaryColor = 0xFFE65100.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Teal Lantern Night",
-            description = "Teal & gold lanterns — romantic evening card.",
+            title = "Blush Minimal",
+            description = "Soft blush card, gold frame — roomy text band.",
             resId = R.drawable.bg_engagement_04,
-            primaryColor = 0xFFFFB74D.toInt(),
-            usesLightText = true
+            primaryColor = 0xFFC2185B.toInt()
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Rose Gold Vows",
-            description = "Rose-gold arch, rings, diyas — premium look.",
+            title = "Midnight Deco",
+            description = "Navy art-deco gold lines — evening modern look.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFFC2185B.toInt()
+            primaryColor = 0xFFFFD54F.toInt(),
+            usesLightText = true
         )
     )
 

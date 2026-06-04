@@ -25,14 +25,17 @@ internal object EngagementPhotoPlacement {
     )
 
     private val specs = mapOf(
-        "engagement_01" to Spec(RectF(298f, 118f, 782f, 450f)),
-        "engagement_02" to Spec(RectF(294f, 112f, 786f, 454f)),
-        "engagement_03" to Spec(RectF(302f, 120f, 778f, 448f)),
+        "engagement_01" to Spec(RectF(292f, 118f, 788f, 442f)),
+        "engagement_02" to Spec(RectF(290f, 115f, 790f, 440f)),
+        "engagement_03" to Spec(RectF(294f, 118f, 786f, 442f)),
         "engagement_04" to Spec(
-            bounds = RectF(300f, 115f, 780f, 452f),
+            bounds = RectF(296f, 112f, 784f, 438f),
             border = Border.INNER_GLOW
         ),
-        "engagement_05" to Spec(RectF(296f, 118f, 784f, 450f))
+        "engagement_05" to Spec(
+            bounds = RectF(294f, 110f, 786f, 436f),
+            border = Border.INNER_GLOW
+        )
     )
 
     fun specFor(templateId: String): Spec {

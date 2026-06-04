@@ -80,12 +80,13 @@ internal object InvitationLayout {
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
-        // Engagement — arch ~y118–454; cream band; kalash/lamps rise into band from ~y900
+        // Traditional — décor strip from ~y940; keep text above y920
         "engagement_01" to engagementTextZone(),
         "engagement_02" to engagementTextZone(),
         "engagement_03" to engagementTextZone(),
-        "engagement_04" to engagementTextZone(),
-        "engagement_05" to engagementTextZone()
+        // Modern — minimal bottom art, taller text band
+        "engagement_04" to engagementModernTextZone(),
+        "engagement_05" to engagementModernTextZone(bottom = 980f, messageBottom = 930f)
     )
 
     private fun engagementTextZone() = TextZoneSpec(
@@ -97,6 +98,20 @@ internal object InvitationLayout {
         messageBottom = 870f,
         topInset = 4f,
         photoTextGap = 18f
+    )
+
+    private fun engagementModernTextZone(
+        bottom: Float = 1010f,
+        messageBottom: Float = 960f
+    ) = TextZoneSpec(
+        left = 215f,
+        right = 865f,
+        topNoPhoto = 498f,
+        topWithPhoto = 508f,
+        bottom = bottom,
+        messageBottom = messageBottom,
+        topInset = 4f,
+        photoTextGap = 16f
     )
 
     private val templatePhotoFrames = mapOf(

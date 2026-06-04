@@ -1,16 +1,21 @@
-# Engagement template samples
+# Engagement template samples (new designs)
 
-Generated with the same pipeline as the app (`InvitationImageGenerator`), at **1080×1350**.
+Five **original** engagement backgrounds — **3 traditional** + **2 modern** — not reused from housewarming or other categories.
 
-| File | Description |
-|------|-------------|
-| `engagement_01_with_photo.png` … `engagement_05_with_photo.png` | Full card: portrait in **top arch**, all fields + message in **cream band below** |
+| ID | Style | Title |
+|----|--------|--------|
+| engagement_01 | Traditional | Gopuram Gold |
+| engagement_02 | Traditional | Jasmine Mandapam |
+| engagement_03 | Traditional | Saffron Kolam |
+| engagement_04 | Modern | Blush Minimal |
+| engagement_05 | Modern | Midnight Deco |
 
-Sample copy used:
+Files `engagement_XX_with_photo.png` are generated at 1080×1350 with a sample portrait in the top arch and full event text below.
 
-- **Occasion:** Engagement Ceremony  
-- **Names:** Arjun & Divya  
-- **Date / time / venue / phone:** typical filled card  
-- **Message:** Together we begin our forever — please join us.
+Regenerate:
 
-Text safe area ends at **y≈920** so copy stays above kalash/lamps artwork that rises into the cream band. With a photo, venue is limited to **one line** so date/time/venue/message fit.
+```bash
+python3 tools/generate_engagement_backgrounds.py
+python3 tools/convert_photo_backgrounds.py
+PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.EngagementSampleExportTest"
+```
