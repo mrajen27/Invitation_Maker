@@ -611,7 +611,6 @@ private fun EditorFields(
             lengthOf = { it.replace("\n", "").length },
             helperText = selectedLanguage.editorVenueHelper.format(
                 InvitationDetails.VENUE_MAX_LINES,
-                InvitationDetails.VENUE_MAX_CHARS_PER_LINE,
                 InvitationDetails.VENUE_MAX_LENGTH
             )
         )
@@ -681,7 +680,6 @@ private fun InviteMessageSection(
                 Text(
                     text = selectedLanguage.editorPhotoWithMessageHint.format(
                         InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                        InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
                         maxMessageChars
                     ),
                     modifier = Modifier.padding(12.dp),
@@ -731,13 +729,11 @@ private fun InviteMessageSection(
             helperText = if (hasUploadedPhoto) {
                 selectedLanguage.editorMessageHelperWithPhoto.format(
                     InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                    InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
                     maxMessageChars
                 )
             } else {
                 selectedLanguage.editorMessageHelperNoPhoto.format(
                     InvitationDetails.MESSAGE_MAX_LINES_ON_CARD,
-                    InvitationDetails.MESSAGE_MAX_CHARS_PER_LINE,
                     maxMessageChars
                 )
             }
