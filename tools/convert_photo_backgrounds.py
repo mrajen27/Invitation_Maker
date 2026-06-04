@@ -28,6 +28,25 @@ def crop_center_cover(im: Image.Image, target_ratio: float) -> Image.Image:
     return im.crop((0, top, w, top + new_h))
 
 
+def fit_portrait_card(im: Image.Image) -> Image.Image:
+    """Scale then center-crop to 1080×1350 without squashing wide designed art."""
+    w, h = im.size
+    target_ratio = TARGET_W / TARGET_H
+    current = w / h
+    if current > target_ratio:
+        scale = TARGET_H / h
+        new_w = max(TARGET_W, int(w * scale))
+        new_h = TARGET_H
+    else:
+        scale = TARGET_W / w
+        new_w = TARGET_W
+        new_h = max(TARGET_H, int(h * scale))
+    im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    left = max(0, (new_w - TARGET_W) // 2)
+    top = max(0, (new_h - TARGET_H) // 2)
+    return im.crop((left, top, left + TARGET_W, top + TARGET_H))
+
+
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
     """Pick a neutral fill from the panel beside the arch (avoids gold frame pixels)."""
     x, y = im.width // 2, int(im.height * 0.36)
@@ -47,8 +66,7 @@ def clear_placeholder_text(im: Image.Image) -> Image.Image:
 
 def convert_one(source: Path, dest: Path, quality: int, strip_text: bool) -> None:
     im = Image.open(source).convert("RGB")
-    im = crop_center_cover(im, TARGET_RATIO)
-    im = im.resize((TARGET_W, TARGET_H), Image.Resampling.LANCZOS)
+    im = fit_portrait_card(im)
     if strip_text:
         im = clear_placeholder_text(im)
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -70,7 +88,7 @@ def main() -> int:
     for src in sorted(args.source_dir.glob(f"{args.prefix}_*_source.png")):
         stem = src.stem.replace("_source", "")
         dest = args.dest_dir / f"bg_{stem}.webp"
-        convert_one(src, dest, args.quality, strip_text=args.prefix == "engagement")
+        convert_one(src, dest, args.quality, strip_text=False)
         print(f"{src.name} -> {dest.name}")
     return 0
 

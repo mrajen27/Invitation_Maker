@@ -22,9 +22,7 @@ class EngagementSampleExportTest {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
         val generator = InvitationImageGenerator(context)
         val repo = TemplateRepository()
-        val outputDir = File(
-            System.getenv("PREVIEW_OUTPUT_DIR") ?: "docs/samples/engagement"
-        )
+        val outputDir = resolvePreviewOutputDir()
         outputDir.mkdirs()
 
         val photoUri = copySamplePhoto(context.cacheDir)
@@ -52,6 +50,19 @@ class EngagementSampleExportTest {
             }
             bitmap.recycle()
         }
+    }
+
+    private fun resolvePreviewOutputDir(): File {
+        System.getenv("PREVIEW_OUTPUT_DIR")?.let { path ->
+            val dir = File(path)
+            if (dir.isAbsolute) return dir
+            val moduleDir = File(System.getProperty("user.dir"))
+            val repoRoot = if (moduleDir.name == "app") moduleDir.parentFile!! else moduleDir
+            return File(repoRoot, path)
+        }
+        val moduleDir = File(System.getProperty("user.dir"))
+        val repoRoot = if (moduleDir.name == "app") moduleDir.parentFile!! else moduleDir
+        return File(repoRoot, "docs/samples/engagement")
     }
 
     private fun copySamplePhoto(cacheDir: File): Uri {

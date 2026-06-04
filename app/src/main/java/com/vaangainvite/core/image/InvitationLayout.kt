@@ -85,8 +85,8 @@ internal object InvitationLayout {
         "engagement_01" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 548f,
-            topWithPhoto = 568f,
+            topNoPhoto = 538f,
+            topWithPhoto = 558f,
             bottom = 1002f,
             messageBottom = 952f,
             photoTextGap = 14f
@@ -94,8 +94,8 @@ internal object InvitationLayout {
         "engagement_02" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 518f,
-            topWithPhoto = 538f,
+            topNoPhoto = 528f,
+            topWithPhoto = 548f,
             bottom = 1000f,
             messageBottom = 950f,
             photoTextGap = 14f
@@ -121,8 +121,8 @@ internal object InvitationLayout {
         "engagement_05" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 498f,
-            topWithPhoto = 518f,
+            topNoPhoto = 538f,
+            topWithPhoto = 558f,
             bottom = 1000f,
             messageBottom = 950f,
             photoTextGap = 14f
