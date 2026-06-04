@@ -80,6 +80,51 @@ internal object InvitationLayout {
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
+        "engagement_01" to TextZoneSpec(
+            left = 200f,
+            right = 880f,
+            topNoPhoto = 468f,
+            topWithPhoto = 492f,
+            bottom = 1185f,
+            messageBottom = 1135f,
+            photoTextGap = 10f
+        ),
+        "engagement_02" to TextZoneSpec(
+            left = 200f,
+            right = 880f,
+            topNoPhoto = 462f,
+            topWithPhoto = 488f,
+            bottom = 1180f,
+            messageBottom = 1130f,
+            photoTextGap = 10f
+        ),
+        "engagement_03" to TextZoneSpec(
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 458f,
+            topWithPhoto = 482f,
+            bottom = 1190f,
+            messageBottom = 1140f,
+            photoTextGap = 8f
+        ),
+        "engagement_04" to TextZoneSpec(
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 465f,
+            topWithPhoto = 490f,
+            bottom = 1185f,
+            messageBottom = 1135f,
+            photoTextGap = 10f
+        ),
+        "engagement_05" to TextZoneSpec(
+            left = 205f,
+            right = 875f,
+            topNoPhoto = 460f,
+            topWithPhoto = 486f,
+            bottom = 1180f,
+            messageBottom = 1130f,
+            photoTextGap = 10f
+        ),
         "naming_01" to TextZoneSpec(
             left = 210f,
             right = 870f,

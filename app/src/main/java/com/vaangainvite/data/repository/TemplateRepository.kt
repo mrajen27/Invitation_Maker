@@ -775,43 +775,43 @@ InvitationTemplate(
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Pink Floral Gold",
-            description = "Blush roses and gold oval frame — classic engagement look.",
+            title = "Banana Leaf Toran",
+            description = "Green toran, kalash, lamps — arch photo like grihapravesam.",
             resId = R.drawable.bg_engagement_01,
-            primaryColor = 0xFFC2185B.toInt()
+            primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Garden Florals",
-            description = "Sage green botanical border with cream panel.",
+            title = "Marigold Royale",
+            description = "Maroon marigolds, banana grove, kalash & kolam.",
             resId = R.drawable.bg_engagement_02,
-            primaryColor = 0xFF388E3C.toInt()
+            primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Lantern Evening",
-            description = "Teal night sky with gold lanterns and florals.",
+            title = "Cream Kolam Glow",
+            description = "Soft cream arch, vilakku row, golden kalash.",
             resId = R.drawable.bg_engagement_03,
-            primaryColor = 0xFFFFB74D.toInt(),
-            usesLightText = true
+            primaryColor = 0xFF8D6E63.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Lavender Bloom",
-            description = "Soft lilac watercolor florals and gold trim.",
+            title = "Teal Lantern Night",
+            description = "Teal & gold lanterns — romantic evening card.",
             resId = R.drawable.bg_engagement_04,
-            primaryColor = 0xFF8E24AA.toInt()
+            primaryColor = 0xFFFFB74D.toInt(),
+            usesLightText = true
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Garden Lanterns",
-            description = "Greenery, white roses, and hanging lantern accents.",
+            title = "Rose Gold Vows",
+            description = "Rose-gold arch, rings, diyas — premium engagement.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFFF57F17.toInt()
+            primaryColor = 0xFFC2185B.toInt()
         ),
 
         photoTemplate(

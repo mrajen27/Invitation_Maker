@@ -85,15 +85,16 @@ internal object InvitationPhotoPlacement {
 
     private val templateSpecs = mapOf(
         // Engagement — tall portrait medallions inside gold ovals
-        "engagement_01" to Spec(RectF(412f, 172f, 668f, 512f), Mask.PORTRAIT_OVAL),
-        "engagement_02" to Spec(RectF(418f, 185f, 662f, 505f), Mask.PORTRAIT_OVAL),
-        "engagement_03" to Spec(
-            bounds = RectF(420f, 168f, 660f, 498f),
-            mask = Mask.PORTRAIT_OVAL,
+        // Engagement — top arch photo slot (housewarming-style printable cards)
+        "engagement_01" to Spec(RectF(312f, 128f, 768f, 448f), Mask.CEREMONY_ARCH),
+        "engagement_02" to Spec(RectF(308f, 122f, 772f, 452f), Mask.CEREMONY_ARCH),
+        "engagement_03" to Spec(RectF(318f, 135f, 762f, 445f), Mask.CEREMONY_ARCH),
+        "engagement_04" to Spec(
+            bounds = RectF(322f, 130f, 758f, 450f),
+            mask = Mask.CEREMONY_ARCH,
             border = Border.INNER_GLOW
         ),
-        "engagement_04" to Spec(RectF(400f, 175f, 680f, 520f), Mask.HEX_MEDALLION),
-        "engagement_05" to Spec(RectF(408f, 188f, 672f, 508f), Mask.CEREMONY_ARCH),
+        "engagement_05" to Spec(RectF(315f, 125f, 765f, 448f), Mask.CEREMONY_ARCH),
 
         // Naming — masks tuned to refreshed artwork set
         "naming_01" to Spec(RectF(384f, 162f, 696f, 476f), Mask.MEDALLION_CIRCLE),
