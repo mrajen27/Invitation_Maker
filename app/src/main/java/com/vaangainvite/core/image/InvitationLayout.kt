@@ -109,7 +109,12 @@ internal object InvitationLayout {
             bottom = 1095f,
             messageBottom = 1055f,
             photoTextGap = 18f
-        )
+        ),
+        "babyshower_01" to photoCardTextZone,
+        "babyshower_02" to photoCardTextZone,
+        "babyshower_03" to photoCardTextZone,
+        "babyshower_04" to photoCardTextZone,
+        "babyshower_05" to photoCardTextZone
     )
 
     private val templatePhotoFrames = mapOf(

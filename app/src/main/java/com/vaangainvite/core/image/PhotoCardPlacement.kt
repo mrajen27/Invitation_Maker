@@ -21,13 +21,19 @@ internal object PhotoCardPlacement {
     private val traditionalPhoto = RectF(248f, 375f, 830f, 555f)
 
     private val templateIds = (1..5).flatMap { i ->
-        listOf("engagement_%02d".format(i), "naming_%02d".format(i))
+        listOf(
+            "engagement_%02d".format(i),
+            "naming_%02d".format(i),
+            "babyshower_%02d".format(i)
+        )
     }
 
     private val specs = templateIds.associateWith { Spec(bounds = traditionalPhoto) }
 
     fun isPhotoCardTemplate(templateId: String): Boolean =
-        templateId.startsWith("engagement_") || templateId.startsWith("naming_")
+        templateId.startsWith("engagement_") ||
+            templateId.startsWith("naming_") ||
+            templateId.startsWith("babyshower_")
 
     fun specFor(templateId: String): Spec {
         return specs[templateId] ?: Spec(bounds = traditionalPhoto)

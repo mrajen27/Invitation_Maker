@@ -116,6 +116,7 @@ private val QuickInviteMessages = listOf(
     QuickInviteMessage("en_puberty", "🌸 Your blessings and presence will make this ceremony special", InvitationLanguage.ENGLISH, "puberty", QuickMessageTone.BLESSING),
     QuickInviteMessage("en_engagement", "💍 Together we begin our forever — please join us", InvitationLanguage.ENGLISH, "engagement", QuickMessageTone.BLESSING),
     QuickInviteMessage("en_naming", "👶 Bless our little one at the naming ceremony", InvitationLanguage.ENGLISH, "naming", QuickMessageTone.BLESSING),
+    QuickInviteMessage("en_babyshower", "🎀 Join us to shower love on mom-to-be and baby", InvitationLanguage.ENGLISH, "babyshower", QuickMessageTone.BLESSING),
     QuickInviteMessage("ta_join", "🙏 தயவு செய்து கலந்து கொள்ளுங்கள்", InvitationLanguage.TAMIL, null, QuickMessageTone.FORMAL),
     QuickInviteMessage("ta_presence", "❤️ உங்கள் வருகை எங்களுக்கு மகிழ்ச்சி தரும்", InvitationLanguage.TAMIL, null, QuickMessageTone.BLESSING),
     QuickInviteMessage("ta_celebrate", "😊 ஒன்றாக கொண்டாட ஆவலுடன் காத்திருக்கிறோம்", InvitationLanguage.TAMIL, null, QuickMessageTone.CASUAL),
@@ -125,7 +126,8 @@ private val QuickInviteMessages = listOf(
     QuickInviteMessage("ta_housewarming", "🏡 புதுமனை புகுவிழாவில் கலந்து கொண்டு ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "housewarming", QuickMessageTone.FORMAL),
     QuickInviteMessage("ta_puberty", "🌸 இவ்விழாவில் உங்கள் வருகையும் ஆசீர்வாதமும் வேண்டுகிறோம்", InvitationLanguage.TAMIL, "puberty", QuickMessageTone.BLESSING),
     QuickInviteMessage("ta_engagement", "💍 எங்கள் நிச்சயதார்த்த விழாவில் கலந்து சிறப்பிக்கவும்", InvitationLanguage.TAMIL, "engagement", QuickMessageTone.FORMAL),
-    QuickInviteMessage("ta_naming", "👶 பெயர் சூட்டும் விழாவில் கலந்து ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "naming", QuickMessageTone.BLESSING)
+    QuickInviteMessage("ta_naming", "👶 பெயர் சூட்டும் விழாவில் கலந்து ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "naming", QuickMessageTone.BLESSING),
+    QuickInviteMessage("ta_babyshower", "🎀 எங்கள் சீமந்த விழாவில் கலந்து ஆசீர்வதிக்கவும்", InvitationLanguage.TAMIL, "babyshower", QuickMessageTone.BLESSING)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

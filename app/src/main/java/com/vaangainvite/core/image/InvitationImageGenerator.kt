@@ -565,6 +565,7 @@ class InvitationImageGenerator(private val context: Context) {
                 template.id.startsWith("puberty") -> "Puberty Ceremony"
                 template.id.startsWith("engagement") -> "Engagement Ceremony"
                 template.id.startsWith("naming") -> "Naming Ceremony"
+                template.id.startsWith("babyshower") -> "Baby Shower"
                 else -> "Birthday Celebration"
             }
             InvitationLanguage.TAMIL -> when {
@@ -573,6 +574,7 @@ class InvitationImageGenerator(private val context: Context) {
                 template.id.startsWith("puberty") -> "பருவ விழா"
                 template.id.startsWith("engagement") -> "நிச்சயதார்த்த விழா"
                 template.id.startsWith("naming") -> "பெயர் சூட்டும் விழா"
+                template.id.startsWith("babyshower") -> "சீமந்த விழா"
                 else -> "பிறந்தநாள் விழா"
             }
         }

@@ -47,6 +47,13 @@ class TemplateRepository {
             description = "Five traditional namakaran photo-card invites for your little one.",
             accentColor = 0xFF6A1B9A.toInt(),
             iconResId = R.drawable.ic_category_naming
+        ),
+        InvitationCategory(
+            id = "babyshower",
+            title = "Baby Shower",
+            description = "Five pastel photo-card invites to celebrate the mom-to-be.",
+            accentColor = 0xFFEC407A.toInt(),
+            iconResId = R.drawable.ic_category_babyshower
         )
     )
 
@@ -303,6 +310,48 @@ class TemplateRepository {
             description = "Sacred green — tulsi toran, kalash & golden footprints.",
             resId = R.drawable.bg_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
+        ),
+
+        // Baby shower — designed WebP photo cards (same layout as engagement / naming)
+        photoTemplate(
+            id = "babyshower_01",
+            categoryId = "babyshower",
+            title = "Pink Cloud Blessing",
+            description = "Blush pink — jasmine toran, cradle & soft balloons.",
+            resId = R.drawable.bg_babyshower_01,
+            primaryColor = 0xFFE91E8C.toInt()
+        ),
+        photoTemplate(
+            id = "babyshower_02",
+            categoryId = "babyshower",
+            title = "Blue Balloon Dream",
+            description = "Sky blue & gold — marigold garland and party balloons.",
+            resId = R.drawable.bg_babyshower_02,
+            primaryColor = 0xFF1976D2.toInt()
+        ),
+        photoTemplate(
+            id = "babyshower_03",
+            categoryId = "babyshower",
+            title = "Sunshine Marigold",
+            description = "Warm yellow — mango leaves, kalash & golden stars.",
+            resId = R.drawable.bg_babyshower_03,
+            primaryColor = 0xFFF9A825.toInt()
+        ),
+        photoTemplate(
+            id = "babyshower_04",
+            categoryId = "babyshower",
+            title = "Lavender Moon Stars",
+            description = "Lavender celestial — moon garland, lotus & twinkle stars.",
+            resId = R.drawable.bg_babyshower_04,
+            primaryColor = 0xFF7E57C2.toInt()
+        ),
+        photoTemplate(
+            id = "babyshower_05",
+            categoryId = "babyshower",
+            title = "Rose Garden Party",
+            description = "Rose & mint — temple roses, marigold top & mint balloons.",
+            resId = R.drawable.bg_babyshower_05,
+            primaryColor = 0xFF43A047.toInt()
         )
     )
 
