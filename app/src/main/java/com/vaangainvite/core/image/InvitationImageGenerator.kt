@@ -221,7 +221,7 @@ class InvitationImageGenerator(private val context: Context) {
         val hasUserMessage = userMessage.isNotBlank()
         val isPeacockVase = template.id == "wedding_05"
         val isEngagement = template.id.startsWith("engagement")
-        val isTightEngagementCard = template.id == "engagement_01" || template.id == "engagement_04"
+        val isTightEngagementCard = template.id.startsWith("engagement")
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
         val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase ||
             (isEngagement && hasUploadedPhoto)

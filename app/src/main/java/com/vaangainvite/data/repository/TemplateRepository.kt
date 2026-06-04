@@ -214,44 +214,44 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement — photo-card WebP (arch photo + text band; same pipeline for all five)
+        // Engagement — five photo shapes: circle, oval, arch, hex, rounded rect
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Temple Jasmine Arch",
-            description = "Wide cream text band — toran arch, edge diyas only.",
+            title = "Gold Ring Medallion",
+            description = "Traditional — circular gold ring photo, cream text below.",
             resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Heritage",
-            description = "Maroon marigold toran, temple bells & thali.",
+            title = "Marigold Oval Frame",
+            description = "Traditional — portrait oval photo, marigold toran.",
             resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Peacock Lotus Garden",
-            description = "Floral vines, peacock, kalash & lotus.",
+            title = "Peacock Temple Arch",
+            description = "Traditional — scalloped arch photo, peacock & lotus.",
             resId = R.drawable.bg_engagement_03,
             primaryColor = 0xFFAD1457.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Pink Lights Minimal",
-            description = "Open pink panel for text — lights top, roses bottom corners.",
+            title = "Rose Hex Modern",
+            description = "Modern — hexagon gold frame photo, blush roses.",
             resId = R.drawable.bg_engagement_04,
             primaryColor = 0xFFC2185B.toInt()
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Sage Garden Glow",
-            description = "Sage botanical, bulbs, candle & gold lantern.",
+            title = "Sage Soft Frame",
+            description = "Modern — rounded rectangle photo, botanical lights.",
             resId = R.drawable.bg_engagement_05,
             primaryColor = 0xFF558B2F.toInt()
         )

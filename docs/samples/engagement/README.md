@@ -1,22 +1,11 @@
-# Engagement samples
+# Engagement samples — five photo shapes
 
-Five **new** illustrated WebP templates using the **same photo-card implementation**:
+| ID | Title | Photo pattern |
+|----|--------|----------------|
+| engagement_01 | Gold Ring Medallion | **Circle** |
+| engagement_02 | Marigold Oval Frame | **Portrait oval** |
+| engagement_03 | Peacock Temple Arch | **Scalloped arch** |
+| engagement_04 | Rose Hex Modern | **Hexagon** |
+| engagement_05 | Sage Soft Frame | **Rounded rectangle** |
 
-- `photoTemplate` + `bg_engagement_XX.webp`
-- `EngagementPhotoPlacement` (arch mask)
-- `InvitationLayout` (per-template text band)
-
-| ID | Title |
-|----|--------|
-| engagement_01 | Green Toran Blessing |
-| engagement_02 | Marigold Heritage |
-| engagement_03 | Peacock Lotus Garden |
-| engagement_04 | Pink Lights Minimal |
-| engagement_05 | Sage Garden Glow |
-
-Replace art: add PNGs under `tools/bg_sources/engagement_XX_source.png`, then:
-
-```bash
-python3 tools/convert_photo_backgrounds.py
-PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"
-```
+Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`

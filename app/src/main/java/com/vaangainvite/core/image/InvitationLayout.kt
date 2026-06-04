@@ -81,50 +81,51 @@ internal object InvitationLayout {
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
         // Engagement WebPs — per-card cream band (measured on designed 1080×1350 art)
+        // Photo shapes differ per card — text starts below each mask
         "engagement_01" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 458f,
-            topWithPhoto = 478f,
+            topNoPhoto = 548f,
+            topWithPhoto = 568f,
             bottom = 1002f,
             messageBottom = 952f,
             photoTextGap = 14f
         ),
         "engagement_02" to TextZoneSpec(
-            left = 200f,
-            right = 880f,
-            topNoPhoto = 462f,
-            topWithPhoto = 488f,
-            bottom = 1080f,
-            messageBottom = 1030f,
-            photoTextGap = 10f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 518f,
+            topWithPhoto = 538f,
+            bottom = 1000f,
+            messageBottom = 950f,
+            photoTextGap = 14f
         ),
         "engagement_03" to TextZoneSpec(
-            left = 210f,
-            right = 870f,
-            topNoPhoto = 458f,
-            topWithPhoto = 482f,
-            bottom = 1090f,
-            messageBottom = 1040f,
-            photoTextGap = 8f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 448f,
+            topWithPhoto = 468f,
+            bottom = 1002f,
+            messageBottom = 952f,
+            photoTextGap = 12f
         ),
         "engagement_04" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 452f,
-            topWithPhoto = 472f,
+            topNoPhoto = 498f,
+            topWithPhoto = 518f,
             bottom = 998f,
             messageBottom = 948f,
             photoTextGap = 14f
         ),
         "engagement_05" to TextZoneSpec(
-            left = 205f,
-            right = 875f,
-            topNoPhoto = 460f,
-            topWithPhoto = 486f,
-            bottom = 1080f,
-            messageBottom = 1030f,
-            photoTextGap = 10f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 498f,
+            topWithPhoto = 518f,
+            bottom = 1000f,
+            messageBottom = 950f,
+            photoTextGap = 14f
         )
     )
 
