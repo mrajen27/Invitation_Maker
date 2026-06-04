@@ -589,15 +589,6 @@ class InvitationImageGenerator(private val context: Context) {
         val frame = placement.bounds
         val clipPath = EngagementPhotoPlacement.clipPath(placement)
 
-        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.argb(50, 30, 20, 40)
-            style = Paint.Style.FILL
-        }
-        canvas.save()
-        canvas.translate(0f, 8f)
-        canvas.drawPath(clipPath, shadowPaint)
-        canvas.restore()
-
         canvas.save()
         canvas.clipPath(clipPath)
         canvas.drawBitmap(
@@ -611,17 +602,7 @@ class InvitationImageGenerator(private val context: Context) {
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
         canvas.restore()
-
-        val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.STROKE
-            strokeWidth = if (placement.border == EngagementPhotoPlacement.Border.INNER_GLOW) 4f else 3f
-            color = if (placement.border == EngagementPhotoPlacement.Border.INNER_GLOW) {
-                Color.argb(130, 255, 248, 220)
-            } else {
-                Color.argb(100, 255, 252, 245)
-            }
-        }
-        canvas.drawPath(clipPath, stroke)
+        // No stroke around photo — continuous cream panel flows into text (no divider line).
         return true
     }
 

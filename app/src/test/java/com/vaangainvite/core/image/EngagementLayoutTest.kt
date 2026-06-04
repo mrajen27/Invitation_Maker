@@ -10,40 +10,36 @@ import org.robolectric.RobolectricTestRunner
 class EngagementLayoutTest {
 
     @Test
-    fun templates01And02UseTraditionalArchNotRoundMasks() {
-        val roundMasks = setOf(
-            EngagementPhotoPlacement.Mask.MEDALLION_CIRCLE,
-            EngagementPhotoPlacement.Mask.PORTRAIT_OVAL,
-            EngagementPhotoPlacement.Mask.ROUNDED_RECT
-        )
-        val first = EngagementPhotoPlacement.specFor("engagement_01").mask
-        val second = EngagementPhotoPlacement.specFor("engagement_02").mask
-        assertEquals(EngagementPhotoPlacement.Mask.CEREMONY_ARCH, first)
-        assertEquals(EngagementPhotoPlacement.Mask.CEREMONY_ARCH, second)
-        assertTrue(first !in roundMasks)
-        assertTrue(second !in roundMasks)
-    }
-
-    @Test
-    fun engagement01And02TextZoneFitsMaxLengthCopy() {
-        val minHeight = 400f
-        listOf("engagement_01", "engagement_02").forEach { id ->
-            val zone = InvitationLayout.photoTextZone(id, hasUploadedPhoto = true)
-            val startY = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
-            val available = zone.bottom - startY
-            assertTrue(
-                "$id text band height ${available}px (start=$startY, bottom=${zone.bottom})",
-                available >= minHeight
+    fun allEngagementTemplatesUseTraditionalRectPhoto() {
+        (1..5).forEach { index ->
+            val id = "engagement_%02d".format(index)
+            assertEquals(
+                EngagementPhotoPlacement.Mask.TRADITIONAL_RECT,
+                EngagementPhotoPlacement.specFor(id).mask
             )
         }
     }
 
     @Test
-    fun engagementSetUsesThreePlusMaskShapes() {
-        val masks = (1..5).map { i ->
-            EngagementPhotoPlacement.specFor("engagement_%02d".format(i)).mask
+    fun engagementTextStartsDirectlyBelowPhotoWithNoOrnamentGap() {
+        val id = "engagement_01"
+        val photoBottom = EngagementPhotoPlacement.photoBottom(id)
+        val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
+        assertTrue(textTop <= photoBottom + 30f)
+        assertTrue(textTop > photoBottom)
+    }
+
+    @Test
+    fun engagementTextZoneFitsMaxLengthCopy() {
+        val minHeight = 400f
+        listOf("engagement_01", "engagement_02").forEach { id ->
+            val zone = InvitationLayout.photoTextZone(id, hasUploadedPhoto = true)
+            val startY = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
+            assertTrue(
+                "$id text band ${zone.bottom - startY}px",
+                zone.bottom - startY >= minHeight
+            )
         }
-        assertTrue(masks.toSet().size >= 3)
     }
 
     @Test
@@ -51,11 +47,10 @@ class EngagementLayoutTest {
         (1..5).forEach { index ->
             val id = "engagement_%02d".format(index)
             val spec = EngagementPhotoPlacement.specFor(id)
-            assertTrue("$id ornament below frame", spec.ornamentBottom >= spec.bounds.bottom)
             val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
             assertTrue(
-                "$id text $textTop clears ornament ${spec.ornamentBottom}",
-                textTop > spec.ornamentBottom + 8f
+                "$id text $textTop below photo ${spec.bounds.bottom}",
+                textTop > spec.bounds.bottom + 6f
             )
         }
     }

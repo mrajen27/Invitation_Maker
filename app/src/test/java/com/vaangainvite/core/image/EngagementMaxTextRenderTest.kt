@@ -34,7 +34,7 @@ class EngagementMaxTextRenderTest {
             message = "M".repeat(InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO)
         )
 
-        listOf("engagement_01", "engagement_02").forEach { id ->
+        (1..5).map { "engagement_%02d".format(it) }.forEach { id ->
             val template = repo.templateById(id) ?: return@forEach
             val report = generator.createInvitationBitmap(
                 template = template,

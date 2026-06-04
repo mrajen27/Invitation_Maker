@@ -214,46 +214,46 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement — temple arch (01–03), hex, rounded rect
+        // Engagement — traditional borders; rectangular photo on continuous cream panel
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Gold Scallop Arch",
-            description = "Traditional — scalloped arch photo, marigold & lotus.",
+            title = "Green Toran Classic",
+            description = "Traditional — toran top, leaf sides, diyas & kalash.",
             resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Temple Arch",
-            description = "Traditional — scalloped arch photo, cream text panel below.",
+            title = "Marigold Royal",
+            description = "Traditional — marigold top, maroon sides, kalash base.",
             resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Peacock Temple Arch",
-            description = "Traditional — scalloped arch photo, peacock & lotus.",
+            title = "Peacock Lotus",
+            description = "Traditional — peacock side, lotus & kalash bottom.",
             resId = R.drawable.bg_engagement_03,
-            primaryColor = 0xFFAD1457.toInt()
+            primaryColor = 0xFF00695C.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Rose Hex Modern",
-            description = "Modern — hexagon gold frame photo, blush roses.",
+            title = "Rose Temple Border",
+            description = "Traditional — rose sides, marigold top, diya base.",
             resId = R.drawable.bg_engagement_04,
-            primaryColor = 0xFFC2185B.toInt()
+            primaryColor = 0xFFAD1457.toInt()
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Sage Soft Frame",
-            description = "Modern — rounded rectangle photo, botanical lights.",
+            title = "Mango Leaf Gold",
+            description = "Traditional — mango leaves, marigold top, kalash.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFF558B2F.toInt()
+            primaryColor = 0xFF33691E.toInt()
         )
     )
 

@@ -38,6 +38,16 @@ internal object InvitationLayout {
      * Per-template safe areas measured from WebP cream panels (1080×1350).
      * Temple Mandapam and Gopuram Welcome have deep arches — text must start below the toran.
      */
+    private val engagementTextZone = TextZoneSpec(
+        left = 208f,
+        right = 872f,
+        topNoPhoto = 548f,
+        topWithPhoto = 556f,
+        bottom = 1100f,
+        messageBottom = 1065f,
+        photoTextGap = 12f
+    )
+
     private val templateTextZones = mapOf(
         "wedding_02" to TextZoneSpec(
             left = 210f,
@@ -80,53 +90,12 @@ internal object InvitationLayout {
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
-        // Engagement WebPs — per-card cream band (measured on designed 1080×1350 art)
-        // Photo shapes differ per card — text starts below each mask
-        "engagement_01" to TextZoneSpec(
-            left = 228f,
-            right = 852f,
-            topNoPhoto = 608f,
-            topWithPhoto = 616f,
-            bottom = 1090f,
-            messageBottom = 1055f,
-            photoTextGap = 18f
-        ),
-        "engagement_02" to TextZoneSpec(
-            left = 215f,
-            right = 865f,
-            topNoPhoto = 652f,
-            topWithPhoto = 660f,
-            bottom = 1090f,
-            messageBottom = 1055f,
-            photoTextGap = 18f
-        ),
-        "engagement_03" to TextZoneSpec(
-            left = 235f,
-            right = 845f,
-            topNoPhoto = 448f,
-            topWithPhoto = 468f,
-            bottom = 1002f,
-            messageBottom = 952f,
-            photoTextGap = 12f
-        ),
-        "engagement_04" to TextZoneSpec(
-            left = 235f,
-            right = 845f,
-            topNoPhoto = 498f,
-            topWithPhoto = 518f,
-            bottom = 998f,
-            messageBottom = 948f,
-            photoTextGap = 14f
-        ),
-        "engagement_05" to TextZoneSpec(
-            left = 235f,
-            right = 845f,
-            topNoPhoto = 538f,
-            topWithPhoto = 558f,
-            bottom = 1000f,
-            messageBottom = 950f,
-            photoTextGap = 14f
-        )
+        // Engagement — continuous cream panel; text flows below photo (no divider line)
+        "engagement_01" to engagementTextZone,
+        "engagement_02" to engagementTextZone,
+        "engagement_03" to engagementTextZone,
+        "engagement_04" to engagementTextZone,
+        "engagement_05" to engagementTextZone
     )
 
     private val templatePhotoFrames = mapOf(
@@ -203,7 +172,7 @@ internal object InvitationLayout {
             return zone.top + inset
         }
         val frameBottom = if (templateId.startsWith("engagement")) {
-            EngagementPhotoPlacement.ornamentBottom(templateId)
+            EngagementPhotoPlacement.photoBottom(templateId)
         } else {
             photoFrame(templateId).bottom
         }
