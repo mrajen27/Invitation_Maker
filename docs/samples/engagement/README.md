@@ -1,19 +1,21 @@
-# Engagement samples (reference board layout)
+# Engagement photo-card samples
 
-Matches the shared reference: **scalloped gold arch** · **photo on top** · **text below** · **corner/bottom décor only** (not blocking the text band).
+Five **designed WebP** backgrounds (1080×1350) with the photo-card pipeline:
 
-| ID | Style | Title |
+- WebP artwork in `drawable-nodpi/bg_engagement_*.webp`
+- Portrait clipped to the **top ceremony arch** (`EngagementPhotoPlacement`)
+- Event copy in the **cream band below** (`InvitationLayout` per template)
+
+| ID | Title | Style |
 |----|--------|--------|
-| engagement_01 | Traditional | Green Toran Gold |
-| engagement_02 | Traditional | Marigold Royal |
-| engagement_03 | Traditional | Peacock & Lotus |
-| engagement_04 | Modern | Pink Lantern Garden |
-| engagement_05 | Modern | Sage Botanical Glow |
+| engagement_01 | Banana Leaf Toran | Traditional |
+| engagement_02 | Marigold Royale | Traditional |
+| engagement_03 | Cream Kolam Glow | Traditional |
+| engagement_04 | Teal Lantern Night | Modern (light text) |
+| engagement_05 | Rose Gold Vows | Modern |
 
-Sample copy: **Kavin & Sowmya**, 29 May 2026, 8:00 PM.
-
-To swap in your exact illustrated PNGs (pixel-perfect), place files in `tools/bg_sources/` as `engagement_01_source.png` … `engagement_05_source.png`, then run:
+Regenerate previews:
 
 ```bash
-python3 tools/convert_photo_backgrounds.py
+PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.EngagementSampleExportTest"
 ```

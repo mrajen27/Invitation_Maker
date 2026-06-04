@@ -4,8 +4,8 @@ import android.graphics.Path
 import android.graphics.RectF
 
 /**
- * Photo clip and bounds for engagement WebP cards (top arch + cream text band below).
- * Other categories keep using [InvitationLayout.photoFrame] with a rounded rectangle.
+ * Per-template photo arch masks for designed engagement WebP backgrounds (1080×1350).
+ * Matches artwork openings on [bg_engagement_01] … [bg_engagement_05].
  */
 internal object EngagementPhotoPlacement {
 
@@ -24,18 +24,19 @@ internal object EngagementPhotoPlacement {
         val border: Border = Border.ARTWORK_FRAME
     )
 
-    private val defaultBounds = RectF(258f, 128f, 822f, 508f)
-
     private val specs = mapOf(
-        "engagement_01" to Spec(defaultBounds),
-        "engagement_02" to Spec(defaultBounds),
-        "engagement_03" to Spec(defaultBounds),
-        "engagement_04" to Spec(defaultBounds, border = Border.INNER_GLOW),
-        "engagement_05" to Spec(defaultBounds, border = Border.INNER_GLOW)
+        "engagement_01" to Spec(RectF(312f, 128f, 768f, 448f)),
+        "engagement_02" to Spec(RectF(308f, 122f, 772f, 452f)),
+        "engagement_03" to Spec(RectF(318f, 135f, 762f, 445f)),
+        "engagement_04" to Spec(
+            bounds = RectF(322f, 130f, 758f, 450f),
+            border = Border.INNER_GLOW
+        ),
+        "engagement_05" to Spec(RectF(315f, 125f, 765f, 448f))
     )
 
     fun specFor(templateId: String): Spec {
-        return specs[templateId] ?: Spec(defaultBounds)
+        return specs[templateId] ?: Spec(RectF(312f, 128f, 768f, 448f))
     }
 
     fun clipPath(spec: Spec): Path = archPath(spec.bounds)

@@ -80,38 +80,52 @@ internal object InvitationLayout {
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
-        // Traditional — décor strip from ~y940; keep text above y920
-        "engagement_01" to engagementTextZone(),
-        "engagement_02" to engagementTextZone(),
-        "engagement_03" to engagementTextZone(),
-        // Modern — minimal bottom art, taller text band
-        "engagement_04" to engagementModernTextZone(),
-        "engagement_05" to engagementModernTextZone(bottom = 980f, messageBottom = 930f)
-    )
-
-    private fun engagementTextZone() = TextZoneSpec(
-        left = 215f,
-        right = 865f,
-        topNoPhoto = 538f,
-        topWithPhoto = 548f,
-        bottom = 990f,
-        messageBottom = 940f,
-        topInset = 4f,
-        photoTextGap = 18f
-    )
-
-    private fun engagementModernTextZone(
-        bottom: Float = 1010f,
-        messageBottom: Float = 960f
-    ) = TextZoneSpec(
-        left = 215f,
-        right = 865f,
-        topNoPhoto = 498f,
-        topWithPhoto = 508f,
-        bottom = bottom,
-        messageBottom = messageBottom,
-        topInset = 4f,
-        photoTextGap = 16f
+        // Engagement WebPs — per-card cream band (measured on designed 1080×1350 art)
+        "engagement_01" to TextZoneSpec(
+            left = 200f,
+            right = 880f,
+            topNoPhoto = 468f,
+            topWithPhoto = 492f,
+            bottom = 1085f,
+            messageBottom = 1035f,
+            photoTextGap = 10f
+        ),
+        "engagement_02" to TextZoneSpec(
+            left = 200f,
+            right = 880f,
+            topNoPhoto = 462f,
+            topWithPhoto = 488f,
+            bottom = 1080f,
+            messageBottom = 1030f,
+            photoTextGap = 10f
+        ),
+        "engagement_03" to TextZoneSpec(
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 458f,
+            topWithPhoto = 482f,
+            bottom = 1090f,
+            messageBottom = 1040f,
+            photoTextGap = 8f
+        ),
+        "engagement_04" to TextZoneSpec(
+            left = 210f,
+            right = 870f,
+            topNoPhoto = 465f,
+            topWithPhoto = 490f,
+            bottom = 1085f,
+            messageBottom = 1035f,
+            photoTextGap = 10f
+        ),
+        "engagement_05" to TextZoneSpec(
+            left = 205f,
+            right = 875f,
+            topNoPhoto = 460f,
+            topWithPhoto = 486f,
+            bottom = 1080f,
+            messageBottom = 1030f,
+            photoTextGap = 10f
+        )
     )
 
     private val templatePhotoFrames = mapOf(
