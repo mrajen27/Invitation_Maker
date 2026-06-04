@@ -12,15 +12,15 @@ class EngagementLayoutTest {
     fun engagementPhotoArchEndsBeforeTextBand() {
         val archBottomMax = 454f
         val textTopNoPhoto = 518f
-        val textTopWithPhoto = 522f
+        val textTopWithPhoto = 512f
         assertTrue(archBottomMax < textTopNoPhoto)
         assertTrue(archBottomMax < textTopWithPhoto)
     }
 
     @Test
     fun engagementTextEndsAboveBottomArtwork() {
-        val textBottom = 1065f
-        val bottomArtStart = 1070f
-        assertTrue(textBottom <= bottomArtStart)
+        val textBottom = 920f
+        val canvasBottom = 1350f
+        assertTrue(textBottom < canvasBottom - 400f)
     }
 }

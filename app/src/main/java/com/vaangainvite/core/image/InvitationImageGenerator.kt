@@ -220,18 +220,30 @@ class InvitationImageGenerator(private val context: Context) {
         val userMessage = details.message.trim()
         val hasUserMessage = userMessage.isNotBlank()
         val isPeacockVase = template.id == "wedding_05"
+        val isEngagement = template.id.startsWith("engagement")
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
-        val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase
-        val detailRowSpacing = if (isPeacockWithPhoto) 4f else InvitationLayout.Spacing.betweenDetails
-        val messageGap = if (isPeacockWithPhoto) 8f else InvitationLayout.Spacing.beforeMessageNoPhoto
+        val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase ||
+            (isEngagement && hasUploadedPhoto)
+        val detailRowSpacing = when {
+            isPeacockWithPhoto -> 4f
+            isEngagement && hasUploadedPhoto -> 4f
+            else -> InvitationLayout.Spacing.betweenDetails
+        }
+        val messageGap = when {
+            isPeacockWithPhoto -> 8f
+            isEngagement && hasUploadedPhoto -> 8f
+            else -> InvitationLayout.Spacing.beforeMessageNoPhoto
+        }
 
         val introSize = when {
             isPeacockVase -> 28f
+            isEngagement && hasUploadedPhoto -> 28f
             template.id == "wedding_02" && hasUploadedPhoto -> 28f
             else -> 32f
         }
         val occasionSize = when {
             isPeacockVase -> 38f
+            isEngagement && hasUploadedPhoto -> 38f
             template.id == "wedding_02" && hasUploadedPhoto -> 40f
             else -> 46f
         }
@@ -242,6 +254,7 @@ class InvitationImageGenerator(private val context: Context) {
             palette.primaryColor,
             when {
                 isPeacockVase -> 54f
+                isEngagement && hasUploadedPhoto -> 48f
                 compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 54f
                 template.id == "wedding_02" && usesPhotoBackground -> 62f
@@ -254,7 +267,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            if (compactLayout || isPeacockVase) 24f else 28f,
+            if (compactLayout || isPeacockVase || (isEngagement && hasUploadedPhoto)) 24f else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -263,7 +276,11 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val messagePaint = textPaint(
             palette.messageColor,
-            if (usesPhotoBackground) 24f else 26f,
+            when {
+                isEngagement && hasUploadedPhoto -> 22f
+                usesPhotoBackground -> 24f
+                else -> 26f
+            },
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -334,6 +351,7 @@ class InvitationImageGenerator(private val context: Context) {
             maxLines = 1,
             rowSpacing = detailRowSpacing
         )
+        val venueMaxLines = if (isEngagement && hasUploadedPhoto) 1 else InvitationDetails.VENUE_MAX_LINES
         blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
@@ -342,7 +360,7 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
-            maxLines = InvitationDetails.VENUE_MAX_LINES,
+            maxLines = venueMaxLines,
             rowSpacing = detailRowSpacing
         )
         if (details.mobileNumber.isNotBlank()) {
@@ -403,32 +421,30 @@ class InvitationImageGenerator(private val context: Context) {
             detailRowSpacing +
             gapBeforeMessage
         val maxBottomY = zone.bottom - 8f
+        val availableHeight = maxBottomY - messageStartY
+        if (availableHeight < 18f) return false
+
         val wrapped = wrapText(text, paint, maxTextWidth)
-        val truncated = wrapped.size > maxLines
-        val lines = wrapped.limitLines(maxLines, paint, maxTextWidth)
-        if (lines.isEmpty()) return false
-
-        val fm = paint.fontMetrics
         val lineAdvance = lineHeight(paint, lineSpacing)
-        val messageHeight = if (lines.size == 1) {
-            -fm.ascent + fm.descent
+        val fm = paint.fontMetrics
+        val firstLineHeight = -fm.ascent + fm.descent
+        val maxLinesByHeight = if (availableHeight < firstLineHeight) {
+            0
         } else {
-            -fm.ascent + (lines.size - 1) * lineAdvance + fm.descent
+            1 + ((availableHeight - firstLineHeight) / lineAdvance).toInt()
         }
-        val topY = if (messageStartY + messageHeight <= maxBottomY) {
-            messageStartY
-        } else {
-            (maxBottomY - messageHeight).coerceAtMost(messageStartY)
-        }
+        val effectiveMaxLines = minOf(maxLines, maxLinesByHeight).coerceAtLeast(0)
+        if (effectiveMaxLines == 0) return false
 
+        val truncated = wrapped.size > effectiveMaxLines
         drawCenteredLines(
             canvas = canvas,
             text = text,
             paint = paint,
-            topY = topY,
+            topY = messageStartY,
             maxWidth = maxTextWidth,
             lineSpacing = lineSpacing,
-            maxLines = maxLines,
+            maxLines = effectiveMaxLines,
             horizontalBounds = zone,
             maxBottomY = maxBottomY
         )
@@ -504,8 +520,12 @@ class InvitationImageGenerator(private val context: Context) {
         DrawableCompat.setTint(icon, iconTint)
         val fm = paint.fontMetrics
         var baseline = topY - fm.ascent
+        val maxBottomY = zone.bottom - 6f
 
         fittedLines.forEachIndexed { index, line ->
+            if (baseline + fm.descent > maxBottomY) {
+                return baseline - fm.descent + rowSpacing
+            }
             val lineWidth = paint.measureText(line)
             if (index == 0) {
                 val blockWidth = iconSize + gap + lineWidth
