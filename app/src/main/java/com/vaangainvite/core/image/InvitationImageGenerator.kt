@@ -6,11 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.media.ExifInterface
 import android.net.Uri
@@ -589,6 +591,7 @@ class InvitationImageGenerator(private val context: Context) {
         val placement = PhotoCardPlacement.specFor(templateId)
         val frame = placement.bounds
         val clipPath = PhotoCardPlacement.clipPath(placement)
+        val photoPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         canvas.save()
         canvas.clipPath(clipPath)
@@ -600,11 +603,67 @@ class InvitationImageGenerator(private val context: Context) {
                 targetAspect = PhotoCardPlacement.cropAspectRatio(templateId)
             ),
             frame,
-            Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+            photoPaint
         )
+        drawPhotoCardCreamBlend(canvas, frame, placement.cornerRadius)
         canvas.restore()
-        // No stroke around photo — continuous cream panel flows into text (no divider line).
         return true
+    }
+
+    /** Soft cream vignette so the photo melts into the parchment panel (no hard box edge). */
+    private fun drawPhotoCardCreamBlend(canvas: Canvas, frame: RectF, cornerRadius: Float) {
+        val cream = Color.rgb(252, 247, 238)
+        val feather = 32f.coerceAtMost(frame.height() * 0.22f).coerceAtMost(frame.width() * 0.14f)
+
+        fun edgePaint(x0: Float, y0: Float, x1: Float, y1: Float, startColor: Int, endColor: Int): Paint {
+            return Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                shader = LinearGradient(x0, y0, x1, y1, startColor, endColor, Shader.TileMode.CLAMP)
+            }
+        }
+
+        val top = frame.top
+        val bottom = frame.bottom
+        val left = frame.left
+        val right = frame.right
+
+        canvas.drawRect(
+            left,
+            top,
+            right,
+            top + feather,
+            edgePaint(left, top, left, top + feather, Color.argb(175, 252, 247, 238), Color.TRANSPARENT)
+        )
+        canvas.drawRect(
+            left,
+            bottom - feather,
+            right,
+            bottom,
+            edgePaint(left, bottom, left, bottom - feather, Color.argb(210, 252, 247, 238), Color.TRANSPARENT)
+        )
+        canvas.drawRect(
+            left,
+            top,
+            left + feather,
+            bottom,
+            edgePaint(left, top, left + feather, top, Color.argb(150, 252, 247, 238), Color.TRANSPARENT)
+        )
+        canvas.drawRect(
+            right - feather,
+            top,
+            right,
+            bottom,
+            edgePaint(right, top, right - feather, top, Color.argb(150, 252, 247, 238), Color.TRANSPARENT)
+        )
+
+        // Extra blend into text area below photo
+        val bottomFade = (feather * 1.4f).coerceAtMost(48f)
+        canvas.drawRect(
+            left + cornerRadius * 0.35f,
+            bottom - bottomFade,
+            right - cornerRadius * 0.35f,
+            bottom + 6f,
+            edgePaint(left, bottom, left, bottom - bottomFade, Color.argb(120, 252, 247, 238), Color.TRANSPARENT)
+        )
     }
 
     private fun drawUploadedPhoto(

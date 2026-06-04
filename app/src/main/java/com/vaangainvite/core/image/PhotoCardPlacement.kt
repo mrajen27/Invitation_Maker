@@ -4,7 +4,7 @@ import android.graphics.Path
 import android.graphics.RectF
 
 /**
- * Designed WebP photo cards (engagement, naming, …) — plain rectangle on continuous cream panel.
+ * Designed WebP photo cards (engagement, naming, …) — soft rectangle on continuous cream panel.
  */
 internal object PhotoCardPlacement {
 
@@ -14,17 +14,20 @@ internal object PhotoCardPlacement {
 
     data class Spec(
         val bounds: RectF,
-        val mask: Mask = Mask.TRADITIONAL_RECT
+        val mask: Mask = Mask.TRADITIONAL_RECT,
+        val cornerRadius: Float = 26f
     )
 
-    /** Measured on 1080×1350 WebPs (width-preserved conversion keeps side borders). */
-    private val traditionalPhoto = RectF(248f, 375f, 830f, 555f)
+    /** Smaller portrait slot — leaves more cream and shows side border art. */
+    private val traditionalPhoto = RectF(320f, 428f, 760f, 598f)
 
     private val templateIds = (1..5).flatMap { i ->
         listOf("engagement_%02d".format(i), "naming_%02d".format(i))
     }
 
-    private val specs = templateIds.associateWith { Spec(bounds = traditionalPhoto) }
+    private val specs = templateIds.associateWith {
+        Spec(bounds = traditionalPhoto, cornerRadius = 26f)
+    }
 
     fun isPhotoCardTemplate(templateId: String): Boolean =
         templateId.startsWith("engagement_") || templateId.startsWith("naming_")
@@ -35,7 +38,9 @@ internal object PhotoCardPlacement {
 
     fun clipPath(spec: Spec): Path {
         val frame = spec.bounds
-        return Path().apply { addRect(frame, Path.Direction.CW) }
+        return Path().apply {
+            addRoundRect(frame, spec.cornerRadius, spec.cornerRadius, Path.Direction.CW)
+        }
     }
 
     fun cropAspectRatio(templateId: String): Float {
