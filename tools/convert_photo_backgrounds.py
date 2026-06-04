@@ -38,31 +38,15 @@ def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def fit_portrait_card(im: Image.Image) -> Image.Image:
-    """Scale to 1080×1350 without squashing; keep full width on landscape art (side borders)."""
+    """Scale to cover 1080×1350 — full-bleed card with no top/bottom letterbox bars."""
     w, h = im.size
-    target_ratio = TARGET_W / TARGET_H
-    current = w / h
-
-    if current > target_ratio:
-        # Wide designed art — scale to full card width so left/right décor is not cropped.
-        scale = TARGET_W / w
-        new_w = TARGET_W
-        new_h = max(1, int(h * scale))
-        im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        if new_h >= TARGET_H:
-            top = (new_h - TARGET_H) // 2
-            return im.crop((0, top, TARGET_W, top + TARGET_H))
-        fill = sample_edge_color(im)
-        out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
-        out.paste(im, (0, (TARGET_H - new_h) // 2))
-        return out
-
-    scale = TARGET_W / w
-    new_w = TARGET_W
-    new_h = max(TARGET_H, int(h * scale))
+    scale = max(TARGET_W / w, TARGET_H / h)
+    new_w = max(1, int(w * scale))
+    new_h = max(1, int(h * scale))
     im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-    top = max(0, (new_h - TARGET_H) // 2)
-    return im.crop((0, top, TARGET_W, top + TARGET_H))
+    left = (new_w - TARGET_W) // 2
+    top = (new_h - TARGET_H) // 2
+    return im.crop((left, top, left + TARGET_W, top + TARGET_H))
 
 
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:

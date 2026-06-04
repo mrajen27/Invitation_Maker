@@ -14,4 +14,6 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 | naming_04 | Moon & Lotus |
 | naming_05 | Tulsi Paladai Gold |
 
+Sources are landscape ~3:2; `convert_photo_backgrounds.py` uses center-cover to fill 1080×1350 (no top/bottom letterbox).
+
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`

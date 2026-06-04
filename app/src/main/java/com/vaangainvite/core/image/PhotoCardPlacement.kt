@@ -18,8 +18,8 @@ internal object PhotoCardPlacement {
         val cornerRadius: Float = 26f
     )
 
-    /** Smaller portrait slot — leaves more cream and shows side border art. */
-    private val traditionalPhoto = RectF(320f, 428f, 760f, 598f)
+    /** Portrait slot on full-bleed 1080×1350 WebPs (center-cover conversion, no letterbox). */
+    private val traditionalPhoto = RectF(258f, 210f, 822f, 630f)
 
     private val templateIds = (1..5).flatMap { i ->
         listOf("engagement_%02d".format(i), "naming_%02d".format(i))

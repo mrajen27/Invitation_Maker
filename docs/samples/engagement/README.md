@@ -16,6 +16,6 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 
 ## Replace artwork
 
-1. Save designed PNGs as `tools/bg_sources/engagement_XX_source.png` (portrait ~4:5).
+1. Save designed PNGs as `tools/bg_sources/engagement_XX_source.png` (landscape ~3:2; converted with center-cover to 1080×1350).
 2. `python3 tools/convert_photo_backgrounds.py`
 3. `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`
