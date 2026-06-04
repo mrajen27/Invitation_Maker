@@ -85,20 +85,20 @@ internal object InvitationLayout {
         "engagement_01" to TextZoneSpec(
             left = 235f,
             right = 845f,
-            topNoPhoto = 538f,
-            topWithPhoto = 558f,
+            topNoPhoto = 748f,
+            topWithPhoto = 756f,
             bottom = 1002f,
             messageBottom = 952f,
-            photoTextGap = 14f
+            photoTextGap = 20f
         ),
         "engagement_02" to TextZoneSpec(
-            left = 235f,
-            right = 845f,
-            topNoPhoto = 528f,
-            topWithPhoto = 548f,
+            left = 220f,
+            right = 860f,
+            topNoPhoto = 708f,
+            topWithPhoto = 716f,
             bottom = 1000f,
             messageBottom = 950f,
-            photoTextGap = 14f
+            photoTextGap = 20f
         ),
         "engagement_03" to TextZoneSpec(
             left = 235f,
@@ -202,7 +202,11 @@ internal object InvitationLayout {
         if (!hasUploadedPhoto) {
             return zone.top + inset
         }
-        val frameBottom = photoFrame(templateId).bottom
+        val frameBottom = if (templateId.startsWith("engagement")) {
+            EngagementPhotoPlacement.ornamentBottom(templateId)
+        } else {
+            photoFrame(templateId).bottom
+        }
         val photoGap = spec?.photoTextGap ?: 22f
         return maxOf(zone.top, frameBottom + photoGap) + inset
     }

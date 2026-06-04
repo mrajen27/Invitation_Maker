@@ -1,32 +1,40 @@
 package com.vaangainvite.core.image
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EngagementLayoutTest {
 
     @Test
-    fun eachTemplateUsesDistinctPhotoMask() {
+    fun templates01And02UseDifferentPhotoShapes() {
+        val first = EngagementPhotoPlacement.specFor("engagement_01").mask
+        val second = EngagementPhotoPlacement.specFor("engagement_02").mask
+        assertEquals(EngagementPhotoPlacement.Mask.MEDALLION_CIRCLE, first)
+        assertEquals(EngagementPhotoPlacement.Mask.ROUNDED_RECT, second)
+        assertNotEquals(first, second)
+    }
+
+    @Test
+    fun engagementSetUsesFourPlusMaskShapes() {
         val masks = (1..5).map { i ->
             EngagementPhotoPlacement.specFor("engagement_%02d".format(i)).mask
         }
-        assertEquals(5, masks.toSet().size)
+        assertTrue(masks.toSet().size >= 4)
     }
 
     @Test
     fun photoMaskEndsBeforeTextBand() {
-        val pairs = listOf(
-            Triple("engagement_01", 518f, 558f),
-            Triple("engagement_02", 515f, 548f),
-            Triple("engagement_03", 438f, 468f),
-            Triple("engagement_04", 495f, 518f),
-            Triple("engagement_05", 518f, 558f)
-        )
-        pairs.forEach { (id, maskBottom, textTop) ->
-            val boundsBottom = EngagementPhotoPlacement.specFor(id).bounds.bottom
-            assertTrue("$id bounds $boundsBottom < text $textTop", boundsBottom <= maskBottom)
-            assertTrue("$id mask above text", maskBottom < textTop)
+        (1..5).forEach { index ->
+            val id = "engagement_%02d".format(index)
+            val spec = EngagementPhotoPlacement.specFor(id)
+            assertTrue("$id ornament below frame", spec.ornamentBottom >= spec.bounds.bottom)
+            val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
+            assertTrue(
+                "$id text $textTop clears ornament ${spec.ornamentBottom}",
+                textTop > spec.ornamentBottom + 8f
+            )
         }
     }
 }

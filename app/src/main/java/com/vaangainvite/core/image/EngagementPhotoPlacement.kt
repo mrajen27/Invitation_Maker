@@ -27,38 +27,47 @@ internal object EngagementPhotoPlacement {
         val bounds: RectF,
         val mask: Mask,
         val border: Border = Border.ARTWORK_FRAME,
-        val roundRectRadius: Float = 36f
+        val roundRectRadius: Float = 36f,
+        /** Bottom of ornamental frame (gold ring / toran) — text starts below this. */
+        val ornamentBottom: Float
     )
 
     private val specs = mapOf(
         "engagement_01" to Spec(
-            bounds = RectF(358f, 157f, 719f, 518f),
-            mask = Mask.MEDALLION_CIRCLE
+            bounds = RectF(384f, 186f, 696f, 498f),
+            mask = Mask.MEDALLION_CIRCLE,
+            ornamentBottom = 738f
         ),
         "engagement_02" to Spec(
-            bounds = RectF(281f, 159f, 806f, 515f),
-            mask = Mask.PORTRAIT_OVAL
+            bounds = RectF(285f, 152f, 795f, 478f),
+            mask = Mask.ROUNDED_RECT,
+            roundRectRadius = 22f,
+            ornamentBottom = 688f
         ),
         "engagement_03" to Spec(
             bounds = RectF(318f, 122f, 762f, 438f),
-            mask = Mask.CEREMONY_ARCH
+            mask = Mask.CEREMONY_ARCH,
+            ornamentBottom = 468f
         ),
         "engagement_04" to Spec(
             bounds = RectF(350f, 155f, 730f, 495f),
             mask = Mask.HEX_MEDALLION,
-            border = Border.INNER_GLOW
+            border = Border.INNER_GLOW,
+            ornamentBottom = 528f
         ),
         "engagement_05" to Spec(
             bounds = RectF(273f, 210f, 805f, 518f),
             mask = Mask.ROUNDED_RECT,
-            roundRectRadius = 40f
+            roundRectRadius = 40f,
+            ornamentBottom = 548f
         )
     )
 
     fun specFor(templateId: String): Spec {
         return specs[templateId] ?: Spec(
             bounds = RectF(340f, 145f, 740f, 545f),
-            mask = Mask.MEDALLION_CIRCLE
+            mask = Mask.MEDALLION_CIRCLE,
+            ornamentBottom = 617f
         )
     }
 
@@ -79,13 +88,16 @@ internal object EngagementPhotoPlacement {
     }
 
     fun cropAspectRatio(templateId: String): Float {
+        val frame = specFor(templateId).bounds
         return when (specFor(templateId).mask) {
             Mask.PORTRAIT_OVAL -> 0.82f
             Mask.MEDALLION_CIRCLE, Mask.HEX_MEDALLION -> 1f
             Mask.CEREMONY_ARCH -> 0.95f
-            Mask.ROUNDED_RECT -> 0.92f
+            Mask.ROUNDED_RECT -> frame.width() / frame.height()
         }
     }
+
+    fun ornamentBottom(templateId: String): Float = specFor(templateId).ornamentBottom
 
     private fun archPath(frame: RectF): Path {
         val rise = frame.width() * 0.2f

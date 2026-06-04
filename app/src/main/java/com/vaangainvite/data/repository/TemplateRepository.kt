@@ -226,8 +226,8 @@ class TemplateRepository {
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Oval Frame",
-            description = "Traditional — portrait oval photo, marigold toran.",
+            title = "Marigold Classic Frame",
+            description = "Traditional — portrait photo in cream panel, marigold toran.",
             resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFFB71C1C.toInt()
         ),

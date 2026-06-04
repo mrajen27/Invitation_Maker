@@ -602,7 +602,11 @@ class InvitationImageGenerator(private val context: Context) {
         canvas.clipPath(clipPath)
         canvas.drawBitmap(
             photoBitmap,
-            centeredCropSource(photoBitmap, frame),
+            centeredCropSource(
+                photoBitmap,
+                frame,
+                targetAspect = EngagementPhotoPlacement.cropAspectRatio(templateId)
+            ),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
@@ -671,9 +675,12 @@ class InvitationImageGenerator(private val context: Context) {
         }
     }
 
-    private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
+    private fun centeredCropSource(
+        bitmap: Bitmap,
+        target: RectF,
+        targetAspect: Float = target.width() / target.height()
+    ): Rect {
         val bitmapAspect = bitmap.width.toFloat() / bitmap.height.toFloat()
-        val targetAspect = target.width() / target.height()
 
         return if (bitmapAspect > targetAspect) {
             val sourceWidth = (bitmap.height * targetAspect).toInt().coerceAtMost(bitmap.width)
