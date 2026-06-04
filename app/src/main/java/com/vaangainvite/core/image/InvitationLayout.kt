@@ -38,7 +38,7 @@ internal object InvitationLayout {
      * Per-template safe areas measured from WebP cream panels (1080×1350).
      * Temple Mandapam and Gopuram Welcome have deep arches — text must start below the toran.
      */
-    private val engagementTextZone = TextZoneSpec(
+    private val photoCardTextZone = TextZoneSpec(
         left = 200f,
         right = 880f,
         topNoPhoto = 548f,
@@ -91,11 +91,16 @@ internal object InvitationLayout {
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
         // Engagement — continuous cream panel; text flows below photo (no divider line)
-        "engagement_01" to engagementTextZone,
-        "engagement_02" to engagementTextZone,
-        "engagement_03" to engagementTextZone,
-        "engagement_04" to engagementTextZone,
-        "engagement_05" to engagementTextZone
+        "engagement_01" to photoCardTextZone,
+        "engagement_02" to photoCardTextZone,
+        "engagement_03" to photoCardTextZone,
+        "engagement_04" to photoCardTextZone,
+        "engagement_05" to photoCardTextZone,
+        "naming_01" to photoCardTextZone,
+        "naming_02" to photoCardTextZone,
+        "naming_03" to photoCardTextZone,
+        "naming_04" to photoCardTextZone,
+        "naming_05" to photoCardTextZone
     )
 
     private val templatePhotoFrames = mapOf(
@@ -110,8 +115,8 @@ internal object InvitationLayout {
     )
 
     fun photoFrame(templateId: String = ""): RectF {
-        if (templateId.startsWith("engagement")) {
-            return EngagementPhotoPlacement.specFor(templateId).bounds
+        if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
+            return PhotoCardPlacement.specFor(templateId).bounds
         }
         return templatePhotoFrames[templateId] ?: defaultPhotoFrame()
     }
@@ -171,8 +176,8 @@ internal object InvitationLayout {
         if (!hasUploadedPhoto) {
             return zone.top + inset
         }
-        val frameBottom = if (templateId.startsWith("engagement")) {
-            EngagementPhotoPlacement.photoBottom(templateId)
+        val frameBottom = if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
+            PhotoCardPlacement.photoBottom(templateId)
         } else {
             photoFrame(templateId).bottom
         }

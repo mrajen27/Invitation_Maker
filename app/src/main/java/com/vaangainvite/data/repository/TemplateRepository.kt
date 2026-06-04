@@ -37,9 +37,16 @@ class TemplateRepository {
         InvitationCategory(
             id = "engagement",
             title = "Engagement",
-            description = "Five designed photo-card invites — arch photo on top, details below.",
+            description = "Five designed photo-card invites — photo on top, details below.",
             accentColor = 0xFFC2185B.toInt(),
             iconResId = R.drawable.ic_category_engagement
+        ),
+        InvitationCategory(
+            id = "naming",
+            title = "Naming Ceremony",
+            description = "Five traditional namakaran photo-card invites for your little one.",
+            accentColor = 0xFF6A1B9A.toInt(),
+            iconResId = R.drawable.ic_category_naming
         )
     )
 
@@ -254,6 +261,48 @@ class TemplateRepository {
             description = "Traditional — mango leaves, marigold top, kalash.",
             resId = R.drawable.bg_engagement_05,
             primaryColor = 0xFF33691E.toInt()
+        ),
+
+        // Naming ceremony — designed WebP photo cards (same layout as engagement)
+        photoTemplate(
+            id = "naming_01",
+            categoryId = "naming",
+            title = "Jasmine Cradle Pink",
+            description = "Soft pink — jasmine toran, silver cradle & lotus.",
+            resId = R.drawable.bg_naming_01,
+            primaryColor = 0xFFAD1457.toInt()
+        ),
+        photoTemplate(
+            id = "naming_02",
+            categoryId = "naming",
+            title = "Royal Blue Namakaran",
+            description = "Blue & gold — marigold, ghungroo, turmeric rice.",
+            resId = R.drawable.bg_naming_02,
+            primaryColor = 0xFF1565C0.toInt()
+        ),
+        photoTemplate(
+            id = "naming_03",
+            categoryId = "naming",
+            title = "Turmeric Blessing",
+            description = "Auspicious yellow — mango leaves, kalash & jasmine.",
+            resId = R.drawable.bg_naming_03,
+            primaryColor = 0xFFF57F17.toInt()
+        ),
+        photoTemplate(
+            id = "naming_04",
+            categoryId = "naming",
+            title = "Moon & Lotus",
+            description = "Celestial lavender — stars, moon garland, lotus row.",
+            resId = R.drawable.bg_naming_04,
+            primaryColor = 0xFF5E35B1.toInt()
+        ),
+        photoTemplate(
+            id = "naming_05",
+            categoryId = "naming",
+            title = "Tulsi Paladai Gold",
+            description = "Sacred green — tulsi toran, kalash & golden footprints.",
+            resId = R.drawable.bg_naming_05,
+            primaryColor = 0xFF2E7D32.toInt()
         )
     )
 

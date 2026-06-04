@@ -14,8 +14,8 @@ class EngagementLayoutTest {
         (1..5).forEach { index ->
             val id = "engagement_%02d".format(index)
             assertEquals(
-                EngagementPhotoPlacement.Mask.TRADITIONAL_RECT,
-                EngagementPhotoPlacement.specFor(id).mask
+                PhotoCardPlacement.Mask.TRADITIONAL_RECT,
+                PhotoCardPlacement.specFor(id).mask
             )
         }
     }
@@ -23,7 +23,7 @@ class EngagementLayoutTest {
     @Test
     fun engagementTextStartsDirectlyBelowPhotoWithNoOrnamentGap() {
         val id = "engagement_01"
-        val photoBottom = EngagementPhotoPlacement.photoBottom(id)
+        val photoBottom = PhotoCardPlacement.photoBottom(id)
         val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
         assertTrue(textTop <= photoBottom + 30f)
         assertTrue(textTop > photoBottom)
@@ -46,7 +46,7 @@ class EngagementLayoutTest {
     fun photoMaskEndsBeforeTextBand() {
         (1..5).forEach { index ->
             val id = "engagement_%02d".format(index)
-            val spec = EngagementPhotoPlacement.specFor(id)
+            val spec = PhotoCardPlacement.specFor(id)
             val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
             assertTrue(
                 "$id text $textTop below photo ${spec.bounds.bottom}",

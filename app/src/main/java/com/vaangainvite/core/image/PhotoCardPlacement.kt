@@ -4,36 +4,30 @@ import android.graphics.Path
 import android.graphics.RectF
 
 /**
- * Engagement photo slots — plain vertical rectangle on continuous cream panel.
- * No arch, circle, oval, hex, or rounded ring.
+ * Designed WebP photo cards (engagement, naming, …) — plain rectangle on continuous cream panel.
  */
-internal object EngagementPhotoPlacement {
+internal object PhotoCardPlacement {
 
     enum class Mask {
         TRADITIONAL_RECT
     }
 
-    enum class Border {
-        ARTWORK_FRAME,
-        INNER_GLOW
-    }
-
     data class Spec(
         val bounds: RectF,
-        val mask: Mask = Mask.TRADITIONAL_RECT,
-        val border: Border = Border.ARTWORK_FRAME
+        val mask: Mask = Mask.TRADITIONAL_RECT
     )
 
-    /** Measured on designed 1080×1350 WebP cream panels (no inner frame). */
+    /** Measured on designed 1080×1350 WebP cream panels. */
     private val traditionalPhoto = RectF(184f, 147f, 894f, 554f)
 
-    private val specs = mapOf(
-        "engagement_01" to Spec(bounds = traditionalPhoto),
-        "engagement_02" to Spec(bounds = traditionalPhoto),
-        "engagement_03" to Spec(bounds = traditionalPhoto),
-        "engagement_04" to Spec(bounds = traditionalPhoto),
-        "engagement_05" to Spec(bounds = traditionalPhoto)
-    )
+    private val templateIds = (1..5).flatMap { i ->
+        listOf("engagement_%02d".format(i), "naming_%02d".format(i))
+    }
+
+    private val specs = templateIds.associateWith { Spec(bounds = traditionalPhoto) }
+
+    fun isPhotoCardTemplate(templateId: String): Boolean =
+        templateId.startsWith("engagement_") || templateId.startsWith("naming_")
 
     fun specFor(templateId: String): Spec {
         return specs[templateId] ?: Spec(bounds = traditionalPhoto)

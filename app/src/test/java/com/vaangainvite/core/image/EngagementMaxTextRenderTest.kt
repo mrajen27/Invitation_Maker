@@ -19,7 +19,7 @@ import java.io.FileOutputStream
 class EngagementMaxTextRenderTest {
 
     @Test
-    fun engagement01And02RenderMaxLengthWithoutMessageTruncation() {
+    fun photoCardsRenderMaxLengthWithoutMessageTruncation() {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
         val generator = InvitationImageGenerator(context)
         val repo = TemplateRepository()
@@ -34,7 +34,9 @@ class EngagementMaxTextRenderTest {
             message = "M".repeat(InvitationFieldLimits.MESSAGE_MAX_LENGTH_WITH_PHOTO)
         )
 
-        (1..5).map { "engagement_%02d".format(it) }.forEach { id ->
+        val ids = (1..5).map { "engagement_%02d".format(it) } +
+            (1..5).map { "naming_%02d".format(it) }
+        ids.forEach { id ->
             val template = repo.templateById(id) ?: return@forEach
             val report = generator.createInvitationBitmap(
                 template = template,

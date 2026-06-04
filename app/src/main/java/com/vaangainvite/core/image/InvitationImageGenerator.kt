@@ -46,8 +46,8 @@ class InvitationImageGenerator(private val context: Context) {
 
         val usesPhotoBackground = template.usesPhotoBackground()
         val expectsPhoto = uploadedPhotoUri != null
-        val hasUploadedPhoto = if (usesPhotoBackground && template.id.startsWith("engagement")) {
-            drawEngagementPhoto(
+        val hasUploadedPhoto = if (usesPhotoBackground && PhotoCardPlacement.isPhotoCardTemplate(template.id)) {
+            drawPhotoCardPhoto(
                 canvas = canvas,
                 uploadedPhotoUri = uploadedPhotoUri,
                 templateId = template.id
@@ -220,33 +220,32 @@ class InvitationImageGenerator(private val context: Context) {
         val userMessage = details.message.trim()
         val hasUserMessage = userMessage.isNotBlank()
         val isPeacockVase = template.id == "wedding_05"
-        val isEngagement = template.id.startsWith("engagement")
-        val isTightEngagementCard = template.id.startsWith("engagement")
+        val isPhotoCard = PhotoCardPlacement.isPhotoCardTemplate(template.id)
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
         val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase ||
-            (isEngagement && hasUploadedPhoto)
+            (isPhotoCard && hasUploadedPhoto)
         val detailRowSpacing = when {
             isPeacockWithPhoto -> 4f
-            isEngagement && hasUploadedPhoto -> 4f
+            isPhotoCard && hasUploadedPhoto -> 4f
             else -> InvitationLayout.Spacing.betweenDetails
         }
         val messageGap = when {
             isPeacockWithPhoto -> 8f
-            isEngagement && hasUploadedPhoto -> 8f
+            isPhotoCard && hasUploadedPhoto -> 8f
             else -> InvitationLayout.Spacing.beforeMessageNoPhoto
         }
 
         val introSize = when {
-            isTightEngagementCard && hasUploadedPhoto -> 26f
+            isPhotoCard && hasUploadedPhoto -> 26f
             isPeacockVase -> 28f
-            isEngagement && hasUploadedPhoto -> 28f
+            isPhotoCard && hasUploadedPhoto -> 28f
             template.id == "wedding_02" && hasUploadedPhoto -> 28f
             else -> 32f
         }
         val occasionSize = when {
-            isTightEngagementCard && hasUploadedPhoto -> 34f
+            isPhotoCard && hasUploadedPhoto -> 34f
             isPeacockVase -> 38f
-            isEngagement && hasUploadedPhoto -> 38f
+            isPhotoCard && hasUploadedPhoto -> 38f
             template.id == "wedding_02" && hasUploadedPhoto -> 40f
             else -> 46f
         }
@@ -257,8 +256,8 @@ class InvitationImageGenerator(private val context: Context) {
             palette.primaryColor,
             when {
                 isPeacockVase -> 54f
-                isTightEngagementCard && hasUploadedPhoto -> 44f
-                isEngagement && hasUploadedPhoto -> 48f
+                isPhotoCard && hasUploadedPhoto -> 44f
+                isPhotoCard && hasUploadedPhoto -> 48f
                 compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 54f
                 template.id == "wedding_02" && usesPhotoBackground -> 62f
@@ -271,7 +270,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            if (compactLayout || isPeacockVase || (isEngagement && hasUploadedPhoto)) 24f else 28f,
+            if (compactLayout || isPeacockVase || (isPhotoCard && hasUploadedPhoto)) 24f else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -281,8 +280,8 @@ class InvitationImageGenerator(private val context: Context) {
         val messagePaint = textPaint(
             palette.messageColor,
             when {
-                isTightEngagementCard && hasUploadedPhoto -> 20f
-                isEngagement && hasUploadedPhoto -> 22f
+                isPhotoCard && hasUploadedPhoto -> 20f
+                isPhotoCard && hasUploadedPhoto -> 22f
                 usesPhotoBackground -> 24f
                 else -> 26f
             },
@@ -356,7 +355,7 @@ class InvitationImageGenerator(private val context: Context) {
             maxLines = 1,
             rowSpacing = detailRowSpacing
         )
-        val venueMaxLines = if (isEngagement && hasUploadedPhoto) 1 else InvitationDetails.VENUE_MAX_LINES
+        val venueMaxLines = if (isPhotoCard && hasUploadedPhoto) 1 else InvitationDetails.VENUE_MAX_LINES
         blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
@@ -565,6 +564,7 @@ class InvitationImageGenerator(private val context: Context) {
                 template.id.startsWith("housewarming") -> "Housewarming Ceremony"
                 template.id.startsWith("puberty") -> "Puberty Ceremony"
                 template.id.startsWith("engagement") -> "Engagement Ceremony"
+                template.id.startsWith("naming") -> "Naming Ceremony"
                 else -> "Birthday Celebration"
             }
             InvitationLanguage.TAMIL -> when {
@@ -572,12 +572,13 @@ class InvitationImageGenerator(private val context: Context) {
                 template.id.startsWith("housewarming") -> "கிருஹப்பிரவேசம்"
                 template.id.startsWith("puberty") -> "பருவ விழா"
                 template.id.startsWith("engagement") -> "நிச்சயதார்த்த விழா"
+                template.id.startsWith("naming") -> "பெயர் சூட்டும் விழா"
                 else -> "பிறந்தநாள் விழா"
             }
         }
     }
 
-    private fun drawEngagementPhoto(
+    private fun drawPhotoCardPhoto(
         canvas: Canvas,
         uploadedPhotoUri: Uri?,
         templateId: String
@@ -585,9 +586,9 @@ class InvitationImageGenerator(private val context: Context) {
         if (uploadedPhotoUri == null) return false
 
         val photoBitmap = decodePhoto(uploadedPhotoUri) ?: return false
-        val placement = EngagementPhotoPlacement.specFor(templateId)
+        val placement = PhotoCardPlacement.specFor(templateId)
         val frame = placement.bounds
-        val clipPath = EngagementPhotoPlacement.clipPath(placement)
+        val clipPath = PhotoCardPlacement.clipPath(placement)
 
         canvas.save()
         canvas.clipPath(clipPath)
@@ -596,7 +597,7 @@ class InvitationImageGenerator(private val context: Context) {
             centeredCropSource(
                 photoBitmap,
                 frame,
-                targetAspect = EngagementPhotoPlacement.cropAspectRatio(templateId)
+                targetAspect = PhotoCardPlacement.cropAspectRatio(templateId)
             ),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
