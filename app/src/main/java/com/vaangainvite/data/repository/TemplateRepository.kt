@@ -33,6 +33,13 @@ class TemplateRepository {
             description = "Five elegant purple-and-rose printable ceremony cards.",
             accentColor = 0xFF6A1B9A.toInt(),
             iconResId = R.drawable.ic_category_puberty
+        ),
+        InvitationCategory(
+            id = "engagement",
+            title = "Engagement",
+            description = "Five printable arch-top cards for your nischayadartha.",
+            accentColor = 0xFFC2185B.toInt(),
+            iconResId = R.drawable.ic_category_engagement
         )
     )
 
@@ -205,6 +212,49 @@ class TemplateRepository {
             description = "Rose-gold sweep with lamps and roses.",
             resId = R.drawable.bg_puberty_rose_festival,
             primaryColor = 0xFF7B1FA2.toInt()
+        ),
+
+        // Engagement
+        photoTemplate(
+            id = "engagement_01",
+            categoryId = "engagement",
+            title = "Banana Leaf Toran",
+            description = "Green toran, kalash, vilakku — arch photo on top.",
+            resId = R.drawable.bg_engagement_01,
+            primaryColor = 0xFF2E7D32.toInt()
+        ),
+        photoTemplate(
+            id = "engagement_02",
+            categoryId = "engagement",
+            title = "Marigold Royale",
+            description = "Maroon marigolds, banana grove, auspicious kalash.",
+            resId = R.drawable.bg_engagement_02,
+            primaryColor = 0xFFB71C1C.toInt()
+        ),
+        photoTemplate(
+            id = "engagement_03",
+            categoryId = "engagement",
+            title = "Cream Kolam Glow",
+            description = "Cream arch, bells, vilakku row, golden kalash.",
+            resId = R.drawable.bg_engagement_03,
+            primaryColor = 0xFF8D6E63.toInt()
+        ),
+        photoTemplate(
+            id = "engagement_04",
+            categoryId = "engagement",
+            title = "Teal Lantern Night",
+            description = "Teal & gold lanterns — romantic evening card.",
+            resId = R.drawable.bg_engagement_04,
+            primaryColor = 0xFFFFB74D.toInt(),
+            usesLightText = true
+        ),
+        photoTemplate(
+            id = "engagement_05",
+            categoryId = "engagement",
+            title = "Rose Gold Vows",
+            description = "Rose-gold arch, rings, diyas — premium look.",
+            resId = R.drawable.bg_engagement_05,
+            primaryColor = 0xFFC2185B.toInt()
         )
     )
 

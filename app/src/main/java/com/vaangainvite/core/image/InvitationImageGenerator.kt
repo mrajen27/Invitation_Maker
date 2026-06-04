@@ -46,7 +46,13 @@ class InvitationImageGenerator(private val context: Context) {
 
         val usesPhotoBackground = template.usesPhotoBackground()
         val expectsPhoto = uploadedPhotoUri != null
-        val hasUploadedPhoto = if (usesPhotoBackground) {
+        val hasUploadedPhoto = if (usesPhotoBackground && template.id.startsWith("engagement")) {
+            drawEngagementPhoto(
+                canvas = canvas,
+                uploadedPhotoUri = uploadedPhotoUri,
+                templateId = template.id
+            )
+        } else if (usesPhotoBackground) {
             drawUploadedPhoto(
                 canvas = canvas,
                 uploadedPhotoUri = uploadedPhotoUri,
@@ -533,15 +539,61 @@ class InvitationImageGenerator(private val context: Context) {
                 template.id.startsWith("wedding") -> "Wedding Celebration"
                 template.id.startsWith("housewarming") -> "Housewarming Ceremony"
                 template.id.startsWith("puberty") -> "Puberty Ceremony"
+                template.id.startsWith("engagement") -> "Engagement Ceremony"
                 else -> "Birthday Celebration"
             }
             InvitationLanguage.TAMIL -> when {
                 template.id.startsWith("wedding") -> "திருமண விழா"
                 template.id.startsWith("housewarming") -> "கிருஹப்பிரவேசம்"
                 template.id.startsWith("puberty") -> "பருவ விழா"
+                template.id.startsWith("engagement") -> "நிச்சயதார்த்த விழா"
                 else -> "பிறந்தநாள் விழா"
             }
         }
+    }
+
+    private fun drawEngagementPhoto(
+        canvas: Canvas,
+        uploadedPhotoUri: Uri?,
+        templateId: String
+    ): Boolean {
+        if (uploadedPhotoUri == null) return false
+
+        val photoBitmap = decodePhoto(uploadedPhotoUri) ?: return false
+        val placement = EngagementPhotoPlacement.specFor(templateId)
+        val frame = placement.bounds
+        val clipPath = EngagementPhotoPlacement.clipPath(placement)
+
+        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.argb(50, 30, 20, 40)
+            style = Paint.Style.FILL
+        }
+        canvas.save()
+        canvas.translate(0f, 8f)
+        canvas.drawPath(clipPath, shadowPaint)
+        canvas.restore()
+
+        canvas.save()
+        canvas.clipPath(clipPath)
+        canvas.drawBitmap(
+            photoBitmap,
+            centeredCropSource(photoBitmap, frame),
+            frame,
+            Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+        )
+        canvas.restore()
+
+        val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = if (placement.border == EngagementPhotoPlacement.Border.INNER_GLOW) 4f else 3f
+            color = if (placement.border == EngagementPhotoPlacement.Border.INNER_GLOW) {
+                Color.argb(130, 255, 248, 220)
+            } else {
+                Color.argb(100, 255, 252, 245)
+            }
+        }
+        canvas.drawPath(clipPath, stroke)
+        return true
     }
 
     private fun drawUploadedPhoto(
@@ -551,13 +603,7 @@ class InvitationImageGenerator(private val context: Context) {
     ): Boolean {
         if (uploadedPhotoUri == null) return false
 
-        val photoBitmap = runCatching {
-            context.contentResolver.openInputStream(uploadedPhotoUri)?.use { input ->
-                BitmapFactory.decodeStream(input)
-            }
-        }.getOrNull()?.let { bitmap ->
-            correctBitmapOrientation(bitmap, uploadedPhotoUri)
-        } ?: return false
+        val photoBitmap = decodePhoto(uploadedPhotoUri) ?: return false
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -581,13 +627,38 @@ class InvitationImageGenerator(private val context: Context) {
         canvas.clipPath(path)
         canvas.drawBitmap(
             photoBitmap,
-            null,
+            centeredCropSource(photoBitmap, frame),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
         canvas.restore()
         canvas.drawRoundRect(frame, 32f, 32f, borderPaint)
         return true
+    }
+
+    private fun decodePhoto(uploadedPhotoUri: Uri): Bitmap? {
+        return runCatching {
+            context.contentResolver.openInputStream(uploadedPhotoUri)?.use { input ->
+                BitmapFactory.decodeStream(input)
+            }
+        }.getOrNull()?.let { bitmap ->
+            correctBitmapOrientation(bitmap, uploadedPhotoUri)
+        }
+    }
+
+    private fun centeredCropSource(bitmap: Bitmap, target: RectF): Rect {
+        val bitmapAspect = bitmap.width.toFloat() / bitmap.height.toFloat()
+        val targetAspect = target.width() / target.height()
+
+        return if (bitmapAspect > targetAspect) {
+            val sourceWidth = (bitmap.height * targetAspect).toInt().coerceAtMost(bitmap.width)
+            val left = (bitmap.width - sourceWidth) / 2
+            Rect(left, 0, left + sourceWidth, bitmap.height)
+        } else {
+            val sourceHeight = (bitmap.width / targetAspect).toInt().coerceAtMost(bitmap.height)
+            val top = (bitmap.height - sourceHeight) / 2
+            Rect(0, top, bitmap.width, top + sourceHeight)
+        }
     }
 
     private fun correctBitmapOrientation(bitmap: Bitmap, uploadedPhotoUri: Uri): Bitmap {
