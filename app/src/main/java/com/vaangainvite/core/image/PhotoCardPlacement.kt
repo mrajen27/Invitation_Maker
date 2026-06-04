@@ -17,8 +17,8 @@ internal object PhotoCardPlacement {
         val mask: Mask = Mask.TRADITIONAL_RECT
     )
 
-    /** Measured on designed 1080×1350 WebP cream panels. */
-    private val traditionalPhoto = RectF(184f, 147f, 894f, 554f)
+    /** Measured on 1080×1350 WebPs (width-preserved conversion keeps side borders). */
+    private val traditionalPhoto = RectF(248f, 375f, 830f, 555f)
 
     private val templateIds = (1..5).flatMap { i ->
         listOf("engagement_%02d".format(i), "naming_%02d".format(i))

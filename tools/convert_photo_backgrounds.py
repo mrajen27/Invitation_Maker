@@ -28,23 +28,41 @@ def crop_center_cover(im: Image.Image, target_ratio: float) -> Image.Image:
     return im.crop((0, top, w, top + new_h))
 
 
+def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
+    """Cream fill for vertical letterbox pads (from center panel)."""
+    x, y = im.width // 2, im.height // 2
+    patch = im.crop((x - 24, y - 24, x + 24, y + 24))
+    pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
+    pixels.sort(key=lambda c: c[0] + c[1] + c[2])
+    return pixels[len(pixels) // 2]
+
+
 def fit_portrait_card(im: Image.Image) -> Image.Image:
-    """Scale then center-crop to 1080×1350 without squashing wide designed art."""
+    """Scale to 1080×1350 without squashing; keep full width on landscape art (side borders)."""
     w, h = im.size
     target_ratio = TARGET_W / TARGET_H
     current = w / h
+
     if current > target_ratio:
-        scale = TARGET_H / h
-        new_w = max(TARGET_W, int(w * scale))
-        new_h = TARGET_H
-    else:
+        # Wide designed art — scale to full card width so left/right décor is not cropped.
         scale = TARGET_W / w
         new_w = TARGET_W
-        new_h = max(TARGET_H, int(h * scale))
+        new_h = max(1, int(h * scale))
+        im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        if new_h >= TARGET_H:
+            top = (new_h - TARGET_H) // 2
+            return im.crop((0, top, TARGET_W, top + TARGET_H))
+        fill = sample_edge_color(im)
+        out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
+        out.paste(im, (0, (TARGET_H - new_h) // 2))
+        return out
+
+    scale = TARGET_W / w
+    new_w = TARGET_W
+    new_h = max(TARGET_H, int(h * scale))
     im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-    left = max(0, (new_w - TARGET_W) // 2)
     top = max(0, (new_h - TARGET_H) // 2)
-    return im.crop((left, top, left + TARGET_W, top + TARGET_H))
+    return im.crop((0, top, TARGET_W, top + TARGET_H))
 
 
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
