@@ -24,8 +24,8 @@ internal object EngagementPhotoPlacement {
         val border: Border = Border.ARTWORK_FRAME
     )
 
-    /** Shared layout on redesigned 1080×1350 traditional panels. */
-    private val traditionalPhoto = RectF(192f, 148f, 888f, 538f)
+    /** Measured on designed 1080×1350 WebP cream panels (no inner frame). */
+    private val traditionalPhoto = RectF(184f, 147f, 894f, 554f)
 
     private val specs = mapOf(
         "engagement_01" to Spec(bounds = traditionalPhoto),

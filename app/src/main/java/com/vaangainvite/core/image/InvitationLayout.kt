@@ -39,13 +39,13 @@ internal object InvitationLayout {
      * Temple Mandapam and Gopuram Welcome have deep arches — text must start below the toran.
      */
     private val engagementTextZone = TextZoneSpec(
-        left = 208f,
-        right = 872f,
+        left = 200f,
+        right = 880f,
         topNoPhoto = 548f,
-        topWithPhoto = 556f,
-        bottom = 1100f,
-        messageBottom = 1065f,
-        photoTextGap = 12f
+        topWithPhoto = 568f,
+        bottom = 1105f,
+        messageBottom = 1068f,
+        photoTextGap = 14f
     )
 
     private val templateTextZones = mapOf(

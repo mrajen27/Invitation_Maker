@@ -1,15 +1,21 @@
-# Engagement samples — traditional panel layout
+# Engagement samples — designed WebP photo cards
 
-All five cards share one layout: **rectangular photo** on a **continuous cream panel** (no arch, no round ring, no line between photo and text). Décor sits on the **top, sides, and bottom** only.
+Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 
-| ID | Title | Theme |
-|----|--------|--------|
-| engagement_01 | Green Toran Classic | Toran, banana leaves, diyas |
-| engagement_02 | Marigold Royal | Marigold, maroon sides, kalash |
-| engagement_03 | Peacock Lotus | Peacock, lotus row |
-| engagement_04 | Rose Temple Border | Roses, marigold, diyas |
-| engagement_05 | Mango Leaf Gold | Mango leaves, kalash |
+- Traditional décor on **top, sides, and bottom**
+- One **continuous cream panel** for photo + text (no divider line)
+- **Rectangular** photo clip only (no arch, circle, oval, or gold ring)
 
-Regenerate backgrounds: `python3 tools/generate_engagement_backgrounds.py && python3 tools/convert_photo_backgrounds.py`
+| ID | Title |
+|----|--------|
+| engagement_01 | Green Toran Classic |
+| engagement_02 | Marigold Royal |
+| engagement_03 | Peacock Lotus |
+| engagement_04 | Rose Temple Border |
+| engagement_05 | Mango Leaf Gold |
 
-Regenerate samples: `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`
+## Replace artwork
+
+1. Save designed PNGs as `tools/bg_sources/engagement_XX_source.png` (portrait ~4:5).
+2. `python3 tools/convert_photo_backgrounds.py`
+3. `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`
