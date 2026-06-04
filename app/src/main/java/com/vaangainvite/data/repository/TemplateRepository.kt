@@ -316,42 +316,42 @@ class TemplateRepository {
         photoTemplate(
             id = "babyshower_01",
             categoryId = "babyshower",
-            title = "Pink Cloud Blessing",
-            description = "Blush pink — jasmine toran, cradle & soft balloons.",
+            title = "Pink Balloon Bunting",
+            description = "Party pink — balloon garland, confetti & baby booties.",
             resId = R.drawable.bg_babyshower_01,
             primaryColor = 0xFFE91E8C.toInt()
         ),
         photoTemplate(
             id = "babyshower_02",
             categoryId = "babyshower",
-            title = "Blue Balloon Dream",
-            description = "Sky blue & gold — marigold garland and party balloons.",
+            title = "Blue Cloud Dream",
+            description = "Sky blue — fluffy clouds, golden stars & teddy bear.",
             resId = R.drawable.bg_babyshower_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
         photoTemplate(
             id = "babyshower_03",
             categoryId = "babyshower",
-            title = "Sunshine Marigold",
-            description = "Warm yellow — mango leaves, kalash & golden stars.",
+            title = "Mint Gift Celebration",
+            description = "Mint & gold — bunting, wrapped gifts & cupcake.",
             resId = R.drawable.bg_babyshower_03,
-            primaryColor = 0xFFF9A825.toInt()
+            primaryColor = 0xFF43A047.toInt()
         ),
         photoTemplate(
             id = "babyshower_04",
             categoryId = "babyshower",
             title = "Lavender Moon Stars",
-            description = "Lavender celestial — moon garland, lotus & twinkle stars.",
+            description = "Lavender night — crescent moon, stars, rattle & bottle.",
             resId = R.drawable.bg_babyshower_04,
             primaryColor = 0xFF7E57C2.toInt()
         ),
         photoTemplate(
             id = "babyshower_05",
             categoryId = "babyshower",
-            title = "Rose Garden Party",
-            description = "Rose & mint — temple roses, marigold top & mint balloons.",
+            title = "Peach Ribbon Party",
+            description = "Peach & coral — ribbon cascade, heart balloon & booties.",
             resId = R.drawable.bg_babyshower_05,
-            primaryColor = 0xFF43A047.toInt()
+            primaryColor = 0xFFFF7043.toInt()
         )
     )
 
