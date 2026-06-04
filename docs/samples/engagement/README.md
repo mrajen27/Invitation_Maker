@@ -1,21 +1,22 @@
-# Engagement photo-card samples
+# Engagement samples
 
-Five **designed WebP** backgrounds (1080×1350) with the photo-card pipeline:
+Five **new** illustrated WebP templates using the **same photo-card implementation**:
 
-- WebP artwork in `drawable-nodpi/bg_engagement_*.webp`
-- Portrait clipped to the **top ceremony arch** (`EngagementPhotoPlacement`)
-- Event copy in the **cream band below** (`InvitationLayout` per template)
+- `photoTemplate` + `bg_engagement_XX.webp`
+- `EngagementPhotoPlacement` (arch mask)
+- `InvitationLayout` (per-template text band)
 
-| ID | Title | Style |
-|----|--------|--------|
-| engagement_01 | Banana Leaf Toran | Traditional |
-| engagement_02 | Marigold Royale | Traditional |
-| engagement_03 | Cream Kolam Glow | Traditional |
-| engagement_04 | Teal Lantern Night | Modern (light text) |
-| engagement_05 | Rose Gold Vows | Modern |
+| ID | Title |
+|----|--------|
+| engagement_01 | Green Toran Blessing |
+| engagement_02 | Marigold Heritage |
+| engagement_03 | Peacock Lotus Garden |
+| engagement_04 | Blush Rose Lights |
+| engagement_05 | Sage Garden Glow |
 
-Regenerate previews:
+Replace art: add PNGs under `tools/bg_sources/engagement_XX_source.png`, then:
 
 ```bash
-PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.EngagementSampleExportTest"
+python3 tools/convert_photo_backgrounds.py
+PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"
 ```

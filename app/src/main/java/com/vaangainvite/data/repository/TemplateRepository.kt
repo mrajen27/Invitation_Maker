@@ -214,47 +214,46 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement — photo-card WebP backgrounds (designed 1080×1350 art)
+        // Engagement — photo-card WebP (arch photo + text band; same pipeline for all five)
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Banana Leaf Toran",
-            description = "Green toran, kalash, vilakku — arch photo on top.",
+            title = "Green Toran Blessing",
+            description = "Banana leaf, jasmine garland, kalash & diyas.",
             resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Royale",
-            description = "Maroon marigolds, banana grove, auspicious kalash.",
+            title = "Marigold Heritage",
+            description = "Maroon marigold toran, temple bells & thali.",
             resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Cream Kolam Glow",
-            description = "Cream arch, bells, vilakku row, golden kalash.",
+            title = "Peacock Lotus Garden",
+            description = "Floral vines, peacock, kalash & lotus.",
             resId = R.drawable.bg_engagement_03,
-            primaryColor = 0xFF8D6E63.toInt()
+            primaryColor = 0xFFAD1457.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Teal Lantern Night",
-            description = "Teal & gold lanterns — romantic evening card.",
+            title = "Blush Rose Lights",
+            description = "Pink wash, fairy lights, roses & lanterns.",
             resId = R.drawable.bg_engagement_04,
-            primaryColor = 0xFFFFB74D.toInt(),
-            usesLightText = true
+            primaryColor = 0xFFC2185B.toInt()
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Rose Gold Vows",
-            description = "Rose-gold arch, rings, diyas — premium look.",
+            title = "Sage Garden Glow",
+            description = "Sage botanical, bulbs, candle & gold lantern.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFFC2185B.toInt()
+            primaryColor = 0xFF558B2F.toInt()
         )
     )
 
