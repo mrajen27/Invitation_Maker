@@ -312,44 +312,44 @@ class TemplateRepository {
             primaryColor = 0xFF2E7D32.toInt()
         ),
 
-        // Baby shower — designed WebP photo cards (same layout as engagement / naming)
+        // Baby shower — illustrated WebP photo cards (pastel engagement-style art)
         photoTemplate(
             id = "babyshower_01",
             categoryId = "babyshower",
-            title = "Pink Balloon Bunting",
-            description = "Party pink — balloon garland, confetti & baby booties.",
+            title = "Blush Rose Pastel",
+            description = "Soft pink — rose temple border with pastel blush tones.",
             resId = R.drawable.bg_babyshower_01,
             primaryColor = 0xFFE91E8C.toInt()
         ),
         photoTemplate(
             id = "babyshower_02",
             categoryId = "babyshower",
-            title = "Blue Cloud Dream",
-            description = "Sky blue — fluffy clouds, golden stars & teddy bear.",
+            title = "Sky Peacock Dream",
+            description = "Sky blue — peacock lotus border in gentle pastel blue.",
             resId = R.drawable.bg_babyshower_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
         photoTemplate(
             id = "babyshower_03",
             categoryId = "babyshower",
-            title = "Mint Gift Celebration",
-            description = "Mint & gold — bunting, wrapped gifts & cupcake.",
+            title = "Mint Toran Joy",
+            description = "Mint green — mango-leaf toran with soft celebration tones.",
             resId = R.drawable.bg_babyshower_03,
             primaryColor = 0xFF43A047.toInt()
         ),
         photoTemplate(
             id = "babyshower_04",
             categoryId = "babyshower",
-            title = "Lavender Moon Stars",
-            description = "Lavender night — crescent moon, stars, rattle & bottle.",
+            title = "Lavender Marigold",
+            description = "Lavender — marigold royal border in lilac pastel.",
             resId = R.drawable.bg_babyshower_04,
             primaryColor = 0xFF7E57C2.toInt()
         ),
         photoTemplate(
             id = "babyshower_05",
             categoryId = "babyshower",
-            title = "Peach Ribbon Party",
-            description = "Peach & coral — ribbon cascade, heart balloon & booties.",
+            title = "Peach Mango Blessing",
+            description = "Warm peach — mango leaf gold in soft golden peach.",
             resId = R.drawable.bg_babyshower_05,
             primaryColor = 0xFFFF7043.toInt()
         )

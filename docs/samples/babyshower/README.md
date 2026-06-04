@@ -1,18 +1,21 @@
 # Baby shower samples
 
-Five **original party-themed** WebP photo cards (not naming-ceremony art):
+Five **illustrated WebP** photo-card invites (same pipeline as engagement / naming):
 
-- Balloons, bunting, clouds, gifts, booties — no kalash, cradle, or tulsi motifs
-- Same photo-card layout as engagement / naming
+- Designed landscape art → center-cover WebP at 1080×1350
+- Pastel-graded from distinct engagement border artwork (not flat vector)
+- Rectangular photo on continuous cream panel; text below
 
 | ID | Title |
 |----|--------|
-| babyshower_01 | Pink Balloon Bunting |
-| babyshower_02 | Blue Cloud Dream |
-| babyshower_03 | Mint Gift Celebration |
-| babyshower_04 | Lavender Moon Stars |
-| babyshower_05 | Peach Ribbon Party |
+| babyshower_01 | Blush Rose Pastel |
+| babyshower_02 | Sky Peacock Dream |
+| babyshower_03 | Mint Toran Joy |
+| babyshower_04 | Lavender Marigold |
+| babyshower_05 | Peach Mango Blessing |
 
-Regenerate art: `python3 tools/generate_babyshower_sources.py` then `python3 tools/convert_photo_backgrounds.py --prefix babyshower`
+Regenerate sources: `python3 tools/generate_babyshower_sources.py` then `python3 tools/convert_photo_backgrounds.py --prefix babyshower`
+
+Replace with custom designer PNGs: save as `tools/bg_sources/babyshower_XX_source.png` and re-run convert only.
 
 Regenerate previews: `PREVIEW_OUTPUT_DIR=docs/samples/babyshower ./gradlew testDebugUnitTest --tests "BabyShowerSampleExportTest"`
