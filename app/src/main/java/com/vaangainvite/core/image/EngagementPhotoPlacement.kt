@@ -34,15 +34,14 @@ internal object EngagementPhotoPlacement {
 
     private val specs = mapOf(
         "engagement_01" to Spec(
-            bounds = RectF(384f, 186f, 696f, 498f),
-            mask = Mask.MEDALLION_CIRCLE,
-            ornamentBottom = 738f
+            bounds = RectF(305f, 118f, 775f, 428f),
+            mask = Mask.CEREMONY_ARCH,
+            ornamentBottom = 592f
         ),
         "engagement_02" to Spec(
-            bounds = RectF(285f, 152f, 795f, 478f),
-            mask = Mask.ROUNDED_RECT,
-            roundRectRadius = 22f,
-            ornamentBottom = 688f
+            bounds = RectF(278f, 108f, 802f, 422f),
+            mask = Mask.CEREMONY_ARCH,
+            ornamentBottom = 638f
         ),
         "engagement_03" to Spec(
             bounds = RectF(318f, 122f, 762f, 438f),

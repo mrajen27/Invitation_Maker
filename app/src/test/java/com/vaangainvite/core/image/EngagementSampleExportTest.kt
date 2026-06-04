@@ -35,13 +35,23 @@ class EngagementSampleExportTest {
             mobileNumber = "+91 98765 43210",
             message = "Your presence means a lot."
         )
+        val maxDetails = InvitationDetails(
+            occasionTitle = "Sacred Nischayathartham & Ring Ceremony",
+            name = "Kavin Kumar & Sowmya Devi",
+            date = "Saturday, 29 May 2026",
+            time = "Evening 8:00 PM",
+            venue = "Annamalaiyar Mahal, Tiruvannamalai Town",
+            mobileNumber = "+91 98765 43210",
+            message = "Your blessings mean the world to our families."
+        )
 
         (1..5).forEach { index ->
             val id = "engagement_%02d".format(index)
             val template = repo.templateById(id) ?: return@forEach
+            val cardDetails = if (index <= 2) maxDetails else details
             val bitmap = generator.createInvitationBitmap(
                 template = template,
-                details = details,
+                details = cardDetails,
                 language = InvitationLanguage.ENGLISH,
                 uploadedPhotoUri = photoUri
             ).bitmap

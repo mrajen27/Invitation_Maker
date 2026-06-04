@@ -214,20 +214,20 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement — five photo shapes: circle, oval, arch, hex, rounded rect
+        // Engagement — temple arch (01–03), hex, rounded rect
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Gold Ring Medallion",
-            description = "Traditional — circular gold ring photo, cream text below.",
+            title = "Gold Scallop Arch",
+            description = "Traditional — scalloped arch photo, marigold & lotus.",
             resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Marigold Classic Frame",
-            description = "Traditional — portrait photo in cream panel, marigold toran.",
+            title = "Marigold Temple Arch",
+            description = "Traditional — scalloped arch photo, cream text panel below.",
             resId = R.drawable.bg_engagement_02,
             primaryColor = 0xFFB71C1C.toInt()
         ),

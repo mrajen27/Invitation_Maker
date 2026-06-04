@@ -83,22 +83,22 @@ internal object InvitationLayout {
         // Engagement WebPs — per-card cream band (measured on designed 1080×1350 art)
         // Photo shapes differ per card — text starts below each mask
         "engagement_01" to TextZoneSpec(
-            left = 235f,
-            right = 845f,
-            topNoPhoto = 748f,
-            topWithPhoto = 756f,
-            bottom = 1002f,
-            messageBottom = 952f,
-            photoTextGap = 20f
+            left = 228f,
+            right = 852f,
+            topNoPhoto = 608f,
+            topWithPhoto = 616f,
+            bottom = 1090f,
+            messageBottom = 1055f,
+            photoTextGap = 18f
         ),
         "engagement_02" to TextZoneSpec(
-            left = 220f,
-            right = 860f,
-            topNoPhoto = 708f,
-            topWithPhoto = 716f,
-            bottom = 1000f,
-            messageBottom = 950f,
-            photoTextGap = 20f
+            left = 215f,
+            right = 865f,
+            topNoPhoto = 652f,
+            topWithPhoto = 660f,
+            bottom = 1090f,
+            messageBottom = 1055f,
+            photoTextGap = 18f
         ),
         "engagement_03" to TextZoneSpec(
             left = 235f,
