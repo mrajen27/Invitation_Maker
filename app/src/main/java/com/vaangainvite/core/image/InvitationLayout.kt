@@ -92,10 +92,10 @@ internal object InvitationLayout {
     private fun engagementTextZone() = TextZoneSpec(
         left = 215f,
         right = 865f,
-        topNoPhoto = 508f,
-        topWithPhoto = 512f,
-        bottom = 920f,
-        messageBottom = 870f,
+        topNoPhoto = 538f,
+        topWithPhoto = 548f,
+        bottom = 990f,
+        messageBottom = 940f,
         topInset = 4f,
         photoTextGap = 18f
     )

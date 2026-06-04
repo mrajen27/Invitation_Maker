@@ -214,47 +214,46 @@ class TemplateRepository {
             primaryColor = 0xFF7B1FA2.toInt()
         ),
 
-        // Engagement — 3 traditional + 2 modern (original designs)
+        // Engagement — 3 traditional + 2 modern (reference board designs)
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Gopuram Gold",
-            description = "Maroon temple frame, marigold toran, kolam & kalash.",
+            title = "Green Toran Gold",
+            description = "Cream card, banana leaf & jasmine, diyas, kalash.",
             resId = R.drawable.bg_engagement_01,
-            primaryColor = 0xFFB71C1C.toInt()
+            primaryColor = 0xFF2E7D32.toInt()
         ),
         photoTemplate(
             id = "engagement_02",
             categoryId = "engagement",
-            title = "Jasmine Mandapam",
-            description = "Banana-leaf border, jasmine garlands, vilakku row.",
+            title = "Marigold Royal",
+            description = "Maroon marigold toran, gold lamps, corner thali.",
             resId = R.drawable.bg_engagement_02,
-            primaryColor = 0xFF2E7D32.toInt()
+            primaryColor = 0xFFB71C1C.toInt()
         ),
         photoTemplate(
             id = "engagement_03",
             categoryId = "engagement",
-            title = "Saffron Kolam",
-            description = "Saffron glow, temple bells, white kolam blessing.",
+            title = "Peacock & Lotus",
+            description = "Floral vines, peacock, kalash & pink lotus.",
             resId = R.drawable.bg_engagement_03,
-            primaryColor = 0xFFE65100.toInt()
+            primaryColor = 0xFFAD1457.toInt()
         ),
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Blush Minimal",
-            description = "Soft blush card, gold frame — roomy text band.",
+            title = "Pink Lantern Garden",
+            description = "Pink wash, fairy lights, roses & gold lanterns.",
             resId = R.drawable.bg_engagement_04,
             primaryColor = 0xFFC2185B.toInt()
         ),
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Midnight Deco",
-            description = "Navy art-deco gold lines — evening modern look.",
+            title = "Sage Botanical Glow",
+            description = "Sage green, branches, bulbs & candle lantern.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFFFFD54F.toInt(),
-            usesLightText = true
+            primaryColor = 0xFF558B2F.toInt()
         )
     )
 

@@ -24,22 +24,18 @@ internal object EngagementPhotoPlacement {
         val border: Border = Border.ARTWORK_FRAME
     )
 
+    private val defaultBounds = RectF(258f, 128f, 822f, 508f)
+
     private val specs = mapOf(
-        "engagement_01" to Spec(RectF(292f, 118f, 788f, 442f)),
-        "engagement_02" to Spec(RectF(290f, 115f, 790f, 440f)),
-        "engagement_03" to Spec(RectF(294f, 118f, 786f, 442f)),
-        "engagement_04" to Spec(
-            bounds = RectF(296f, 112f, 784f, 438f),
-            border = Border.INNER_GLOW
-        ),
-        "engagement_05" to Spec(
-            bounds = RectF(294f, 110f, 786f, 436f),
-            border = Border.INNER_GLOW
-        )
+        "engagement_01" to Spec(defaultBounds),
+        "engagement_02" to Spec(defaultBounds),
+        "engagement_03" to Spec(defaultBounds),
+        "engagement_04" to Spec(defaultBounds, border = Border.INNER_GLOW),
+        "engagement_05" to Spec(defaultBounds, border = Border.INNER_GLOW)
     )
 
     fun specFor(templateId: String): Spec {
-        return specs[templateId] ?: Spec(RectF(298f, 118f, 782f, 450f))
+        return specs[templateId] ?: Spec(defaultBounds)
     }
 
     fun clipPath(spec: Spec): Path = archPath(spec.bounds)

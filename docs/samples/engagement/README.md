@@ -1,21 +1,19 @@
-# Engagement template samples (new designs)
+# Engagement samples (reference board layout)
 
-Five **original** engagement backgrounds — **3 traditional** + **2 modern** — not reused from housewarming or other categories.
+Matches the shared reference: **scalloped gold arch** · **photo on top** · **text below** · **corner/bottom décor only** (not blocking the text band).
 
 | ID | Style | Title |
 |----|--------|--------|
-| engagement_01 | Traditional | Gopuram Gold |
-| engagement_02 | Traditional | Jasmine Mandapam |
-| engagement_03 | Traditional | Saffron Kolam |
-| engagement_04 | Modern | Blush Minimal |
-| engagement_05 | Modern | Midnight Deco |
+| engagement_01 | Traditional | Green Toran Gold |
+| engagement_02 | Traditional | Marigold Royal |
+| engagement_03 | Traditional | Peacock & Lotus |
+| engagement_04 | Modern | Pink Lantern Garden |
+| engagement_05 | Modern | Sage Botanical Glow |
 
-Files `engagement_XX_with_photo.png` are generated at 1080×1350 with a sample portrait in the top arch and full event text below.
+Sample copy: **Kavin & Sowmya**, 29 May 2026, 8:00 PM.
 
-Regenerate:
+To swap in your exact illustrated PNGs (pixel-perfect), place files in `tools/bg_sources/` as `engagement_01_source.png` … `engagement_05_source.png`, then run:
 
 ```bash
-python3 tools/generate_engagement_backgrounds.py
 python3 tools/convert_photo_backgrounds.py
-PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.EngagementSampleExportTest"
 ```

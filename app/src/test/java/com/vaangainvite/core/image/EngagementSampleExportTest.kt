@@ -30,12 +30,12 @@ class EngagementSampleExportTest {
         val photoUri = copySamplePhoto(context.cacheDir)
         val details = InvitationDetails(
             occasionTitle = "Engagement Ceremony",
-            name = "Arjun & Divya",
-            date = "Sunday, 25 May 2026",
-            time = "6:00 PM onwards",
+            name = "Kavin & Sowmya",
+            date = "29 May 2026",
+            time = "8:00 PM",
             venue = "Annamalaiyar Mahal, Tiruvannamalai",
             mobileNumber = "+91 98765 43210",
-            message = "Together we begin our forever."
+            message = "Your presence means a lot."
         )
 
         (1..5).forEach { index ->
