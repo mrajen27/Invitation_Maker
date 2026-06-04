@@ -82,13 +82,13 @@ internal object InvitationLayout {
         "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
         // Engagement WebPs — per-card cream band (measured on designed 1080×1350 art)
         "engagement_01" to TextZoneSpec(
-            left = 200f,
-            right = 880f,
-            topNoPhoto = 468f,
-            topWithPhoto = 492f,
-            bottom = 1085f,
-            messageBottom = 1035f,
-            photoTextGap = 10f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 458f,
+            topWithPhoto = 478f,
+            bottom = 1002f,
+            messageBottom = 952f,
+            photoTextGap = 14f
         ),
         "engagement_02" to TextZoneSpec(
             left = 200f,
@@ -109,13 +109,13 @@ internal object InvitationLayout {
             photoTextGap = 8f
         ),
         "engagement_04" to TextZoneSpec(
-            left = 210f,
-            right = 870f,
-            topNoPhoto = 465f,
-            topWithPhoto = 490f,
-            bottom = 1085f,
-            messageBottom = 1035f,
-            photoTextGap = 10f
+            left = 235f,
+            right = 845f,
+            topNoPhoto = 452f,
+            topWithPhoto = 472f,
+            bottom = 998f,
+            messageBottom = 948f,
+            photoTextGap = 14f
         ),
         "engagement_05" to TextZoneSpec(
             left = 205f,

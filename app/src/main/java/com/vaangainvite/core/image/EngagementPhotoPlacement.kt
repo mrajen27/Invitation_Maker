@@ -25,13 +25,10 @@ internal object EngagementPhotoPlacement {
     )
 
     private val specs = mapOf(
-        "engagement_01" to Spec(RectF(312f, 128f, 768f, 448f)),
+        "engagement_01" to Spec(RectF(318f, 118f, 762f, 432f)),
         "engagement_02" to Spec(RectF(308f, 122f, 772f, 452f)),
         "engagement_03" to Spec(RectF(318f, 135f, 762f, 445f)),
-        "engagement_04" to Spec(
-            bounds = RectF(322f, 130f, 758f, 450f),
-            border = Border.INNER_GLOW
-        ),
+        "engagement_04" to Spec(RectF(320f, 115f, 760f, 428f)),
         "engagement_05" to Spec(RectF(315f, 125f, 765f, 448f))
     )
 

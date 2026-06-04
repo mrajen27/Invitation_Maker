@@ -10,7 +10,8 @@ from PIL import Image, ImageDraw
 
 TARGET_W = 1080
 # Cream band where the app draws event copy (below arch photo opening).
-TEXT_BAND = (188, 455, 892, 1075)
+# Plain band where the app draws copy (keeps décor at top/bottom edges only).
+TEXT_BAND = (210, 442, 870, 1012)
 TARGET_H = 1350
 TARGET_RATIO = TARGET_W / TARGET_H
 
@@ -31,7 +32,7 @@ def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
     """Pick a neutral fill from the panel beside the arch (avoids gold frame pixels)."""
     x, y = im.width // 2, int(im.height * 0.36)
     patch = im.crop((x - 20, y - 20, x + 20, y + 20))
-    pixels = list(patch.getdata())
+    pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
     pixels.sort(key=lambda c: c[0] + c[1] + c[2])
     return pixels[len(pixels) // 2]
 

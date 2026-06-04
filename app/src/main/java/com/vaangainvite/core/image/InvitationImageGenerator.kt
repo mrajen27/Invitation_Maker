@@ -221,6 +221,7 @@ class InvitationImageGenerator(private val context: Context) {
         val hasUserMessage = userMessage.isNotBlank()
         val isPeacockVase = template.id == "wedding_05"
         val isEngagement = template.id.startsWith("engagement")
+        val isTightEngagementCard = template.id == "engagement_01" || template.id == "engagement_04"
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
         val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase ||
             (isEngagement && hasUploadedPhoto)
@@ -236,12 +237,14 @@ class InvitationImageGenerator(private val context: Context) {
         }
 
         val introSize = when {
+            isTightEngagementCard && hasUploadedPhoto -> 26f
             isPeacockVase -> 28f
             isEngagement && hasUploadedPhoto -> 28f
             template.id == "wedding_02" && hasUploadedPhoto -> 28f
             else -> 32f
         }
         val occasionSize = when {
+            isTightEngagementCard && hasUploadedPhoto -> 34f
             isPeacockVase -> 38f
             isEngagement && hasUploadedPhoto -> 38f
             template.id == "wedding_02" && hasUploadedPhoto -> 40f
@@ -254,6 +257,7 @@ class InvitationImageGenerator(private val context: Context) {
             palette.primaryColor,
             when {
                 isPeacockVase -> 54f
+                isTightEngagementCard && hasUploadedPhoto -> 44f
                 isEngagement && hasUploadedPhoto -> 48f
                 compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 54f
@@ -277,6 +281,7 @@ class InvitationImageGenerator(private val context: Context) {
         val messagePaint = textPaint(
             palette.messageColor,
             when {
+                isTightEngagementCard && hasUploadedPhoto -> 20f
                 isEngagement && hasUploadedPhoto -> 22f
                 usesPhotoBackground -> 24f
                 else -> 26f

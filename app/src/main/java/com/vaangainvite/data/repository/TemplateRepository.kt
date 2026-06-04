@@ -218,8 +218,8 @@ class TemplateRepository {
         photoTemplate(
             id = "engagement_01",
             categoryId = "engagement",
-            title = "Green Toran Blessing",
-            description = "Banana leaf, jasmine garland, kalash & diyas.",
+            title = "Temple Jasmine Arch",
+            description = "Wide cream text band — toran arch, edge diyas only.",
             resId = R.drawable.bg_engagement_01,
             primaryColor = 0xFF2E7D32.toInt()
         ),
@@ -242,8 +242,8 @@ class TemplateRepository {
         photoTemplate(
             id = "engagement_04",
             categoryId = "engagement",
-            title = "Blush Rose Lights",
-            description = "Pink wash, fairy lights, roses & lanterns.",
+            title = "Pink Lights Minimal",
+            description = "Open pink panel for text — lights top, roses bottom corners.",
             resId = R.drawable.bg_engagement_04,
             primaryColor = 0xFFC2185B.toInt()
         ),
