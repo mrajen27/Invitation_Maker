@@ -383,8 +383,8 @@ def frameless_portrait_from_landscape(
     top_band_ratio: float | None = None,
     bottom_band_ratio: float | None = None,
 ) -> Image.Image:
-    """Portrait build — naming uses band+stretch center; others use full stretch."""
-    if stem in ("naming_01", "naming_05"):
+    """Portrait build — band+stretch center for footer-heavy cards; others use full stretch."""
+    if stem in ("naming_01", "naming_05", "engagement_05"):
         return naming_portrait_from_landscape(im)
 
     _ = (side_col_ratio, top_band_ratio, bottom_band_ratio)
