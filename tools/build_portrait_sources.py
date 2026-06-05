@@ -150,6 +150,31 @@ def normalize_center_on_scaled(
     return out
 
 
+def blend_horizontal_seam(
+    im: Image.Image,
+    y: int,
+    x0: int,
+    x1: int,
+    *,
+    half_height: int = 6,
+) -> None:
+    """Soften the hard edge where top/bottom décor meets the center panel."""
+    pixels = im.load()
+    w, h = im.size
+    x_start = max(0, x0)
+    x_end = min(w, x1)
+    span = max(1, 2 * half_height)
+    for x in range(x_start, x_end):
+        for dy in range(-half_height, half_height + 1):
+            py = y + dy
+            if py <= 0 or py >= h - 1:
+                continue
+            t = (dy + half_height) / span
+            above = pixels[x, py - 1]
+            below = pixels[x, min(py + 1, h - 1)]
+            pixels[x, py] = tuple(int(above[i] * (1.0 - t) + below[i] * t) for i in range(3))
+
+
 def blend_vertical_seam(
     im: Image.Image,
     x: int,
@@ -209,6 +234,8 @@ def portrait_from_scaled_bands(
     if feather_seams and mid_h > 0:
         blend_vertical_seam(canvas, side_w, mid_top, mid_bottom)
         blend_vertical_seam(canvas, TARGET_W - side_w, mid_top, mid_bottom)
+        blend_horizontal_seam(canvas, mid_top, side_w, TARGET_W - side_w)
+        blend_horizontal_seam(canvas, mid_bottom, side_w, TARGET_W - side_w)
 
     return add_parchment_texture(canvas, strength=0.025)
 
@@ -316,7 +343,7 @@ def smooth_center_panel(portrait: Image.Image, *, strength: str = "light") -> Im
 # Naming cards: short flat footer so cradle/diyas never overlap copy (photo ends ~y600, text to ~1105).
 NAMING_SIDE_RATIO = 0.19
 NAMING_TOP_RATIO = 0.125
-NAMING_BOTTOM_RATIO = 0.12
+NAMING_BOTTOM_RATIO = 0.10
 
 
 def naming_portrait_from_landscape(im: Image.Image) -> Image.Image:
