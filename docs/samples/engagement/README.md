@@ -14,8 +14,11 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 | engagement_04 | Rose Temple Border |
 | engagement_05 | Mango Leaf Gold |
 
-## Replace artwork
+## Regenerate portrait assets
 
-1. Save designed PNGs as `tools/bg_sources/engagement_XX_source.png` (portrait ~4:5).
-2. `python3 tools/convert_photo_backgrounds.py`
-3. `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`
+Portrait sources are built from landscape masters by **stretching the side borders and center cream panel** (top toran and bottom lotus keep their original height — no letterbox, no mirrored seams).
+
+1. Landscape masters: `tools/bg_sources/engagement_XX_source_landscape_backup.png`
+2. Build 1080×1350 sources: `python3 tools/build_portrait_sources.py --prefix engagement --restore-landscape`
+3. WebP: `python3 tools/convert_photo_backgrounds.py --prefix engagement`
+4. Samples: `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`

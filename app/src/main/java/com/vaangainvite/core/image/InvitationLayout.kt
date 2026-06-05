@@ -41,8 +41,8 @@ internal object InvitationLayout {
     private val photoCardTextZone = TextZoneSpec(
         left = 200f,
         right = 880f,
-        topNoPhoto = 608f,
-        topWithPhoto = 618f,
+        topNoPhoto = 618f,
+        topWithPhoto = 612f,
         bottom = 1105f,
         messageBottom = 1068f,
         photoTextGap = 14f
