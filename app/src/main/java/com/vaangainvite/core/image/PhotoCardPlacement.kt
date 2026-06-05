@@ -18,8 +18,16 @@ internal object PhotoCardPlacement {
         val cornerRadius: Float = 32f
     )
 
-    /** Same slot as birthday WebP cards — compact frame under the toran band. */
-    val framedPhoto = RectF(390f, 292f, 690f, 478f)
+    /** Compact frame under the toran band — fits max-length copy + message. */
+    val compactFramedPhoto = RectF(390f, 292f, 690f, 478f)
+
+    /**
+     * Wider photo on the same vertical slot — ~73% wider than compact, max-length copy safe.
+     * Height cannot grow much (~10px) before the 2-line message truncates.
+     */
+    val expandedFramedPhoto = RectF(280f, 292f, 800f, 478f)
+
+    val framedPhoto = compactFramedPhoto
 
     private val templateIds = (1..5).flatMap { i ->
         listOf(
@@ -29,8 +37,18 @@ internal object PhotoCardPlacement {
         )
     }
 
-    private val specs = templateIds.associateWith {
-        Spec(bounds = framedPhoto, cornerRadius = 32f)
+    private var framedPhotoBounds = framedPhoto
+
+    private var specs = templateIds.associateWith {
+        Spec(bounds = framedPhotoBounds, cornerRadius = 32f)
+    }
+
+    /** Test-only: swap photo slot bounds for layout probes. */
+    internal fun setFramedPhotoForTests(bounds: RectF) {
+        framedPhotoBounds = RectF(bounds)
+        specs = templateIds.associateWith {
+            Spec(bounds = framedPhotoBounds, cornerRadius = 32f)
+        }
     }
 
     fun isPhotoCardTemplate(templateId: String): Boolean =
