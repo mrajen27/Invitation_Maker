@@ -2,8 +2,8 @@
 
 Five **illustrated WebP** photo cards (1080×1350 full-bleed portrait):
 
-- Continuous cream center for photo + text
-- Pastel-graded traditional borders (distinct from engagement/naming)
+- Seamless cream center (no inner frame box or divider)
+- Unique pastel illustrated borders per template
 - Rectangular photo clip only
 
 | ID | Title |
@@ -16,10 +16,10 @@ Five **illustrated WebP** photo cards (1080×1350 full-bleed portrait):
 
 ## Regenerate
 
-```bash
-python3 tools/generate_babyshower_templates.py
-python3 tools/convert_photo_backgrounds.py --prefix babyshower
-PREVIEW_OUTPUT_DIR=docs/samples/babyshower ./gradlew testDebugUnitTest --tests "BabyShowerSampleExportTest"
-```
+Masters: `tools/bg_sources/babyshower_XX_landscape_master.png`
 
-Requires engagement `*_landscape_backup.png` masters and portrait layout refs on `main`.
+```bash
+python3 tools/import_landscape_masters.py --all-special   # or per --stem babyshower_01
+python3 tools/regenerate_photo_cards.py --babyshower
+PREVIEW_OUTPUT_DIR=docs/samples/babyshower ./gradlew testDebugUnitTest --tests "com.vaangainvite.core.image.BabyShowerSampleExportTest"
+```

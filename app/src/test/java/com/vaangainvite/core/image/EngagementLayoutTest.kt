@@ -21,11 +21,17 @@ class EngagementLayoutTest {
     }
 
     @Test
-    fun engagementTextStartsDirectlyBelowPhotoWithNoOrnamentGap() {
+    fun engagementPhotoSlotMatchesBirthdayFrame() {
+        val frame = PhotoCardPlacement.specFor("engagement_01").bounds
+        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertTrue(PhotoCardPlacement.usesFramedPhotoBorder("engagement_01"))
+    }
+
+    @Test
+    fun engagementTextStartsBelowPhotoFrame() {
         val id = "engagement_01"
         val photoBottom = PhotoCardPlacement.photoBottom(id)
         val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
-        assertTrue(textTop <= photoBottom + 30f)
         assertTrue(textTop > photoBottom)
     }
 

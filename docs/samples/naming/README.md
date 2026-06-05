@@ -12,8 +12,8 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 | naming_02 | Royal Blue Namakaran |
 | naming_03 | Turmeric Blessing |
 | naming_04 | Moon & Lotus |
-| naming_05 | Tulsi Paladai Gold |
+| naming_05 | Jade Peacock Cradle |
 
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`
 
-Portrait rebuilds: `python3 tools/generate_new_photo_cards.py` (naming_01, naming_05, and engagement_05)
+Portrait rebuilds: `python3 tools/import_landscape_masters.py --all-special` (illustrated naming_01, naming_05 & engagement_05)

@@ -21,6 +21,18 @@ class NamingLayoutTest {
     }
 
     @Test
+    fun namingPhotoSlotMatchesBirthdayFrame() {
+        assertPhotoCardUsesBirthdayFrame("naming_01")
+    }
+
+    private fun assertPhotoCardUsesBirthdayFrame(templateId: String) {
+        val frame = PhotoCardPlacement.specFor(templateId).bounds
+        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertEquals(32f, PhotoCardPlacement.specFor(templateId).cornerRadius, 0.01f)
+        assertTrue(PhotoCardPlacement.usesFramedPhotoBorder(templateId))
+    }
+
+    @Test
     fun namingTextZoneFitsMaxLengthCopy() {
         val id = "naming_01"
         val zone = InvitationLayout.photoTextZone(id, hasUploadedPhoto = true)

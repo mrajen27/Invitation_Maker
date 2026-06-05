@@ -80,8 +80,6 @@ def main() -> int:
     for src in sorted(args.source_dir.glob(f"{args.prefix}_*_source.png")):
         if "_landscape_backup" in src.name:
             continue
-        if args.prefix in ("engagement", "naming") and src.name.endswith("_05_source.png"):
-            continue
         stem = src.stem.replace("_source", "")
         dest = args.dest_dir / f"bg_{stem}.webp"
         convert_one(src, dest, args.quality, strip_text=False)

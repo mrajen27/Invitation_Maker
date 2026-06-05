@@ -21,6 +21,13 @@ class BabyShowerLayoutTest {
     }
 
     @Test
+    fun babyShowerPhotoSlotMatchesBirthdayFrame() {
+        val frame = PhotoCardPlacement.specFor("babyshower_01").bounds
+        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertTrue(PhotoCardPlacement.usesFramedPhotoBorder("babyshower_01"))
+    }
+
+    @Test
     fun babyShowerTextZoneFitsMaxLengthCopy() {
         val id = "babyshower_01"
         val zone = InvitationLayout.photoTextZone(id, hasUploadedPhoto = true)

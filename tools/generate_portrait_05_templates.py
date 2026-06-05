@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate engagement_05 and naming_05 — see generate_new_photo_cards.py."""
+"""Regenerate engagement_05 and naming_05 from illustrated landscape backups."""
 
 from __future__ import annotations
 
