@@ -388,7 +388,7 @@ class InvitationImageGenerator(private val context: Context) {
             return InvitationRenderReport()
         }
 
-        val messageTruncated = drawAdditionalMessage(
+        val messageResult = drawAdditionalMessage(
             canvas = canvas,
             text = messageText,
             paint = messagePaint,
@@ -401,10 +401,15 @@ class InvitationImageGenerator(private val context: Context) {
             gapBeforeMessage = messageGap
         )
         return InvitationRenderReport(
-            messageShown = true,
-            messageTruncated = messageTruncated
+            messageShown = messageResult.shown,
+            messageTruncated = messageResult.truncated
         )
     }
+
+    private data class MessageDrawResult(
+        val shown: Boolean,
+        val truncated: Boolean
+    )
 
     /**
      * Places the additional message 10px below the last detail row (phone).
@@ -422,13 +427,15 @@ class InvitationImageGenerator(private val context: Context) {
         lineSpacing: Float,
         detailRowSpacing: Float = InvitationLayout.Spacing.betweenDetails,
         gapBeforeMessage: Float = InvitationLayout.Spacing.beforeMessageNoPhoto
-    ): Boolean {
+    ): MessageDrawResult {
         val messageStartY = blockTopAfterLastDetail -
             detailRowSpacing +
             gapBeforeMessage
         val maxBottomY = zone.bottom - 8f
         val availableHeight = maxBottomY - messageStartY
-        if (availableHeight < 18f) return false
+        if (availableHeight < 18f) {
+            return MessageDrawResult(shown = false, truncated = false)
+        }
 
         val wrapped = wrapText(text, paint, maxTextWidth)
         val lineAdvance = lineHeight(paint, lineSpacing)
@@ -440,7 +447,9 @@ class InvitationImageGenerator(private val context: Context) {
             1 + ((availableHeight - firstLineHeight) / lineAdvance).toInt()
         }
         val effectiveMaxLines = minOf(maxLines, maxLinesByHeight).coerceAtLeast(0)
-        if (effectiveMaxLines == 0) return false
+        if (effectiveMaxLines == 0) {
+            return MessageDrawResult(shown = false, truncated = false)
+        }
 
         val truncated = wrapped.size > effectiveMaxLines
         drawCenteredLines(
@@ -454,7 +463,7 @@ class InvitationImageGenerator(private val context: Context) {
             horizontalBounds = zone,
             maxBottomY = maxBottomY
         )
-        return truncated
+        return MessageDrawResult(shown = true, truncated = truncated)
     }
 
     private data class InvitationTextPalette(

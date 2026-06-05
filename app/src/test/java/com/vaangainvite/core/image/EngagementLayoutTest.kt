@@ -28,11 +28,12 @@ class EngagementLayoutTest {
     }
 
     @Test
-    fun engagementTextStartsBelowPhotoFrame() {
+    fun engagementTextStartsJustBelowPhotoFrame() {
         val id = "engagement_01"
         val photoBottom = PhotoCardPlacement.photoBottom(id)
         val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
-        assertTrue(textTop > photoBottom)
+        val gap = textTop - photoBottom
+        assertTrue("gap ${gap}px", gap in 12f..20f)
     }
 
     @Test

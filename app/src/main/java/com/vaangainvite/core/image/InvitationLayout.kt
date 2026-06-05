@@ -41,11 +41,12 @@ internal object InvitationLayout {
     private val photoCardTextZone = TextZoneSpec(
         left = 200f,
         right = 880f,
-        topNoPhoto = 618f,
-        topWithPhoto = 612f,
-        bottom = 1105f,
-        messageBottom = 1068f,
-        photoTextGap = 14f
+        topNoPhoto = 518f,
+        // Compact photo frame ends ~y478; intro sits just below gold border.
+        topWithPhoto = 494f,
+        bottom = 1145f,
+        messageBottom = 1110f,
+        photoTextGap = 12f
     )
 
     private val templateTextZones = mapOf(
@@ -187,6 +188,9 @@ internal object InvitationLayout {
             photoFrame(templateId).bottom
         }
         val photoGap = spec?.photoTextGap ?: 22f
+        if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
+            return frameBottom + photoGap + inset
+        }
         return maxOf(zone.top, frameBottom + photoGap) + inset
     }
 
