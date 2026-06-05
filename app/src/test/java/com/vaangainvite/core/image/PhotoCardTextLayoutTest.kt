@@ -19,12 +19,12 @@ import java.io.FileOutputStream
 class PhotoCardTextLayoutTest {
 
     @Test
-    fun introStartsJustBelowCompactPhotoFrame() {
+    fun introStartsJustBelowPhotoFrame() {
         listOf("engagement_01", "naming_01", "babyshower_01").forEach { id ->
             val photoBottom = PhotoCardPlacement.photoBottom(id)
             val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
             val gap = textTop - photoBottom
-            assertTrue("$id gap ${gap}px", gap in 12f..20f)
+            assertTrue("$id gap ${gap}px", gap in 6f..14f)
         }
     }
 

@@ -42,11 +42,12 @@ internal object InvitationLayout {
         left = 200f,
         right = 880f,
         topNoPhoto = 518f,
-        // Compact photo frame ends ~y478; intro sits just below gold border.
         topWithPhoto = 494f,
-        bottom = 1145f,
-        messageBottom = 1110f,
-        photoTextGap = 12f
+        // Cream panel above bottom diyas/toran — text can sit lower on photo cards.
+        bottom = 1185f,
+        messageBottom = 1150f,
+        photoTextGap = 6f,
+        topInset = 2f
     )
 
     private val templateTextZones = mapOf(
