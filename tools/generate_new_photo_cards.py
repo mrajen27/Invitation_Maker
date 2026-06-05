@@ -2,26 +2,30 @@
 """
 Generate portrait photo-card sources.
 
-engagement_05 / naming_05: brand-new procedural art (tools/procedural_05_art.py).
-Other maintenance targets (e.g. naming_01) use landscape compositing.
+engagement_05 / naming_05: illustrated landscape masters (see import_05_landscape_masters.py).
+naming_01: landscape compositing maintenance.
 
-    python3 tools/generate_new_photo_cards.py
+    python3 tools/import_05_landscape_masters.py   # after updating master PNGs
+    python3 tools/generate_new_photo_cards.py      # rebuild _05 from backups
     python3 tools/convert_photo_backgrounds.py --prefix engagement
     python3 tools/convert_photo_backgrounds.py --prefix naming
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-from procedural_05_art import build_engagement_05 as procedural_engagement_05
-from procedural_05_art import build_naming_05 as procedural_naming_05
+TOOLS = Path(__file__).parent
+sys.path.insert(0, str(TOOLS))
+
+from build_portrait_sources import landscape_to_portrait, sample_cream
 
 TARGET_W = 1080
 TARGET_H = 1350
-SRC = Path(__file__).parent / "bg_sources"
+SRC = TOOLS / "bg_sources"
 
 
 def sample_color(im: Image.Image, x: int, y: int) -> tuple[int, int, int]:
@@ -43,6 +47,24 @@ def add_parchment(base: Image.Image, strength: float = 0.028) -> Image.Image:
 def scale_width(im: Image.Image, width: int = TARGET_W) -> Image.Image:
     s = width / im.width
     return im.resize((width, max(1, int(im.height * s))), Image.Resampling.LANCZOS)
+
+
+def flatten_center_panel(im: Image.Image) -> Image.Image:
+    out = im.copy()
+    w, h = out.size
+    cream = sample_cream(out)
+    ImageDraw.Draw(out).rectangle((int(w * 0.10), int(h * 0.20), int(w * 0.90), int(h * 0.76)), fill=cream)
+    return out
+
+
+def portrait_from_landscape_backup(stem: str) -> Image.Image:
+    backup = SRC / f"{stem}_source_landscape_backup.png"
+    if not backup.exists():
+        raise FileNotFoundError(f"Missing landscape backup: {backup}")
+    landscape = Image.open(backup).convert("RGB")
+    if landscape.size != (1536, 1024):
+        landscape = landscape.resize((1536, 1024), Image.Resampling.LANCZOS)
+    return landscape_to_portrait(flatten_center_panel(landscape))
 
 
 def build_fresh_card(
@@ -94,11 +116,11 @@ def build_fresh_card(
 
 
 def build_engagement_05() -> Image.Image:
-    return procedural_engagement_05()
+    return portrait_from_landscape_backup("engagement_05")
 
 
 def build_naming_05() -> Image.Image:
-    return procedural_naming_05()
+    return portrait_from_landscape_backup("naming_05")
 
 
 def build_naming_01() -> Image.Image:
@@ -131,7 +153,7 @@ def main() -> int:
             raise SystemExit(f"{stem} bad size {out.size}")
         path = SRC / f"{stem}_source.png"
         out.save(path, format="PNG", optimize=True)
-        print(f"procedural design → {path.name}")
+        print(f"illustrated portrait → {path.name}")
     return 0
 
 
