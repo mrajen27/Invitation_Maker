@@ -313,6 +313,41 @@ def smooth_center_panel(portrait: Image.Image, *, strength: str = "light") -> Im
     return Image.composite(fixed, portrait, mask)
 
 
+# Naming cards: short flat footer so cradle/diyas never overlap copy (photo ends ~y600, text to ~1105).
+NAMING_SIDE_RATIO = 0.19
+NAMING_TOP_RATIO = 0.125
+NAMING_BOTTOM_RATIO = 0.12
+
+
+def naming_portrait_from_landscape(im: Image.Image) -> Image.Image:
+    """
+    Stretch the natural cream center from the master; short flat bottom band only.
+    No flat rectangle overlay — center crop is stretched vertically.
+    """
+    w, h = im.size
+    if w == TARGET_W and h == TARGET_H:
+        return add_parchment_texture(im, strength=0.02)
+
+    scale = TARGET_W / w
+    scaled_h = max(1, int(h * scale))
+    scaled = im.resize((TARGET_W, scaled_h), Image.Resampling.LANCZOS)
+
+    sw, sh = scaled.size
+    side_w = max(68, int(sw * NAMING_SIDE_RATIO))
+    top_h = max(80, int(sh * NAMING_TOP_RATIO))
+    bottom_h = max(68, int(sh * NAMING_BOTTOM_RATIO))
+
+    out = portrait_from_scaled_bands(
+        scaled,
+        side_w=side_w,
+        top_h=top_h,
+        bottom_h=bottom_h,
+        feather_seams=True,
+    )
+    out = smooth_center_panel(out, strength="light")
+    return add_parchment_texture(out, strength=0.02)
+
+
 def frameless_portrait_from_landscape(
     im: Image.Image,
     *,
@@ -321,7 +356,10 @@ def frameless_portrait_from_landscape(
     top_band_ratio: float | None = None,
     bottom_band_ratio: float | None = None,
 ) -> Image.Image:
-    """Full stretch + stem-tuned smoothing (never a flat overlay rectangle)."""
+    """Portrait build — naming uses band+stretch center; others use full stretch."""
+    if stem in ("naming_01", "naming_05"):
+        return naming_portrait_from_landscape(im)
+
     _ = (side_col_ratio, top_band_ratio, bottom_band_ratio)
     stretched = full_stretch_portrait(im)
     if stem == "engagement_05":

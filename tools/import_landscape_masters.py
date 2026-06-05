@@ -44,7 +44,7 @@ def resolve_master(stem: str, art: str | None, art_dir: Path) -> Path:
             if candidate.exists():
                 return candidate
         raise FileNotFoundError(f"Art not found: {art}")
-    for candidate in (SRC / f"{stem}_landscape_master.png", art_dir / f"{stem}_landscape_master.png"):
+    for candidate in (art_dir / f"{stem}_landscape_master.png", SRC / f"{stem}_landscape_master.png"):
         if candidate.exists():
             return candidate
     raise FileNotFoundError(f"No master for {stem}")
