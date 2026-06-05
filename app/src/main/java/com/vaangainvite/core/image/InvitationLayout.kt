@@ -119,19 +119,22 @@ internal object InvitationLayout {
 
     private val templatePhotoFrames = mapOf(
         // Lower/wider slot inside the temple arch cream panel.
-        "wedding_02" to RectF(320f, 308f, 760f, 498f),
+        "wedding_02" to RectF(360f, 308f, 720f, 498f),
         // Below sacred-knot medallions on the thali motif card.
-        "wedding_04" to RectF(300f, 410f, 780f, 530f),
-        // Narrow upper cream panel on the peacock crest card — widened within arch bounds.
-        "wedding_05" to RectF(390f, 360f, 690f, 490f),
+        "wedding_04" to RectF(360f, 410f, 720f, 530f),
+        // Narrow upper cream panel on the peacock crest card.
+        "wedding_05" to RectF(420f, 360f, 660f, 490f),
         // Below mango-toran band on the gopuram doorway card.
-        "housewarming_03" to RectF(300f, 360f, 780f, 530f)
+        "housewarming_03" to RectF(350f, 360f, 730f, 530f)
     )
 
-    /** Shared wider slot — safe on default WebP templates (birthday, puberty, most housewarming). */
+    /** Default compact slot for birthday, puberty, and most housewarming templates. */
+    val compactDefaultPhotoFrame = RectF(390f, 292f, 690f, 478f)
+
+    /** Wider slot — used in layout probes; engagement/naming/baby shower use [PhotoCardPlacement]. */
     val expandedDefaultPhotoFrame = RectF(280f, 292f, 800f, 478f)
 
-    private val defaultPhotoFrameBase = expandedDefaultPhotoFrame
+    private val defaultPhotoFrameBase = compactDefaultPhotoFrame
     private var defaultPhotoFrameOverride: RectF? = null
     private val templatePhotoFrameOverrides = mutableMapOf<String, RectF>()
 
