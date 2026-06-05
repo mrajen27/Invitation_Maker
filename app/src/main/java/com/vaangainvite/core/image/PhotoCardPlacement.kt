@@ -4,7 +4,7 @@ import android.graphics.Path
 import android.graphics.RectF
 
 /**
- * Designed WebP photo cards (engagement, naming, …) — soft rectangle on continuous cream panel.
+ * Designed WebP photo cards (engagement, naming, baby shower, …) — soft rectangle on continuous cream panel.
  */
 internal object PhotoCardPlacement {
 
@@ -18,8 +18,8 @@ internal object PhotoCardPlacement {
         val cornerRadius: Float = 26f
     )
 
-    /** Measured on width-fit WebPs with cream letterbox (1080×1350). */
-    private val traditionalPhoto = RectF(320f, 428f, 760f, 598f)
+    /** Measured on native 1080×1350 portrait sources (full-bleed, no letterbox). */
+    private val traditionalPhoto = RectF(248f, 210f, 832f, 600f)
 
     private val templateIds = (1..5).flatMap { i ->
         listOf(

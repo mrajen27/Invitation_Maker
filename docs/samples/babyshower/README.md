@@ -1,10 +1,10 @@
 # Baby shower samples
 
-Five **illustrated WebP** photo-card invites (same pipeline as engagement / naming):
+Five **illustrated WebP** photo cards (1080×1350 full-bleed portrait):
 
-- Designed landscape art → center-cover WebP at 1080×1350
-- Pastel-graded from distinct engagement border artwork (not flat vector)
-- Rectangular photo on continuous cream panel; text below
+- Continuous cream center for photo + text
+- Pastel-graded traditional borders (distinct from engagement/naming)
+- Rectangular photo clip only
 
 | ID | Title |
 |----|--------|
@@ -14,8 +14,12 @@ Five **illustrated WebP** photo-card invites (same pipeline as engagement / nami
 | babyshower_04 | Lavender Marigold |
 | babyshower_05 | Peach Mango Blessing |
 
-Regenerate sources: `python3 tools/generate_babyshower_sources.py` then `python3 tools/convert_photo_backgrounds.py --prefix babyshower`
+## Regenerate
 
-Replace with custom designer PNGs: save as `tools/bg_sources/babyshower_XX_source.png` and re-run convert only.
+```bash
+python3 tools/generate_babyshower_templates.py
+python3 tools/convert_photo_backgrounds.py --prefix babyshower
+PREVIEW_OUTPUT_DIR=docs/samples/babyshower ./gradlew testDebugUnitTest --tests "BabyShowerSampleExportTest"
+```
 
-Regenerate previews: `PREVIEW_OUTPUT_DIR=docs/samples/babyshower ./gradlew testDebugUnitTest --tests "BabyShowerSampleExportTest"`
+Requires engagement `*_landscape_backup.png` masters and portrait layout refs on `main`.

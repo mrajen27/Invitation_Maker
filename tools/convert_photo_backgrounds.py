@@ -9,12 +9,11 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 TARGET_W = 1080
-TEXT_BAND = (210, 442, 870, 1012)
 TARGET_H = 1350
+TEXT_BAND = (210, 442, 870, 1012)
 
 
 def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
-    """Cream fill for vertical letterbox pads (from center panel)."""
     x, y = im.width // 2, im.height // 2
     patch = im.crop((x - 24, y - 24, x + 24, y + 24))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -23,23 +22,22 @@ def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def fit_portrait_card(im: Image.Image) -> Image.Image:
-    """
-    Scale landscape art to full card width (side borders stay visible).
-    Letterbox top/bottom with cream sampled from the panel — no crop, no stretch.
-    """
+    """Pass-through for native 1080×1350 sources; otherwise scale width + cream letterbox."""
     w, h = im.size
-    scale = TARGET_W / w
-    new_w = TARGET_W
-    new_h = max(1, int(h * scale))
-    scaled = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    if w == TARGET_W and h == TARGET_H:
+        return im
+    if abs(w / h - TARGET_W / TARGET_H) < 0.02 and w >= TARGET_W:
+        return im.resize((TARGET_W, TARGET_H), Image.Resampling.LANCZOS)
 
-    if new_h >= TARGET_H:
-        top = (new_h - TARGET_H) // 2
+    scale = TARGET_W / w
+    scaled = im.resize((TARGET_W, max(1, int(h * scale))), Image.Resampling.LANCZOS)
+    if scaled.height >= TARGET_H:
+        top = (scaled.height - TARGET_H) // 2
         return scaled.crop((0, top, TARGET_W, top + TARGET_H))
 
     fill = sample_edge_color(scaled)
     out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
-    out.paste(scaled, (0, (TARGET_H - new_h) // 2))
+    out.paste(scaled, (0, (TARGET_H - scaled.height) // 2))
     return out
 
 
@@ -80,6 +78,10 @@ def main() -> int:
     args = parser.parse_args()
 
     for src in sorted(args.source_dir.glob(f"{args.prefix}_*_source.png")):
+        if "_landscape_backup" in src.name:
+            continue
+        if args.prefix in ("engagement", "naming") and src.name.endswith("_05_source.png"):
+            continue
         stem = src.stem.replace("_source", "")
         dest = args.dest_dir / f"bg_{stem}.webp"
         convert_one(src, dest, args.quality, strip_text=False)
