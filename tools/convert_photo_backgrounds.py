@@ -9,23 +9,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 TARGET_W = 1080
-# Cream band where the app draws event copy (below arch photo opening).
-# Plain band where the app draws copy (keeps décor at top/bottom edges only).
 TEXT_BAND = (210, 442, 870, 1012)
 TARGET_H = 1350
-TARGET_RATIO = TARGET_W / TARGET_H
-
-
-def crop_center_cover(im: Image.Image, target_ratio: float) -> Image.Image:
-    w, h = im.size
-    current = w / h
-    if current > target_ratio:
-        new_w = int(h * target_ratio)
-        left = (w - new_w) // 2
-        return im.crop((left, 0, left + new_w, h))
-    new_h = int(w / target_ratio)
-    top = (h - new_h) // 2
-    return im.crop((0, top, w, top + new_h))
 
 
 def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
@@ -38,19 +23,27 @@ def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def fit_portrait_card(im: Image.Image) -> Image.Image:
-    """Scale to cover 1080×1350 — full-bleed card with no top/bottom letterbox bars."""
+    """
+    Scale landscape art to full card width (side borders stay visible).
+    Letterbox top/bottom with cream sampled from the panel — no crop, no stretch.
+    """
     w, h = im.size
-    scale = max(TARGET_W / w, TARGET_H / h)
-    new_w = max(1, int(w * scale))
+    scale = TARGET_W / w
+    new_w = TARGET_W
     new_h = max(1, int(h * scale))
-    im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-    left = (new_w - TARGET_W) // 2
-    top = (new_h - TARGET_H) // 2
-    return im.crop((left, top, left + TARGET_W, top + TARGET_H))
+    scaled = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+    if new_h >= TARGET_H:
+        top = (new_h - TARGET_H) // 2
+        return scaled.crop((0, top, TARGET_W, top + TARGET_H))
+
+    fill = sample_edge_color(scaled)
+    out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
+    out.paste(scaled, (0, (TARGET_H - new_h) // 2))
+    return out
 
 
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
-    """Pick a neutral fill from the panel beside the arch (avoids gold frame pixels)."""
     x, y = im.width // 2, int(im.height * 0.36)
     patch = im.crop((x - 20, y - 20, x + 20, y + 20))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -59,7 +52,6 @@ def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def clear_placeholder_text(im: Image.Image) -> Image.Image:
-    """Remove AI placeholder wording so only app-rendered text appears."""
     fill = sample_panel_color(im)
     out = im.copy()
     ImageDraw.Draw(out).rectangle(TEXT_BAND, fill=fill)
