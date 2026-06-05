@@ -14,8 +14,11 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 | engagement_04 | Rose Temple Border |
 | engagement_05 | Mango Leaf Gold |
 
-## Replace artwork
+## Regenerate portrait assets
 
-1. Save designed PNGs as `tools/bg_sources/engagement_XX_source.png` (landscape ~3:2; scaled to full width, cream letterbox top/bottom).
-2. `python3 tools/convert_photo_backgrounds.py`
-3. `PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"`
+```bash
+python3 tools/build_portrait_sources.py --prefix engagement --restore-landscape
+python3 tools/generate_new_photo_cards.py   # engagement_05 only
+python3 tools/convert_photo_backgrounds.py --prefix engagement
+PREVIEW_OUTPUT_DIR=docs/samples/engagement ./gradlew testDebugUnitTest --tests "EngagementSampleExportTest"
+```

@@ -35,7 +35,8 @@ class EngagementMaxTextRenderTest {
         )
 
         val ids = (1..5).map { "engagement_%02d".format(it) } +
-            (1..5).map { "naming_%02d".format(it) }
+            (1..5).map { "naming_%02d".format(it) } +
+            (1..5).map { "babyshower_%02d".format(it) }
         ids.forEach { id ->
             val template = repo.templateById(id) ?: return@forEach
             val report = generator.createInvitationBitmap(

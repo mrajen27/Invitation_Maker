@@ -321,6 +321,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 "puberty" -> "Puberty Ceremony"
                 "engagement" -> "Engagement Ceremony"
                 "naming" -> "Naming Ceremony"
+                "babyshower" -> "Baby Shower"
                 else -> "Special Occasion"
             }
             InvitationLanguage.TAMIL -> when (categoryId) {
@@ -330,6 +331,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 "puberty" -> "பூப்புனித நீராட்டு விழா"
                 "engagement" -> "நிச்சயதார்த்த விழா"
                 "naming" -> "பெயர் சூட்டும் விழா"
+                "babyshower" -> "சீமந்த விழா"
                 else -> "சிறப்பு விழா"
             }
         }
@@ -343,6 +345,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             "Puberty Ceremony",
             "Engagement Ceremony",
             "Naming Ceremony",
+            "Baby Shower",
             "Special Occasion",
             "பிறந்தநாள் விழா",
             "திருமண அழைப்பிதழ்",
@@ -350,6 +353,7 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
             "பூப்புனித நீராட்டு விழா",
             "நிச்சயதார்த்த விழா",
             "பெயர் சூட்டும் விழா",
+            "சீமந்த விழா",
             "சிறப்பு விழா"
         )
         return title.isBlank() || title in defaultTitles

@@ -17,3 +17,5 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 Sources are landscape ~3:2; conversion scales to full width with cream letterbox top/bottom (preserves full border art).
 
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`
+
+Portrait rebuilds: `python3 tools/generate_new_photo_cards.py` (naming_01, naming_05, and engagement_05)
