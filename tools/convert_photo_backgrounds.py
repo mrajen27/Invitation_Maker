@@ -6,17 +6,15 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 
 TARGET_W = 1080
-# Cream band where the app draws event copy (below arch photo opening).
 TEXT_BAND = (210, 442, 870, 1012)
 TARGET_H = 1350
-TARGET_RATIO = TARGET_W / TARGET_H
 
 
 def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
-    """Cream fill fallback (from center panel)."""
+    """Cream fill for vertical letterbox pads (from center panel)."""
     x, y = im.width // 2, im.height // 2
     patch = im.crop((x - 24, y - 24, x + 24, y + 24))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -24,20 +22,10 @@ def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
     return pixels[len(pixels) // 2]
 
 
-def stretch_band_to_height(band: Image.Image, height: int) -> Image.Image:
-    """Vertically scale a decorative strip to fill a letterbox pad."""
-    if height <= 0:
-        return band
-    if height <= band.height:
-        return band.crop((0, band.height - height, band.width, band.height))
-    stretched = band.resize((band.width, height), Image.Resampling.LANCZOS)
-    return stretched.filter(ImageFilter.GaussianBlur(radius=0.35))
-
-
 def fit_portrait_card(im: Image.Image) -> Image.Image:
     """
-    Scale to full card width (keeps side border art), then fill top/bottom to 1350px
-    by extending the decorative edge strips — not center-crop and not flat cream bars.
+    Scale landscape art to full card width (side borders stay visible).
+    Letterbox top/bottom with cream sampled from the panel — no crop, no stretch.
     """
     w, h = im.size
     scale = TARGET_W / w
@@ -49,30 +37,13 @@ def fit_portrait_card(im: Image.Image) -> Image.Image:
         top = (new_h - TARGET_H) // 2
         return scaled.crop((0, top, TARGET_W, top + TARGET_H))
 
-    pad_total = TARGET_H - new_h
-    pad_top = pad_total // 2
-    pad_bottom = pad_total - pad_top
-
-    # Top/bottom décor bands from the scaled art (toran, florals, kalash row).
-    top_band_h = max(48, int(new_h * 0.14))
-    bottom_band_h = max(48, int(new_h * 0.14))
-    top_band = scaled.crop((0, 0, new_w, top_band_h))
-    bottom_band = scaled.crop((0, new_h - bottom_band_h, new_w, new_h))
-
     fill = sample_edge_color(scaled)
     out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
-
-    top_fill = stretch_band_to_height(top_band, pad_top)
-    bottom_fill = stretch_band_to_height(bottom_band, pad_bottom)
-
-    out.paste(top_fill, (0, 0))
-    out.paste(scaled, (0, pad_top))
-    out.paste(bottom_fill, (0, pad_top + new_h))
+    out.paste(scaled, (0, (TARGET_H - new_h) // 2))
     return out
 
 
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
-    """Pick a neutral fill from the panel beside the arch (avoids gold frame pixels)."""
     x, y = im.width // 2, int(im.height * 0.36)
     patch = im.crop((x - 20, y - 20, x + 20, y + 20))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -81,7 +52,6 @@ def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def clear_placeholder_text(im: Image.Image) -> Image.Image:
-    """Remove AI placeholder wording so only app-rendered text appears."""
     fill = sample_panel_color(im)
     out = im.copy()
     ImageDraw.Draw(out).rectangle(TEXT_BAND, fill=fill)

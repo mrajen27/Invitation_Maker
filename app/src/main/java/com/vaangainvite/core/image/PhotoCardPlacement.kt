@@ -18,7 +18,7 @@ internal object PhotoCardPlacement {
         val cornerRadius: Float = 26f
     )
 
-    /** Measured on width-fit WebPs with extended top/bottom décor (1080×1350). */
+    /** Measured on width-fit WebPs with cream letterbox (1080×1350). */
     private val traditionalPhoto = RectF(320f, 428f, 760f, 598f)
 
     private val templateIds = (1..5).flatMap { i ->
