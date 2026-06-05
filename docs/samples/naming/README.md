@@ -12,7 +12,7 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 | naming_02 | Royal Blue Namakaran |
 | naming_03 | Turmeric Blessing |
 | naming_04 | Moon & Lotus |
-| naming_05 | Sunset Vermillion Blessing |
+| naming_05 | Jade Peacock Cradle |
 
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`
 

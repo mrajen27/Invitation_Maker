@@ -306,10 +306,10 @@ class TemplateRepository {
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Sunset Vermillion Blessing",
-            description = "Warm vermillion — marigold toran, Om motifs & golden footprints.",
+            title = "Jade Peacock Cradle",
+            description = "Emerald jade — peacock feather sides, jasmine toran & silver cradle.",
             resId = R.drawable.bg_naming_05,
-            primaryColor = 0xFFC62828.toInt()
+            primaryColor = 0xFF00695C.toInt()
         ),
 
         // Baby shower — illustrated WebP photo cards (pastel engagement-style art)
