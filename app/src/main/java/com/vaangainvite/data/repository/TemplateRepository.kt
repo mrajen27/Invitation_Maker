@@ -265,7 +265,7 @@ class TemplateRepository {
             id = "engagement_05",
             categoryId = "engagement",
             title = "Mango Leaf Gold",
-            description = "Traditional — mango leaves, marigold top, kalash.",
+            description = "Mango leaves & marigold toran — rose diya temple footer.",
             resId = R.drawable.bg_engagement_05,
             primaryColor = 0xFF33691E.toInt()
         ),
@@ -307,7 +307,7 @@ class TemplateRepository {
             id = "naming_05",
             categoryId = "naming",
             title = "Tulsi Paladai Gold",
-            description = "Sacred green — tulsi toran, kalash & golden footprints.",
+            description = "Tulsi toran & sage sides — moon garland & lotus footer.",
             resId = R.drawable.bg_naming_05,
             primaryColor = 0xFF2E7D32.toInt()
         ),

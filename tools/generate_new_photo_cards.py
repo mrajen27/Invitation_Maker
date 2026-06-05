@@ -113,40 +113,40 @@ def prepare_naming_05_landscape(im: Image.Image) -> Image.Image:
 
 
 def build_engagement_05() -> Image.Image:
-    """Mango Leaf Gold — maroon-royal layout (engagement_02) + mango/marigold art."""
-    ref = Image.open(SRC / "engagement_02_source.png")
+    """Mango Leaf Gold v3 — mango/marigold sides & toran, rose-diya temple footer."""
+    ref = Image.open(SRC / "engagement_04_source.png")
     land = prepare_engagement_05_landscape(
         Image.open(SRC / "engagement_05_source_landscape_backup.png").convert("RGB")
     )
     return build_fresh_card(
         land,
         ref,
-        top_h=178,
-        bottom_h=210,
-        side_w=132,
+        top_h=184,
+        bottom_h=216,
+        side_w=124,
         side_end_ratio=0.52,
         bottom_mode="reference",
-        top_crop_y=0,
+        top_crop_y=4,
+        cream=(252, 246, 236),
     )
 
 
 def build_naming_05() -> Image.Image:
-    """Tulsi Paladai — moon-lotus layout (naming_04) + tulsi/sage ritual art."""
+    """Tulsi Paladai v3 — tulsi sage sides & toran, moon-lotus celestial footer."""
     ref = Image.open(SRC / "naming_04_source.png")
     land = prepare_naming_05_landscape(
         Image.open(SRC / "naming_05_source_landscape_backup.png").convert("RGB")
     )
-    out = build_fresh_card(
+    return build_fresh_card(
         land,
         ref,
-        top_h=118,
-        bottom_h=192,
-        side_w=112,
+        top_h=128,
+        bottom_h=204,
+        side_w=108,
         side_end_ratio=0.52,
-        bottom_mode="landscape",
-        cream=(252, 248, 240),
+        bottom_mode="reference",
+        cream=(252, 250, 244),
     )
-    return out
 
 
 def build_naming_01() -> Image.Image:
@@ -174,7 +174,6 @@ def main() -> int:
     jobs = [
         ("engagement_05", build_engagement_05),
         ("naming_05", build_naming_05),
-        ("naming_01", build_naming_01),
     ]
     for stem, fn in jobs:
         out = fn()
