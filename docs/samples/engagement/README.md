@@ -18,13 +18,11 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 
 Portrait sources are built from landscape masters by **stretching the side borders and center cream panel** (top toran and bottom lotus keep their original height — no letterbox, no mirrored seams).
 
-**Exception:** `engagement_05` and `naming_05` — fresh designs via:
+**Exception:** `engagement_05` and `naming_05` — unified single-source portrait (no merged footers from other templates):
 
 ```bash
 python3 tools/generate_new_photo_cards.py
 ```
-
-`naming_01` (remove top line box) is rebuilt in the same script.
 
 1. Landscape masters: `tools/bg_sources/engagement_XX_source_landscape_backup.png`
 2. Build 1080×1350 sources: `python3 tools/build_portrait_sources.py --prefix engagement --restore-landscape`

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-Generate fresh 1080×1350 portrait photo-card sources.
+Generate unified 1080×1350 portrait photo-card sources for _05 templates.
+
+Each card is built from ONE landscape master only (no footer/top borrowed from
+other templates — avoids the “two designs merged” seam).
 
     python3 tools/generate_new_photo_cards.py
     python3 tools/convert_photo_backgrounds.py --prefix engagement
@@ -17,6 +20,11 @@ TARGET_W = 1080
 TARGET_H = 1350
 SRC = Path(__file__).parent / "bg_sources"
 
+# Match tools/build_portrait_sources.py band geometry.
+TOP_BAND_RATIO = 0.235
+BOTTOM_BAND_RATIO = 0.275
+SIDE_COL_RATIO = 0.122
+
 
 def sample_color(im: Image.Image, x: int, y: int) -> tuple[int, int, int]:
     patch = im.crop((x - 18, y - 18, x + 18, y + 18))
@@ -25,10 +33,6 @@ def sample_color(im: Image.Image, x: int, y: int) -> tuple[int, int, int]:
     )
     pixels.sort(key=lambda c: c[0] + c[1] + c[2])
     return pixels[len(pixels) // 2]
-
-
-def sample_cream_from_ref(ref: Image.Image) -> tuple[int, int, int]:
-    return sample_color(ref, ref.width // 2, int(ref.height * 0.42))
 
 
 def add_parchment(base: Image.Image, strength: float = 0.028) -> Image.Image:
@@ -43,58 +47,45 @@ def scale_width(im: Image.Image, width: int = TARGET_W) -> Image.Image:
     return im.resize((width, max(1, int(im.height * s))), Image.Resampling.LANCZOS)
 
 
-def build_fresh_card(
-    decor_landscape: Image.Image,
-    layout_ref: Image.Image,
-    *,
-    top_h: int,
-    bottom_h: int,
-    side_w: int,
-    side_end_ratio: float = 0.54,
-    bottom_mode: str = "landscape",
-    top_crop_y: int = 0,
-    cream: tuple[int, int, int] | None = None,
-) -> Image.Image:
+def band_heights(scaled_h: int) -> tuple[int, int, int]:
+    top_h = max(96, int(scaled_h * TOP_BAND_RATIO))
+    bottom_h = max(96, int(scaled_h * BOTTOM_BAND_RATIO))
+    side_w = max(72, int(TARGET_W * SIDE_COL_RATIO))
+    return top_h, bottom_h, side_w
+
+
+def unified_portrait_from_landscape(landscape: Image.Image) -> Image.Image:
     """
-    New portrait card: décor from landscape, continuous cream center (never stretched
-    landscape middle — avoids frames, boxes, and seam lines).
+    Single-source portrait: top, stretched sides, and bottom from the same
+    scaled landscape; center is flat cream (never stretched landscape middle).
     """
-    ref = layout_ref.convert("RGB")
-    scaled = scale_width(decor_landscape)
+    scaled = scale_width(landscape)
     sw, sh = scaled.size
+    top_h, bottom_h, side_w = band_heights(sh)
 
-    if cream is None:
-        cream = sample_cream_from_ref(ref)
-
+    cream = sample_color(scaled, sw // 2, int(sh * 0.42))
     canvas = add_parchment(Image.new("RGB", (TARGET_W, TARGET_H), cream))
     mid_top = top_h
     mid_bot = TARGET_H - bottom_h
+    mid_h = mid_bot - mid_top
 
-    top_src = scaled.crop((0, top_crop_y, sw, top_h))
-    if top_src.height < top_h:
-        top_src = scaled.crop((0, 0, sw, top_h))
-    canvas.paste(top_src, (0, 0))
+    canvas.paste(scaled.crop((0, 0, sw, top_h)), (0, 0))
 
-    side_end = int(sh * side_end_ratio)
-    if side_end > mid_top:
-        mid_h = mid_bot - mid_top
+    side_end = sh - bottom_h
+    if side_end > mid_top and mid_h > 0:
         left = scaled.crop((0, mid_top, side_w, side_end)).resize((side_w, mid_h), Image.Resampling.LANCZOS)
-        right = scaled.crop((sw - side_w, mid_top, sw, side_end)).resize((side_w, mid_h), Image.Resampling.LANCZOS)
+        right = scaled.crop((sw - side_w, mid_top, sw, side_end)).resize(
+            (side_w, mid_h), Image.Resampling.LANCZOS
+        )
         canvas.paste(left, (0, mid_top))
         canvas.paste(right, (TARGET_W - side_w, mid_top))
 
-    if bottom_mode == "reference":
-        canvas.paste(ref.crop((0, TARGET_H - bottom_h, TARGET_W, TARGET_H)), (0, TARGET_H - bottom_h))
-    else:
-        foot = scaled.crop((0, sh - int(sh * 0.30), sw, sh))
-        foot = foot.resize((TARGET_W, bottom_h), Image.Resampling.LANCZOS)
-        canvas.paste(foot, (0, TARGET_H - bottom_h))
-
+    canvas.paste(scaled.crop((0, sh - bottom_h, sw, sh)).resize((TARGET_W, bottom_h), Image.Resampling.LANCZOS), (0, mid_bot))
     return canvas
 
 
 def prepare_engagement_05_landscape(im: Image.Image) -> Image.Image:
-    """Remove embedded center kalash panel so portrait build stays one cream field."""
+    """Flatten embedded center kalash so the portrait center stays one cream field."""
     w, h = im.size
     out = im.copy()
     cream = sample_color(im, w // 2, int(h * 0.35))
@@ -104,6 +95,7 @@ def prepare_engagement_05_landscape(im: Image.Image) -> Image.Image:
 
 
 def prepare_naming_05_landscape(im: Image.Image) -> Image.Image:
+    """Remove inner naming frame so portrait build has a clean cream panel."""
     w, h = im.size
     out = im.copy()
     cream = sample_color(im, w // 2, int(h * 0.42))
@@ -113,61 +105,29 @@ def prepare_naming_05_landscape(im: Image.Image) -> Image.Image:
 
 
 def build_engagement_05() -> Image.Image:
-    """Mango Leaf Gold v3 — mango/marigold sides & toran, rose-diya temple footer."""
-    ref = Image.open(SRC / "engagement_04_source.png")
+    """Mango Leaf Gold — single mango/marigold landscape (toran, sides, kalash footer)."""
     land = prepare_engagement_05_landscape(
         Image.open(SRC / "engagement_05_source_landscape_backup.png").convert("RGB")
     )
-    return build_fresh_card(
-        land,
-        ref,
-        top_h=184,
-        bottom_h=216,
-        side_w=124,
-        side_end_ratio=0.52,
-        bottom_mode="reference",
-        top_crop_y=4,
-        cream=(252, 246, 236),
-    )
+    return unified_portrait_from_landscape(land)
 
 
 def build_naming_05() -> Image.Image:
-    """Tulsi Paladai v3 — tulsi sage sides & toran, moon-lotus celestial footer."""
-    ref = Image.open(SRC / "naming_04_source.png")
+    """Tulsi Paladai Gold — single tulsi/sage landscape (toran, sides, paladai footer)."""
     land = prepare_naming_05_landscape(
         Image.open(SRC / "naming_05_source_landscape_backup.png").convert("RGB")
     )
-    return build_fresh_card(
-        land,
-        ref,
-        top_h=128,
-        bottom_h=204,
-        side_w=108,
-        side_end_ratio=0.52,
-        bottom_mode="reference",
-        cream=(252, 250, 244),
-    )
+    return unified_portrait_from_landscape(land)
 
 
 def build_naming_01() -> Image.Image:
-    """Jasmine Cradle Pink — continuous cream panel, jasmine/rose/cradle décor."""
-    ref = Image.open(SRC / "naming_02_source.png")
+    """Jasmine Cradle Pink — single-source rebuild (optional maintenance)."""
     land = Image.open(SRC / "naming_01_source_landscape_backup.png").convert("RGB")
     w, h = land.size
     draw = ImageDraw.Draw(land)
     cream = (252, 244, 234)
     draw.rectangle((int(w * 0.18), int(h * 0.08), int(w * 0.82), int(h * 0.48)), fill=cream)
-    out = build_fresh_card(
-        land,
-        ref,
-        top_h=168,
-        bottom_h=240,
-        side_w=148,
-        side_end_ratio=0.48,
-        bottom_mode="landscape",
-        cream=cream,
-    )
-    return out
+    return unified_portrait_from_landscape(land)
 
 
 def main() -> int:
@@ -181,7 +141,7 @@ def main() -> int:
             raise SystemExit(f"{stem} bad size {out.size}")
         path = SRC / f"{stem}_source.png"
         out.save(path, format="PNG", optimize=True)
-        print(f"new design → {path.name}")
+        print(f"unified design → {path.name}")
     return 0
 
 
