@@ -22,11 +22,14 @@ class NamingLayoutTest {
 
     @Test
     fun namingPhotoSlotMatchesBirthdayFrame() {
-        val namingFrame = PhotoCardPlacement.specFor("naming_01").bounds
-        val birthdayFrame = InvitationLayout.defaultPhotoFrame()
-        assertEquals(birthdayFrame, namingFrame)
-        assertEquals(32f, PhotoCardPlacement.specFor("naming_01").cornerRadius, 0.01f)
-        assertTrue(PhotoCardPlacement.usesFramedPhotoBorder("naming_01"))
+        assertPhotoCardUsesBirthdayFrame("naming_01")
+    }
+
+    private fun assertPhotoCardUsesBirthdayFrame(templateId: String) {
+        val frame = PhotoCardPlacement.specFor(templateId).bounds
+        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertEquals(32f, PhotoCardPlacement.specFor(templateId).cornerRadius, 0.01f)
+        assertTrue(PhotoCardPlacement.usesFramedPhotoBorder(templateId))
     }
 
     @Test
