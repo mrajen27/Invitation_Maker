@@ -26,13 +26,18 @@ class PhotoCardMaxPhotoBoundsTest {
   }
 
   @Test
+  fun tallPhotoFitsMaxLengthCopy() {
+    assertMaxTextFits(PhotoCardPlacement.tallFramedPhoto)
+  }
+
+  @Test
   fun compactPhotoStillFitsMaxLengthCopy() {
     assertMaxTextFits(PhotoCardPlacement.compactFramedPhoto)
   }
 
   @Test
   fun tallPhotoTruncatesMaxLengthMessage() {
-    PhotoCardPlacement.setFramedPhotoForTests(RectF(360f, 268f, 720f, 508f))
+    PhotoCardPlacement.setFramedPhotoForTests(RectF(280f, 268f, 800f, 560f))
     val context = ApplicationProvider.getApplicationContext<android.content.Context>()
     val generator = InvitationImageGenerator(context)
     val template = TemplateRepository().templateById("engagement_01")!!

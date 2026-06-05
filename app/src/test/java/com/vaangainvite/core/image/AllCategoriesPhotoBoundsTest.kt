@@ -46,8 +46,8 @@ class AllCategoriesPhotoBoundsTest {
     }
 
     @Test
-    fun engagementNamingBabyShowerExpandedWideFitsMaxText() {
-        PhotoCardPlacement.setFramedPhotoForTests(PhotoCardPlacement.expandedFramedPhoto)
+    fun engagementNamingBabyShowerTallFrameFitsMaxText() {
+        PhotoCardPlacement.setFramedPhotoForTests(PhotoCardPlacement.tallFramedPhoto)
         photoCardTemplateIds().forEach { id ->
             assertMaxTextOk(id, label = "expanded-photo-card")
         }

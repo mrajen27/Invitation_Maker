@@ -21,13 +21,16 @@ internal object PhotoCardPlacement {
     /** Compact frame under the toran band — fits max-length copy + message. */
     val compactFramedPhoto = RectF(390f, 292f, 690f, 478f)
 
-    /**
-     * Wider photo on the same vertical slot — ~73% wider than compact, max-length copy safe.
-     * Height cannot grow much (~10px) before the 2-line message truncates.
-     */
+    /** Wide photo slot — max-length copy safe at previous height. */
     val expandedFramedPhoto = RectF(280f, 292f, 800f, 478f)
 
-    val framedPhoto = expandedFramedPhoto
+    /**
+     * Taller portrait-friendly frame on the cream panel (~520×268).
+     * Uses extra vertical space above bottom décor; text zone extended in [InvitationLayout].
+     */
+    val tallFramedPhoto = RectF(280f, 268f, 800f, 531f)
+
+    val framedPhoto = tallFramedPhoto
 
     private val templateIds = (1..5).flatMap { i ->
         listOf(
