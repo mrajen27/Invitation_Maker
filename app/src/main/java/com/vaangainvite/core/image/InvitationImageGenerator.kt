@@ -223,31 +223,30 @@ class InvitationImageGenerator(private val context: Context) {
         val hasUserMessage = userMessage.isNotBlank()
         val isPeacockVase = template.id == "wedding_05"
         val isPhotoCard = PhotoCardPlacement.isPhotoCardTemplate(template.id)
+        val compactWebpPhoto = usesPhotoBackground && hasUploadedPhoto
+        val compactPhotoLayout = compactWebpPhoto || isPhotoCard
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
-        val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase ||
-            (isPhotoCard && hasUploadedPhoto)
+        val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase || compactPhotoLayout
         val detailRowSpacing = when {
             isPeacockWithPhoto -> 4f
-            isPhotoCard && hasUploadedPhoto -> 4f
+            compactPhotoLayout -> 4f
             else -> InvitationLayout.Spacing.betweenDetails
         }
         val messageGap = when {
             isPeacockWithPhoto -> 8f
-            isPhotoCard && hasUploadedPhoto -> 8f
+            compactPhotoLayout -> 8f
             else -> InvitationLayout.Spacing.beforeMessageNoPhoto
         }
 
         val introSize = when {
-            isPhotoCard && hasUploadedPhoto -> 26f
+            compactPhotoLayout -> 26f
             isPeacockVase -> 28f
-            isPhotoCard && hasUploadedPhoto -> 28f
             template.id == "wedding_02" && hasUploadedPhoto -> 28f
             else -> 32f
         }
         val occasionSize = when {
-            isPhotoCard && hasUploadedPhoto -> 34f
+            compactPhotoLayout -> 34f
             isPeacockVase -> 38f
-            isPhotoCard && hasUploadedPhoto -> 38f
             template.id == "wedding_02" && hasUploadedPhoto -> 40f
             else -> 46f
         }
@@ -257,9 +256,9 @@ class InvitationImageGenerator(private val context: Context) {
         val namePaint = textPaint(
             palette.primaryColor,
             when {
+                isPeacockWithPhoto -> 44f
                 isPeacockVase -> 54f
-                isPhotoCard && hasUploadedPhoto -> 44f
-                isPhotoCard && hasUploadedPhoto -> 48f
+                compactPhotoLayout -> 44f
                 compactLayout && usesPhotoBackground -> 52f
                 hasUploadedPhoto && usesPhotoBackground -> 54f
                 template.id == "wedding_02" && usesPhotoBackground -> 62f
@@ -272,7 +271,7 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            if (compactLayout || isPeacockVase || (isPhotoCard && hasUploadedPhoto)) 24f else 28f,
+            if (compactLayout || isPeacockVase || compactPhotoLayout) 24f else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -282,8 +281,7 @@ class InvitationImageGenerator(private val context: Context) {
         val messagePaint = textPaint(
             palette.messageColor,
             when {
-                isPhotoCard && hasUploadedPhoto -> 20f
-                isPhotoCard && hasUploadedPhoto -> 22f
+                compactPhotoLayout -> 20f
                 usesPhotoBackground -> 24f
                 else -> 26f
             },
@@ -357,7 +355,7 @@ class InvitationImageGenerator(private val context: Context) {
             maxLines = 1,
             rowSpacing = detailRowSpacing
         )
-        val venueMaxLines = if (isPhotoCard && hasUploadedPhoto) 1 else InvitationDetails.VENUE_MAX_LINES
+        val venueMaxLines = if (compactPhotoLayout) 1 else InvitationDetails.VENUE_MAX_LINES
         blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
@@ -388,7 +386,7 @@ class InvitationImageGenerator(private val context: Context) {
             return InvitationRenderReport()
         }
 
-        val messageTruncated = drawAdditionalMessage(
+        val messageResult = drawAdditionalMessage(
             canvas = canvas,
             text = messageText,
             paint = messagePaint,
@@ -401,10 +399,15 @@ class InvitationImageGenerator(private val context: Context) {
             gapBeforeMessage = messageGap
         )
         return InvitationRenderReport(
-            messageShown = true,
-            messageTruncated = messageTruncated
+            messageShown = messageResult.shown,
+            messageTruncated = messageResult.truncated
         )
     }
+
+    private data class MessageDrawResult(
+        val shown: Boolean,
+        val truncated: Boolean
+    )
 
     /**
      * Places the additional message 10px below the last detail row (phone).
@@ -422,13 +425,15 @@ class InvitationImageGenerator(private val context: Context) {
         lineSpacing: Float,
         detailRowSpacing: Float = InvitationLayout.Spacing.betweenDetails,
         gapBeforeMessage: Float = InvitationLayout.Spacing.beforeMessageNoPhoto
-    ): Boolean {
+    ): MessageDrawResult {
         val messageStartY = blockTopAfterLastDetail -
             detailRowSpacing +
             gapBeforeMessage
         val maxBottomY = zone.bottom - 8f
         val availableHeight = maxBottomY - messageStartY
-        if (availableHeight < 18f) return false
+        if (availableHeight < 18f) {
+            return MessageDrawResult(shown = false, truncated = false)
+        }
 
         val wrapped = wrapText(text, paint, maxTextWidth)
         val lineAdvance = lineHeight(paint, lineSpacing)
@@ -440,7 +445,9 @@ class InvitationImageGenerator(private val context: Context) {
             1 + ((availableHeight - firstLineHeight) / lineAdvance).toInt()
         }
         val effectiveMaxLines = minOf(maxLines, maxLinesByHeight).coerceAtLeast(0)
-        if (effectiveMaxLines == 0) return false
+        if (effectiveMaxLines == 0) {
+            return MessageDrawResult(shown = false, truncated = false)
+        }
 
         val truncated = wrapped.size > effectiveMaxLines
         drawCenteredLines(
@@ -454,7 +461,7 @@ class InvitationImageGenerator(private val context: Context) {
             horizontalBounds = zone,
             maxBottomY = maxBottomY
         )
-        return truncated
+        return MessageDrawResult(shown = true, truncated = truncated)
     }
 
     private data class InvitationTextPalette(

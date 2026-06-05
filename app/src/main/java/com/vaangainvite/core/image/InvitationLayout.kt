@@ -41,11 +41,12 @@ internal object InvitationLayout {
     private val photoCardTextZone = TextZoneSpec(
         left = 200f,
         right = 880f,
-        topNoPhoto = 618f,
-        topWithPhoto = 612f,
-        bottom = 1105f,
-        messageBottom = 1068f,
-        photoTextGap = 14f
+        topNoPhoto = 518f,
+        // Compact photo frame ends ~y478; intro sits just below gold border.
+        topWithPhoto = 494f,
+        bottom = 1145f,
+        messageBottom = 1110f,
+        photoTextGap = 12f
     )
 
     private val templateTextZones = mapOf(
@@ -68,14 +69,14 @@ internal object InvitationLayout {
             topInset = 10f
         ),
         "wedding_05" to TextZoneSpec(
-            left = 220f,
-            right = 860f,
+            left = 200f,
+            right = 880f,
             // Upper cream panel — garland ends ~y300; previous start (532) left a large empty gap.
             topNoPhoto = 328f,
             topWithPhoto = 496f,
-            // Vase panel stays wide until ~y1160; 915 was clipping the additional message.
-            bottom = 1140f,
-            messageBottom = 1100f,
+            // Vase panel stays wide until ~y1160.
+            bottom = 1170f,
+            messageBottom = 1135f,
             topInset = 4f,
             photoTextGap = 6f
         ),
@@ -89,7 +90,15 @@ internal object InvitationLayout {
             topInset = 10f
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
-        "puberty_01" to TextZoneSpec(left = 290f, right = 790f, topNoPhoto = 280f, topWithPhoto = 492f),
+        "puberty_01" to TextZoneSpec(
+            left = 250f,
+            right = 830f,
+            topNoPhoto = 280f,
+            topWithPhoto = 494f,
+            bottom = 1145f,
+            messageBottom = 1110f,
+            photoTextGap = 12f
+        ),
         // Engagement — continuous cream panel; text flows below photo (no divider line)
         "engagement_01" to photoCardTextZone,
         "engagement_02" to photoCardTextZone,
@@ -110,23 +119,50 @@ internal object InvitationLayout {
 
     private val templatePhotoFrames = mapOf(
         // Lower/wider slot inside the temple arch cream panel.
-        "wedding_02" to RectF(360f, 308f, 720f, 498f),
+        "wedding_02" to RectF(320f, 308f, 760f, 498f),
         // Below sacred-knot medallions on the thali motif card.
-        "wedding_04" to RectF(360f, 410f, 720f, 530f),
-        // Narrow upper cream panel on the peacock crest card.
-        "wedding_05" to RectF(420f, 360f, 660f, 490f),
+        "wedding_04" to RectF(300f, 410f, 780f, 530f),
+        // Narrow upper cream panel on the peacock crest card — widened within arch bounds.
+        "wedding_05" to RectF(390f, 360f, 690f, 490f),
         // Below mango-toran band on the gopuram doorway card.
-        "housewarming_03" to RectF(350f, 360f, 730f, 530f)
+        "housewarming_03" to RectF(300f, 360f, 780f, 530f)
     )
+
+    /** Shared wider slot — safe on default WebP templates (birthday, puberty, most housewarming). */
+    val expandedDefaultPhotoFrame = RectF(280f, 292f, 800f, 478f)
+
+    private val defaultPhotoFrameBase = expandedDefaultPhotoFrame
+    private var defaultPhotoFrameOverride: RectF? = null
+    private val templatePhotoFrameOverrides = mutableMapOf<String, RectF>()
 
     fun photoFrame(templateId: String = ""): RectF {
         if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
             return PhotoCardPlacement.specFor(templateId).bounds
         }
+        templatePhotoFrameOverrides[templateId]?.let { return RectF(it) }
         return templatePhotoFrames[templateId] ?: defaultPhotoFrame()
     }
 
-    fun defaultPhotoFrame(): RectF = RectF(390f, 292f, 690f, 478f)
+    fun defaultPhotoFrame(): RectF = RectF(defaultPhotoFrameOverride ?: defaultPhotoFrameBase)
+
+    /** Test-only: override photo slot for layout probes. */
+    internal fun setDefaultPhotoFrameForTests(bounds: RectF?) {
+        defaultPhotoFrameOverride = bounds?.let { RectF(it) }
+    }
+
+    internal fun setTemplatePhotoFrameForTests(templateId: String, bounds: RectF?) {
+        if (bounds == null) {
+            templatePhotoFrameOverrides.remove(templateId)
+        } else {
+            templatePhotoFrameOverrides[templateId] = RectF(bounds)
+        }
+    }
+
+    internal fun resetPhotoFramesForTests() {
+        defaultPhotoFrameOverride = null
+        templatePhotoFrameOverrides.clear()
+        PhotoCardPlacement.setFramedPhotoForTests(PhotoCardPlacement.framedPhoto)
+    }
 
     /**
      * Horizontal + bottom inset for the additional message on photo WebP templates.
@@ -187,6 +223,9 @@ internal object InvitationLayout {
             photoFrame(templateId).bottom
         }
         val photoGap = spec?.photoTextGap ?: 22f
+        if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
+            return frameBottom + photoGap + inset
+        }
         return maxOf(zone.top, frameBottom + photoGap) + inset
     }
 
