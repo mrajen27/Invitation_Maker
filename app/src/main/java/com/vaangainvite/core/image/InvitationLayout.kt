@@ -95,20 +95,12 @@ internal object InvitationLayout {
         "engagement_02" to photoCardTextZone,
         "engagement_03" to photoCardTextZone,
         "engagement_04" to photoCardTextZone,
-        // Mango Leaf Gold — kalash sits in footer band only.
-        "engagement_05" to photoCardTextZone.copy(
-            bottom = 1095f,
-            messageBottom = 1055f
-        ),
+        "engagement_05" to photoCardTextZone,
         "naming_01" to photoCardTextZone,
         "naming_02" to photoCardTextZone,
         "naming_03" to photoCardTextZone,
         "naming_04" to photoCardTextZone,
-        "naming_05" to photoCardTextZone.copy(
-            bottom = 1100f,
-            messageBottom = 1060f,
-            photoTextGap = 16f
-        ),
+        "naming_05" to photoCardTextZone,
         "babyshower_01" to photoCardTextZone,
         "babyshower_02" to photoCardTextZone,
         "babyshower_03" to photoCardTextZone,

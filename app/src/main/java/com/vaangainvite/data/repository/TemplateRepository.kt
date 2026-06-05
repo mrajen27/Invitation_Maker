@@ -264,10 +264,10 @@ class TemplateRepository {
         photoTemplate(
             id = "engagement_05",
             categoryId = "engagement",
-            title = "Mango Leaf Gold",
-            description = "Traditional — mango leaves, marigold top, kalash.",
+            title = "Crimson Kundan Glow",
+            description = "Ruby & gold — kundan sides, marigold toran, diya row.",
             resId = R.drawable.bg_engagement_05,
-            primaryColor = 0xFF33691E.toInt()
+            primaryColor = 0xFF880E4F.toInt()
         ),
 
         // Naming ceremony — designed WebP photo cards (same layout as engagement)
@@ -306,10 +306,10 @@ class TemplateRepository {
         photoTemplate(
             id = "naming_05",
             categoryId = "naming",
-            title = "Tulsi Paladai Gold",
-            description = "Sacred green — tulsi toran, kalash & golden footprints.",
+            title = "Sunset Vermillion Blessing",
+            description = "Warm vermillion — marigold toran, Om motifs & golden footprints.",
             resId = R.drawable.bg_naming_05,
-            primaryColor = 0xFF2E7D32.toInt()
+            primaryColor = 0xFFC62828.toInt()
         ),
 
         // Baby shower — illustrated WebP photo cards (pastel engagement-style art)
