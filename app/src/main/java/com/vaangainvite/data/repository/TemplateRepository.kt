@@ -317,7 +317,7 @@ class TemplateRepository {
             id = "babyshower_01",
             categoryId = "babyshower",
             title = "Blush Rose Pastel",
-            description = "Soft pink — rose temple border with pastel blush tones.",
+            description = "Pastel blush — rose ribbons, hearts & baby booties border.",
             resId = R.drawable.bg_babyshower_01,
             primaryColor = 0xFFE91E8C.toInt()
         ),
@@ -325,7 +325,7 @@ class TemplateRepository {
             id = "babyshower_02",
             categoryId = "babyshower",
             title = "Sky Peacock Dream",
-            description = "Sky blue — peacock lotus border in gentle pastel blue.",
+            description = "Sky blue — clouds, stars & pastel peacock feather border.",
             resId = R.drawable.bg_babyshower_02,
             primaryColor = 0xFF1976D2.toInt()
         ),
@@ -333,7 +333,7 @@ class TemplateRepository {
             id = "babyshower_03",
             categoryId = "babyshower",
             title = "Mint Toran Joy",
-            description = "Mint green — mango-leaf toran with soft celebration tones.",
+            description = "Mint pastel — butterflies, ribbon toran & baby blocks.",
             resId = R.drawable.bg_babyshower_03,
             primaryColor = 0xFF43A047.toInt()
         ),
@@ -341,7 +341,7 @@ class TemplateRepository {
             id = "babyshower_04",
             categoryId = "babyshower",
             title = "Lavender Marigold",
-            description = "Lavender — marigold royal border in lilac pastel.",
+            description = "Lavender dream — moon, stars & pastel lotus border.",
             resId = R.drawable.bg_babyshower_04,
             primaryColor = 0xFF7E57C2.toInt()
         ),
@@ -349,7 +349,7 @@ class TemplateRepository {
             id = "babyshower_05",
             categoryId = "babyshower",
             title = "Peach Mango Blessing",
-            description = "Warm peach — mango leaf gold in soft golden peach.",
+            description = "Warm peach — cherry blossoms, cradle & mango leaves.",
             resId = R.drawable.bg_babyshower_05,
             primaryColor = 0xFFFF7043.toInt()
         )

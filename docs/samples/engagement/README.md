@@ -18,12 +18,11 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 
 Portrait sources are built from landscape masters by **stretching the side borders and center cream panel** (top toran and bottom lotus keep their original height — no letterbox, no mirrored seams).
 
-**Exception:** `engagement_05` and `naming_05` — illustrated landscape masters (`*_landscape_master.png`):
+**Exception:** `engagement_05`, `naming_01`, `naming_05` — illustrated masters (`*_landscape_master.png`):
 
 ```bash
-python3 tools/import_05_landscape_masters.py
-python3 tools/convert_photo_backgrounds.py --prefix engagement
-python3 tools/convert_photo_backgrounds.py --prefix naming
+python3 tools/import_landscape_masters.py --all-special
+python3 tools/regenerate_photo_cards.py --cards
 ```
 
 1. Landscape masters: `tools/bg_sources/engagement_XX_source_landscape_backup.png`

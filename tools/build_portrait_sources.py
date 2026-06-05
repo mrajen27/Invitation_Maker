@@ -16,7 +16,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 TARGET_W = 1080
 TARGET_H = 1350
@@ -89,6 +89,59 @@ def landscape_to_portrait(im: Image.Image) -> Image.Image:
         canvas.paste(center, (side_w, mid_top))
 
     return canvas
+
+
+def frameless_portrait_from_landscape(
+    im: Image.Image,
+    *,
+    side_col_ratio: float | None = None,
+    top_band_ratio: float | None = None,
+    bottom_band_ratio: float | None = None,
+) -> Image.Image:
+    """
+    Portrait photo card: décor on top/sides/bottom only — seamless cream center.
+    No inner rectangle, no divider, no stretched frame box from master art.
+    """
+    w, h = im.size
+    if w == TARGET_W and h == TARGET_H:
+        return im
+
+    scale = TARGET_W / w
+    scaled_h = max(1, int(h * scale))
+    scaled = im.resize((TARGET_W, scaled_h), Image.Resampling.LANCZOS)
+
+    sw, sh = scaled.size
+    side_ratio = side_col_ratio if side_col_ratio is not None else SIDE_COL_RATIO
+    top_ratio = top_band_ratio if top_band_ratio is not None else TOP_BAND_RATIO
+    bottom_ratio = bottom_band_ratio if bottom_band_ratio is not None else BOTTOM_BAND_RATIO
+    side_w = max(72, int(sw * side_ratio))
+    top_h = max(96, int(sh * top_ratio))
+    bottom_h = max(96, int(sh * bottom_ratio))
+
+    cream = sample_cream(scaled)
+    canvas = Image.new("RGB", (TARGET_W, TARGET_H), cream)
+    canvas = add_parchment_texture(canvas)
+
+    mid_top = top_h
+    mid_bottom = TARGET_H - bottom_h
+    mid_h = mid_bottom - mid_top
+
+    left_src = scaled.crop((0, top_h, side_w, sh - bottom_h))
+    right_src = scaled.crop((sw - side_w, top_h, sw, sh - bottom_h))
+    if left_src.height > 0 and mid_h > 0:
+        canvas.paste(left_src.resize((side_w, mid_h), Image.Resampling.LANCZOS), (0, mid_top))
+        canvas.paste(right_src.resize((side_w, mid_h), Image.Resampling.LANCZOS), (TARGET_W - side_w, mid_top))
+
+    canvas.paste(scaled.crop((0, 0, sw, top_h)), (0, 0))
+    canvas.paste(scaled.crop((0, sh - bottom_h, sw, sh)), (0, TARGET_H - bottom_h))
+
+    # Seamless cream panel between décor bands (covers any residual inner frame pixels).
+    ImageDraw.Draw(canvas).rectangle((side_w, mid_top, TARGET_W - side_w, mid_bottom), fill=cream)
+    return add_parchment_texture(canvas, strength=0.02)
+
+
+# Back-compat alias
+unified_portrait_from_landscape = frameless_portrait_from_landscape
 
 
 def restore_from_backup(src: Path) -> bool:
