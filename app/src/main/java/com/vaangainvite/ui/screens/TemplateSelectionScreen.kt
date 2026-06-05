@@ -1,6 +1,5 @@
 package com.vaangainvite.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,11 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaangainvite.data.model.InvitationTemplate
+import com.vaangainvite.ui.components.SubsampledResourceImage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,14 +114,15 @@ private fun TemplateCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = template.previewResId()),
+            SubsampledResourceImage(
+                resId = template.previewResId(),
                 contentDescription = template.title,
                 modifier = Modifier
                     .width(110.dp)
                     .aspectRatio(0.8f)
                     .clip(RoundedCornerShape(18.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                maxDimension = 320
             )
             Column(
                 modifier = Modifier

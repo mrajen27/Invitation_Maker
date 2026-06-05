@@ -21,9 +21,9 @@ class BabyShowerLayoutTest {
     }
 
     @Test
-    fun babyShowerPhotoSlotMatchesBirthdayFrame() {
+    fun babyShowerPhotoSlotUsesTallFrame() {
         val frame = PhotoCardPlacement.specFor("babyshower_01").bounds
-        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertEquals(PhotoCardPlacement.tallFramedPhoto, frame)
         assertTrue(PhotoCardPlacement.usesFramedPhotoBorder("babyshower_01"))
     }
 

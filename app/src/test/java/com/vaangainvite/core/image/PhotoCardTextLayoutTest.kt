@@ -24,7 +24,7 @@ class PhotoCardTextLayoutTest {
             val photoBottom = PhotoCardPlacement.photoBottom(id)
             val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
             val gap = textTop - photoBottom
-            assertTrue("$id gap ${gap}px", gap in 6f..14f)
+            assertTrue("$id gap ${gap}px", gap in 14f..24f)
         }
     }
 

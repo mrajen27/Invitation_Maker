@@ -92,8 +92,17 @@ fun VaangaNavHost(viewModel: InviteViewModel) {
                 return@composable
             }
 
+            val templateId = state.selectedTemplate?.id
+            if (templateId == null) {
+                LaunchedEffect(Unit) {
+                    navController.returnFromPhotoCrop()
+                }
+                return@composable
+            }
+
             PhotoCropScreen(
                 sourceUri = sourceUri,
+                templateId = templateId,
                 language = state.selectedLanguage,
                 initialTransform = state.photoCropTransform?.takeIf {
                     state.originalPhotoUri == sourceUri
