@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""One-off art fixes on designed photo-card source PNGs before WebP conversion."""
+"""One-off art fixes on designed photo-card source PNGs before WebP conversion.
+
+engagement_05 and naming_05 use tools/generate_portrait_05_templates.py instead.
+"""
 
 from __future__ import annotations
 

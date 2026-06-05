@@ -9,27 +9,11 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 TARGET_W = 1080
-# Cream band where the app draws event copy (below arch photo opening).
-# Plain band where the app draws copy (keeps décor at top/bottom edges only).
-TEXT_BAND = (210, 442, 870, 1012)
 TARGET_H = 1350
-TARGET_RATIO = TARGET_W / TARGET_H
-
-
-def crop_center_cover(im: Image.Image, target_ratio: float) -> Image.Image:
-    w, h = im.size
-    current = w / h
-    if current > target_ratio:
-        new_w = int(h * target_ratio)
-        left = (w - new_w) // 2
-        return im.crop((left, 0, left + new_w, h))
-    new_h = int(w / target_ratio)
-    top = (h - new_h) // 2
-    return im.crop((0, top, w, top + new_h))
+TEXT_BAND = (210, 442, 870, 1012)
 
 
 def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
-    """Cream fill for vertical letterbox pads (from center panel)."""
     x, y = im.width // 2, im.height // 2
     patch = im.crop((x - 24, y - 24, x + 24, y + 24))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -38,35 +22,26 @@ def sample_edge_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def fit_portrait_card(im: Image.Image) -> Image.Image:
-    """Scale to 1080×1350 without squashing; keep full width on landscape art (side borders)."""
+    """Pass-through for native 1080×1350 sources; otherwise scale width + cream letterbox."""
     w, h = im.size
-    target_ratio = TARGET_W / TARGET_H
-    current = w / h
-
-    if current > target_ratio:
-        # Wide designed art — scale to full card width so left/right décor is not cropped.
-        scale = TARGET_W / w
-        new_w = TARGET_W
-        new_h = max(1, int(h * scale))
-        im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        if new_h >= TARGET_H:
-            top = (new_h - TARGET_H) // 2
-            return im.crop((0, top, TARGET_W, top + TARGET_H))
-        fill = sample_edge_color(im)
-        out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
-        out.paste(im, (0, (TARGET_H - new_h) // 2))
-        return out
+    if w == TARGET_W and h == TARGET_H:
+        return im
+    if abs(w / h - TARGET_W / TARGET_H) < 0.02 and w >= TARGET_W:
+        return im.resize((TARGET_W, TARGET_H), Image.Resampling.LANCZOS)
 
     scale = TARGET_W / w
-    new_w = TARGET_W
-    new_h = max(TARGET_H, int(h * scale))
-    im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
-    top = max(0, (new_h - TARGET_H) // 2)
-    return im.crop((0, top, TARGET_W, top + TARGET_H))
+    scaled = im.resize((TARGET_W, max(1, int(h * scale))), Image.Resampling.LANCZOS)
+    if scaled.height >= TARGET_H:
+        top = (scaled.height - TARGET_H) // 2
+        return scaled.crop((0, top, TARGET_W, top + TARGET_H))
+
+    fill = sample_edge_color(scaled)
+    out = Image.new("RGB", (TARGET_W, TARGET_H), fill)
+    out.paste(scaled, (0, (TARGET_H - scaled.height) // 2))
+    return out
 
 
 def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
-    """Pick a neutral fill from the panel beside the arch (avoids gold frame pixels)."""
     x, y = im.width // 2, int(im.height * 0.36)
     patch = im.crop((x - 20, y - 20, x + 20, y + 20))
     pixels = list(patch.get_flattened_data() if hasattr(patch, "get_flattened_data") else patch.getdata())
@@ -75,7 +50,6 @@ def sample_panel_color(im: Image.Image) -> tuple[int, int, int]:
 
 
 def clear_placeholder_text(im: Image.Image) -> Image.Image:
-    """Remove AI placeholder wording so only app-rendered text appears."""
     fill = sample_panel_color(im)
     out = im.copy()
     ImageDraw.Draw(out).rectangle(TEXT_BAND, fill=fill)
@@ -104,6 +78,8 @@ def main() -> int:
     args = parser.parse_args()
 
     for src in sorted(args.source_dir.glob(f"{args.prefix}_*_source.png")):
+        if "_landscape_backup" in src.name:
+            continue
         stem = src.stem.replace("_source", "")
         dest = args.dest_dir / f"bg_{stem}.webp"
         convert_one(src, dest, args.quality, strip_text=False)
