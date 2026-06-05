@@ -60,7 +60,7 @@ def import_one(stem: str, *, art: str | None = None, art_dir: Path = ART) -> Non
     master_copy = SRC / f"{stem}_landscape_master.png"
     landscape.save(master_copy, format="PNG", optimize=True)
 
-    portrait = frameless_portrait_from_landscape(landscape)
+    portrait = frameless_portrait_from_landscape(landscape, stem=stem)
     dest = SRC / f"{stem}_source.png"
     portrait.save(dest, format="PNG", optimize=True)
     print(f"{stem}: {master_path.name} → {dest.name} ({portrait.size[0]}×{portrait.size[1]})")
