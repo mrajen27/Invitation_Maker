@@ -27,7 +27,7 @@ internal object PhotoCardPlacement {
      */
     val expandedFramedPhoto = RectF(280f, 292f, 800f, 478f)
 
-    val framedPhoto = compactFramedPhoto
+    val framedPhoto = expandedFramedPhoto
 
     private val templateIds = (1..5).flatMap { i ->
         listOf(
