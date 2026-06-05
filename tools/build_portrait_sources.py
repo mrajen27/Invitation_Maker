@@ -119,6 +119,9 @@ def main() -> int:
     for src in sorted(args.source_dir.glob(f"{args.prefix}_*_source.png")):
         if "_landscape_backup" in src.name:
             continue
+        if src.name.endswith("_05_source.png"):
+            print(f"skip {src.name} (use generate_portrait_05_templates.py)")
+            continue
 
         if args.restore_landscape:
             restore_from_backup(src)

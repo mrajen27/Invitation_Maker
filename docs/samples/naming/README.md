@@ -15,3 +15,5 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 | naming_05 | Tulsi Paladai Gold |
 
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`
+
+For `naming_05`, rebuild the portrait source first: `python3 tools/generate_portrait_05_templates.py`

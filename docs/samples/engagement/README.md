@@ -18,6 +18,12 @@ Five **illustrated WebP** backgrounds (`bg_engagement_01` … `05`) with:
 
 Portrait sources are built from landscape masters by **stretching the side borders and center cream panel** (top toran and bottom lotus keep their original height — no letterbox, no mirrored seams).
 
+**Exception:** `engagement_05` and `naming_05` use a dedicated compositor because their landscape art embeds footer décor inside the cream panel:
+
+```bash
+python3 tools/generate_portrait_05_templates.py
+```
+
 1. Landscape masters: `tools/bg_sources/engagement_XX_source_landscape_backup.png`
 2. Build 1080×1350 sources: `python3 tools/build_portrait_sources.py --prefix engagement --restore-landscape`
 3. WebP: `python3 tools/convert_photo_backgrounds.py --prefix engagement`

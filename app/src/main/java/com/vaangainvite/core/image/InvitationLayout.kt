@@ -95,20 +95,19 @@ internal object InvitationLayout {
         "engagement_02" to photoCardTextZone,
         "engagement_03" to photoCardTextZone,
         "engagement_04" to photoCardTextZone,
-        // Mango Leaf Gold — kalash cluster at bottom; keep copy above vessel.
+        // Mango Leaf Gold — kalash sits in footer band only.
         "engagement_05" to photoCardTextZone.copy(
-            bottom = 1088f,
-            messageBottom = 1045f
+            bottom = 1095f,
+            messageBottom = 1055f
         ),
         "naming_01" to photoCardTextZone,
         "naming_02" to photoCardTextZone,
         "naming_03" to photoCardTextZone,
         "naming_04" to photoCardTextZone,
-        // Tulsi Paladai — no inner divider; footprints sit in lower footer only.
         "naming_05" to photoCardTextZone.copy(
-            bottom = 1095f,
-            messageBottom = 1055f,
-            photoTextGap = 18f
+            bottom = 1100f,
+            messageBottom = 1060f,
+            photoTextGap = 16f
         )
     )
 
