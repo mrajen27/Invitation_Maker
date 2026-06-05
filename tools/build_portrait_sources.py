@@ -235,19 +235,21 @@ def portrait_from_native_bands(
 
     canvas = Image.new("RGB", (TARGET_W, TARGET_H), sample_cream(landscape))
 
+    # Full-height side columns: one native→portrait scale (~1.32×), not a stretched mid strip.
+    left_full = landscape.crop((0, 0, side_w_native, h)).resize(
+        (side_w, TARGET_H), Image.Resampling.LANCZOS
+    )
+    right_full = landscape.crop((w - side_w_native, 0, w, h)).resize(
+        (side_w, TARGET_H), Image.Resampling.LANCZOS
+    )
+    canvas.paste(left_full, (0, 0))
+    canvas.paste(right_full, (TARGET_W - side_w, 0))
+
     if mid_h > 0 and center_w > 0 and y1_native > y0_native:
-        left = landscape.crop((0, y0_native, side_w_native, y1_native)).resize(
-            (side_w, mid_h), Image.Resampling.LANCZOS
-        )
-        right = landscape.crop((w - side_w_native, y0_native, w, y1_native)).resize(
-            (side_w, mid_h), Image.Resampling.LANCZOS
-        )
         center = landscape.crop((side_w_native, y0_native, w - side_w_native, y1_native)).resize(
             (center_w, mid_h), Image.Resampling.LANCZOS
         )
-        canvas.paste(left, (0, mid_top))
         canvas.paste(center, (side_w, mid_top))
-        canvas.paste(right, (TARGET_W - side_w, mid_top))
 
     top_band = landscape.crop((0, 0, w, top_native)).resize(
         (TARGET_W, top_h_p), Image.Resampling.LANCZOS
@@ -258,9 +260,8 @@ def portrait_from_native_bands(
     canvas.paste(top_band, (0, 0))
     canvas.paste(bottom_band, (0, mid_bottom))
 
-    if feather_vertical_seams and mid_h > 0:
-        blend_vertical_seam(canvas, side_w, mid_top + 4, mid_bottom - 4, half_width=4)
-        blend_vertical_seam(canvas, TARGET_W - side_w, mid_top + 4, mid_bottom - 4, half_width=4)
+    # Vertical seam feather blurs side filigree — center panel edges are already continuous.
+    _ = feather_vertical_seams
 
     return canvas
 
@@ -339,29 +340,38 @@ def replace_gold_pixels_in_center(portrait: Image.Image) -> Image.Image:
     return out
 
 
+# Photo-card band ratios (1080×1350): protect top/side/bottom décor from center processing.
+NAMING_SIDE_RATIO = 0.19
+NAMING_TOP_RATIO = 0.14
+NAMING_BOTTOM_RATIO = 0.10
+
+
 def smooth_center_panel(
     portrait: Image.Image,
     *,
     strength: str = "light",
     top_protect_ratio: float = 0.12,
     bottom_protect_ratio: float = 0.10,
+    side_protect_ratio: float = NAMING_SIDE_RATIO,
 ) -> Image.Image:
-    """Smooth inner panel only — blur mask never bleeds into top/bottom décor bands."""
+    """Smooth inner panel only — blur mask never bleeds into top/side/bottom décor."""
     w, h = portrait.size
     pad_y = max(8, int(h * 0.01))
+    pad_x = max(6, int(w * 0.008))
     y0 = int(h * top_protect_ratio) + pad_y
     y1 = int(h * (1.0 - bottom_protect_ratio)) - pad_y
-    if y1 <= y0 + 40:
+    side_w = int(w * side_protect_ratio)
+    x0 = side_w + pad_x
+    x1 = w - side_w - pad_x
+    if y1 <= y0 + 40 or x1 <= x0 + 40:
         return portrait
 
     if strength == "heavy":
-        x0, x1 = int(w * 0.11), int(w * 0.89)
-        blur = 4.0
-        mask_r = 22
+        blur = 3.0
+        mask_r = 14
     else:
-        x0, x1 = int(w * 0.14), int(w * 0.86)
-        blur = 1.2
-        mask_r = 10
+        blur = 1.0
+        mask_r = 8
 
     region = portrait.crop((x0, y0, x1, y1))
     smooth = region.filter(ImageFilter.SMOOTH).filter(ImageFilter.GaussianBlur(radius=blur))
@@ -380,24 +390,20 @@ def add_parchment_to_center(
     *,
     top_protect_ratio: float = 0.12,
     bottom_protect_ratio: float = 0.10,
+    side_protect_ratio: float = NAMING_SIDE_RATIO,
     strength: float = 0.018,
 ) -> Image.Image:
-    """Parchment grain on the cream panel only — keeps toran/footer art crisp."""
+    """Parchment grain on the cream panel only — keeps toran/side/footer art crisp."""
     w, h = portrait.size
     y0 = int(h * top_protect_ratio)
     y1 = int(h * (1.0 - bottom_protect_ratio))
-    x0, x1 = int(w * 0.10), int(w * 0.90)
+    side_w = int(w * side_protect_ratio)
+    x0, x1 = side_w, w - side_w
     center = portrait.crop((x0, y0, x1, y1))
     textured = add_parchment_texture(center, strength=strength)
     out = portrait.copy()
     out.paste(textured, (x0, y0))
     return out
-
-
-# Naming cards: short flat footer so cradle/diyas never overlap copy (photo ends ~y600, text to ~1105).
-NAMING_SIDE_RATIO = 0.19
-NAMING_TOP_RATIO = 0.14
-NAMING_BOTTOM_RATIO = 0.10
 
 
 def band_compose_portrait_from_landscape(
@@ -413,25 +419,32 @@ def band_compose_portrait_from_landscape(
     Stretch only the natural cream center vertically.
     """
     if im.size == (TARGET_W, TARGET_H):
-        return add_parchment_to_center(im, top_protect_ratio=top_ratio, bottom_protect_ratio=bottom_ratio)
+        return add_parchment_to_center(
+            im,
+            top_protect_ratio=top_ratio,
+            bottom_protect_ratio=bottom_ratio,
+            side_protect_ratio=side_ratio,
+        )
 
     out = portrait_from_native_bands(
         im,
         top_ratio=top_ratio,
         bottom_ratio=bottom_ratio,
         side_ratio=side_ratio,
-        feather_vertical_seams=True,
+        feather_vertical_seams=False,
     )
     out = smooth_center_panel(
         out,
         strength=center_smooth,
         top_protect_ratio=top_ratio,
         bottom_protect_ratio=bottom_ratio,
+        side_protect_ratio=side_ratio,
     )
     return add_parchment_to_center(
         out,
         top_protect_ratio=top_ratio,
         bottom_protect_ratio=bottom_ratio,
+        side_protect_ratio=side_ratio,
     )
 
 
