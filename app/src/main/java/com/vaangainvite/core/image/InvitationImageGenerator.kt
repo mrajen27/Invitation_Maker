@@ -592,6 +592,17 @@ class InvitationImageGenerator(private val context: Context) {
         val photoBitmap = decodePhoto(uploadedPhotoUri) ?: return false
         val placement = PhotoCardPlacement.specFor(templateId)
         val frame = placement.bounds
+        if (PhotoCardPlacement.usesFramedPhotoBorder(templateId)) {
+            drawFramedPhoto(
+                canvas = canvas,
+                photoBitmap = photoBitmap,
+                frame = frame,
+                cornerRadius = placement.cornerRadius,
+                targetAspect = PhotoCardPlacement.cropAspectRatio(templateId)
+            )
+            return true
+        }
+
         val clipPath = PhotoCardPlacement.clipPath(placement)
         val photoPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
@@ -676,6 +687,17 @@ class InvitationImageGenerator(private val context: Context) {
         if (uploadedPhotoUri == null) return false
 
         val photoBitmap = decodePhoto(uploadedPhotoUri) ?: return false
+        drawFramedPhoto(canvas, photoBitmap, frame)
+        return true
+    }
+
+    private fun drawFramedPhoto(
+        canvas: Canvas,
+        photoBitmap: Bitmap,
+        frame: RectF,
+        cornerRadius: Float = 32f,
+        targetAspect: Float? = null
+    ) {
         val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(70, 0, 0, 0)
         }
@@ -687,25 +709,25 @@ class InvitationImageGenerator(private val context: Context) {
 
         canvas.drawRoundRect(
             RectF(frame.left + 8f, frame.top + 10f, frame.right + 8f, frame.bottom + 10f),
-            34f,
-            34f,
+            cornerRadius + 2f,
+            cornerRadius + 2f,
             shadowPaint
         )
 
         val path = Path().apply {
-            addRoundRect(frame, 32f, 32f, Path.Direction.CW)
+            addRoundRect(frame, cornerRadius, cornerRadius, Path.Direction.CW)
         }
         canvas.save()
         canvas.clipPath(path)
+        val aspect = targetAspect ?: (frame.width() / frame.height())
         canvas.drawBitmap(
             photoBitmap,
-            centeredCropSource(photoBitmap, frame),
+            centeredCropSource(photoBitmap, frame, targetAspect = aspect),
             frame,
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         )
         canvas.restore()
-        canvas.drawRoundRect(frame, 32f, 32f, borderPaint)
-        return true
+        canvas.drawRoundRect(frame, cornerRadius, cornerRadius, borderPaint)
     }
 
     private fun decodePhoto(uploadedPhotoUri: Uri): Bitmap? {

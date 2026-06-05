@@ -21,6 +21,9 @@ internal object PhotoCardPlacement {
     /** Measured on native 1080×1350 portrait sources (full-bleed, no letterbox). */
     private val traditionalPhoto = RectF(248f, 210f, 832f, 600f)
 
+    /** Same slot as birthday WebP cards — compact frame under the toran band. */
+    private val namingPhoto = RectF(390f, 292f, 690f, 478f)
+
     private val templateIds = (1..5).flatMap { i ->
         listOf(
             "engagement_%02d".format(i),
@@ -29,14 +32,22 @@ internal object PhotoCardPlacement {
         )
     }
 
-    private val specs = templateIds.associateWith {
-        Spec(bounds = traditionalPhoto, cornerRadius = 26f)
+    private val specs = templateIds.associateWith { id ->
+        if (id.startsWith("naming_")) {
+            Spec(bounds = namingPhoto, cornerRadius = 32f)
+        } else {
+            Spec(bounds = traditionalPhoto, cornerRadius = 26f)
+        }
     }
 
     fun isPhotoCardTemplate(templateId: String): Boolean =
         templateId.startsWith("engagement_") ||
             templateId.startsWith("naming_") ||
             templateId.startsWith("babyshower_")
+
+    /** Gold stroke frame (birthday style) instead of cream vignette blend. */
+    fun usesFramedPhotoBorder(templateId: String): Boolean =
+        templateId.startsWith("naming_")
 
     fun specFor(templateId: String): Spec {
         return specs[templateId] ?: Spec(bounds = traditionalPhoto)
