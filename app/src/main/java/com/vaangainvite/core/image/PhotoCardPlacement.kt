@@ -4,7 +4,7 @@ import android.graphics.Path
 import android.graphics.RectF
 
 /**
- * Designed WebP photo cards (engagement, naming, …) — soft rectangle on continuous cream panel.
+ * Designed WebP photo cards (engagement, naming, baby shower, …) — soft rectangle on continuous cream panel.
  */
 internal object PhotoCardPlacement {
 
@@ -22,7 +22,11 @@ internal object PhotoCardPlacement {
     private val traditionalPhoto = RectF(248f, 210f, 832f, 600f)
 
     private val templateIds = (1..5).flatMap { i ->
-        listOf("engagement_%02d".format(i), "naming_%02d".format(i))
+        listOf(
+            "engagement_%02d".format(i),
+            "naming_%02d".format(i),
+            "babyshower_%02d".format(i)
+        )
     }
 
     private val specs = templateIds.associateWith {
@@ -30,7 +34,9 @@ internal object PhotoCardPlacement {
     }
 
     fun isPhotoCardTemplate(templateId: String): Boolean =
-        templateId.startsWith("engagement_") || templateId.startsWith("naming_")
+        templateId.startsWith("engagement_") ||
+            templateId.startsWith("naming_") ||
+            templateId.startsWith("babyshower_")
 
     fun specFor(templateId: String): Spec {
         return specs[templateId] ?: Spec(bounds = traditionalPhoto)
