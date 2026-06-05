@@ -16,4 +16,4 @@ Five **designed WebP** namakaran photo cards (same layout as engagement):
 
 Regenerate: `PREVIEW_OUTPUT_DIR=docs/samples/naming ./gradlew testDebugUnitTest --tests "NamingSampleExportTest"`
 
-For `naming_05`, rebuild the portrait source first: `python3 tools/generate_portrait_05_templates.py`
+Portrait rebuilds: `python3 tools/generate_portrait_05_templates.py` (05 only). Remove naming_01 frame: `python3 tools/patch_naming_01_frame.py`
