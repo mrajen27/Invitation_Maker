@@ -228,13 +228,13 @@ class InvitationImageGenerator(private val context: Context) {
         val isPeacockWithPhoto = isPeacockVase && hasUploadedPhoto
         val compactLayout = (hasUploadedPhoto && hasUserMessage) || isPeacockVase || compactPhotoLayout
         val detailRowSpacing = when {
-            isPeacockWithPhoto -> 4f
-            compactPhotoLayout -> 4f
+            isPeacockWithPhoto -> 3f
+            compactPhotoLayout -> 3f
             else -> InvitationLayout.Spacing.betweenDetails
         }
         val messageGap = when {
-            isPeacockWithPhoto -> 8f
-            compactPhotoLayout -> 8f
+            isPeacockWithPhoto -> 6f
+            compactPhotoLayout -> 6f
             else -> InvitationLayout.Spacing.beforeMessageNoPhoto
         }
 
@@ -271,7 +271,9 @@ class InvitationImageGenerator(private val context: Context) {
         )
         val bodyPaint = textPaint(
             palette.bodyColor,
-            if (compactLayout || isPeacockVase || compactPhotoLayout) 24f else 28f,
+            if (compactPhotoLayout) 22f
+            else if (compactLayout || isPeacockVase) 24f
+            else 28f,
             when (language) {
                 InvitationLanguage.TAMIL -> tamilTypeface
                 InvitationLanguage.ENGLISH -> serifTypeface()
@@ -281,7 +283,7 @@ class InvitationImageGenerator(private val context: Context) {
         val messagePaint = textPaint(
             palette.messageColor,
             when {
-                compactPhotoLayout -> 20f
+                compactPhotoLayout -> 19f
                 usesPhotoBackground -> 24f
                 else -> 26f
             },
@@ -355,7 +357,6 @@ class InvitationImageGenerator(private val context: Context) {
             maxLines = 1,
             rowSpacing = detailRowSpacing
         )
-        val venueMaxLines = if (compactPhotoLayout) 1 else InvitationDetails.VENUE_MAX_LINES
         blockTop = drawDetailWithIcon(
             canvas = canvas,
             iconResId = R.drawable.ic_invite_location,
@@ -364,7 +365,7 @@ class InvitationImageGenerator(private val context: Context) {
             topY = blockTop,
             zone = zone,
             iconTint = palette.iconTint,
-            maxLines = venueMaxLines,
+            maxLines = InvitationDetails.VENUE_MAX_LINES,
             rowSpacing = detailRowSpacing
         )
         if (details.mobileNumber.isNotBlank()) {
@@ -388,6 +389,7 @@ class InvitationImageGenerator(private val context: Context) {
 
         val messageResult = drawAdditionalMessage(
             canvas = canvas,
+            templateId = template.id,
             text = messageText,
             paint = messagePaint,
             blockTopAfterLastDetail = blockTop,
@@ -416,6 +418,7 @@ class InvitationImageGenerator(private val context: Context) {
      */
     private fun drawAdditionalMessage(
         canvas: Canvas,
+        templateId: String,
         text: String,
         paint: Paint,
         blockTopAfterLastDetail: Float,
@@ -429,7 +432,7 @@ class InvitationImageGenerator(private val context: Context) {
         val messageStartY = blockTopAfterLastDetail -
             detailRowSpacing +
             gapBeforeMessage
-        val maxBottomY = zone.bottom - 8f
+        val maxBottomY = InvitationLayout.messageMaxBottomY(templateId, zone)
         val availableHeight = maxBottomY - messageStartY
         if (availableHeight < 18f) {
             return MessageDrawResult(shown = false, truncated = false)
