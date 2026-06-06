@@ -1,7 +1,7 @@
 package com.vaangainvite.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,10 +37,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.vaangainvite.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vaangainvite.R
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.ui.viewmodel.InviteViewModel
+import kotlinx.coroutines.flow.map
 
 private val HomeSandalwood = Color(0xFFFFF4E6)
 private val HomeMaroon = Color(0xFF8B1E3F)
@@ -55,7 +57,10 @@ fun HomeScreen(
     viewModel: InviteViewModel,
     onCategorySelected: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val categories by viewModel.uiState
+        .map { it.categories }
+        .collectAsStateWithLifecycle(initialValue = emptyList())
+    val backgroundPainter = painterResource(id = R.drawable.home_traditional_background)
 
     Scaffold(
         containerColor = HomeSandalwood,
@@ -76,7 +81,7 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.home_traditional_background),
+                painter = backgroundPainter,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -89,10 +94,14 @@ fun HomeScreen(
                     .padding(horizontal = 20.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
+                item(key = "header") {
                     Header()
                 }
-                items(state.categories) { category ->
+                items(
+                    items = categories,
+                    key = { it.id },
+                    contentType = { "category" }
+                ) { category ->
                     CategoryCard(
                         category = category,
                         onClick = {
@@ -154,7 +163,7 @@ private fun CategoryCard(
     category: InvitationCategory,
     onClick: () -> Unit
 ) {
-    val accent = Color(category.accentColor)
+    val accent = remember(category.accentColor) { Color(category.accentColor) }
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),

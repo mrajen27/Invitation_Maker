@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.vaangainvite.core.image.InvitationImageGenerator
 import com.vaangainvite.core.image.PhotoCropTransform
+import com.vaangainvite.core.image.TemplatePreviewCache
 import com.vaangainvite.data.model.InvitationCategory
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
@@ -52,10 +53,11 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
 
     fun selectCategory(categoryId: String) {
         val category = repository.categoryById(categoryId) ?: return
+        val templates = repository.templatesForCategory(categoryId)
         _uiState.update { current ->
             current.copy(
                 selectedCategory = category,
-                templates = repository.templatesForCategory(categoryId),
+                templates = templates,
                 selectedTemplate = null,
                 details = current.details.copy(
                     occasionTitle = defaultOccasionTitle(categoryId, current.selectedLanguage)
@@ -64,6 +66,15 @@ class InviteViewModel(application: Application) : AndroidViewModel(application) 
                 cachedImageUri = null,
                 statusMessage = null
             )
+        }
+        preloadTemplatePreviews(categoryId)
+    }
+
+    private fun preloadTemplatePreviews(categoryId: String) {
+        val resIds = repository.previewResIdsForCategory(categoryId)
+        if (resIds.isEmpty()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            TemplatePreviewCache.preload(getApplication(), resIds)
         }
     }
 
