@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +70,7 @@ import com.vaangainvite.core.share.InvitationShare
 import com.vaangainvite.data.model.InvitationDetails
 import com.vaangainvite.data.model.InvitationFieldLimits
 import com.vaangainvite.data.model.InvitationLanguage
+import com.vaangainvite.ui.components.SubsampledResourceImage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -205,13 +208,14 @@ fun EditorScreen(
                     shape = RoundedCornerShape(28.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = selectedTemplate.drawableResId),
+                    SubsampledResourceImage(
+                        resId = selectedTemplate.previewResId(),
                         contentDescription = selectedTemplate.title,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(0.8f),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        maxDimension = 540
                     )
                 }
             }
@@ -396,6 +400,7 @@ private fun ShareActions(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PhotoUploadSection(
     hasPhoto: Boolean,
@@ -443,7 +448,11 @@ private fun PhotoUploadSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Button(onClick = onChoosePhoto) {
                     Text(text = if (hasPhoto) selectedLanguage.editorChangePhoto else selectedLanguage.editorUploadPhoto)
                 }

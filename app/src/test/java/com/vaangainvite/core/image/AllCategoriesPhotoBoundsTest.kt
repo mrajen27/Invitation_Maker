@@ -38,8 +38,8 @@ class AllCategoriesPhotoBoundsTest {
     }
 
     @Test
-    fun birthdayPubertyHousewarmingDefaultExpandedWideFitsMaxText() {
-        InvitationLayout.setDefaultPhotoFrameForTests(InvitationLayout.expandedDefaultPhotoFrame)
+    fun birthdayPubertyHousewarmingCompactFrameFitsMaxText() {
+        InvitationLayout.setDefaultPhotoFrameForTests(InvitationLayout.compactDefaultPhotoFrame)
         defaultFrameTemplateIds().forEach { id ->
             assertMaxTextOk(id, label = "expanded-default")
         }

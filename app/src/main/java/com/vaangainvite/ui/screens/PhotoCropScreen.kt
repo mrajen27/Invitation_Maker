@@ -43,9 +43,11 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.vaangainvite.core.image.InvitationLayout
 import com.vaangainvite.core.image.PhotoBitmapLoader
 import com.vaangainvite.core.image.PhotoCropExporter
 import com.vaangainvite.core.image.PhotoCropTransform
+import com.vaangainvite.core.image.PhotoCardPlacement
 import com.vaangainvite.data.model.InvitationLanguage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,6 +57,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun PhotoCropScreen(
     sourceUri: Uri,
+    templateId: String,
     language: InvitationLanguage,
     initialTransform: PhotoCropTransform?,
     onConfirm: (Uri, PhotoCropTransform) -> Unit,
@@ -67,11 +70,18 @@ fun PhotoCropScreen(
     var isSaving by remember { mutableStateOf(false) }
     var loadError by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(sourceUri, initialTransform) {
+    val frameAspect = InvitationLayout.photoAspectRatio(templateId)
+    val frameCornerRadius = if (PhotoCardPlacement.isPhotoCardTemplate(templateId)) {
+        PhotoCardPlacement.specFor(templateId).cornerRadius
+    } else {
+        32f
+    }
+
+    LaunchedEffect(sourceUri, templateId, initialTransform) {
         runCatching {
             withContext(Dispatchers.Default) {
                 val loaded = PhotoBitmapLoader.load(context, sourceUri)
-                val initial = initialTransform ?: PhotoCropTransform.autoDetect(loaded)
+                val initial = initialTransform ?: PhotoCropTransform.autoDetect(loaded, templateId)
                 loaded to initial
             }
         }.onSuccess { (loadedBitmap, initialCrop) ->
@@ -136,7 +146,6 @@ fun PhotoCropScreen(
                 else -> {
                     val imageBitmap = bitmap!!.asImageBitmap()
                     val cropTransform = transform!!
-                    val frameAspect = PhotoCropTransform.targetAspectRatio
                     val currentBitmap by rememberUpdatedState(bitmap)
                     val currentTransform by rememberUpdatedState(transform)
 
@@ -186,10 +195,11 @@ fun PhotoCropScreen(
 
                                 val overlayPath = Path().apply {
                                     addRect(Rect(Offset.Zero, size))
+                                    val cornerPx = frameCornerRadius * (size.width / InvitationLayout.canvasWidth)
                                     addRoundRect(
                                         androidx.compose.ui.geometry.RoundRect(
                                             rect = Rect(Offset.Zero, size),
-                                            cornerRadius = CornerRadius(size.minDimension * 0.08f)
+                                            cornerRadius = CornerRadius(cornerPx)
                                         )
                                     )
                                     fillType = PathFillType.EvenOdd
@@ -202,7 +212,9 @@ fun PhotoCropScreen(
                                     color = Color(0xFFF7C948),
                                     topLeft = Offset.Zero,
                                     size = size,
-                                    cornerRadius = CornerRadius(size.minDimension * 0.08f),
+                                    cornerRadius = CornerRadius(
+                                        frameCornerRadius * (size.width / InvitationLayout.canvasWidth)
+                                    ),
                                     style = Stroke(width = 4f)
                                 )
                             }

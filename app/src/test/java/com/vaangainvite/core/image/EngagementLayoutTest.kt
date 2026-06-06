@@ -21,9 +21,9 @@ class EngagementLayoutTest {
     }
 
     @Test
-    fun engagementPhotoSlotMatchesBirthdayFrame() {
+    fun engagementPhotoSlotUsesTallFrame() {
         val frame = PhotoCardPlacement.specFor("engagement_01").bounds
-        assertEquals(InvitationLayout.defaultPhotoFrame(), frame)
+        assertEquals(PhotoCardPlacement.tallFramedPhoto, frame)
         assertTrue(PhotoCardPlacement.usesFramedPhotoBorder("engagement_01"))
     }
 
@@ -33,7 +33,7 @@ class EngagementLayoutTest {
         val photoBottom = PhotoCardPlacement.photoBottom(id)
         val textTop = InvitationLayout.textStartY(id, hasUploadedPhoto = true)
         val gap = textTop - photoBottom
-        assertTrue("gap ${gap}px", gap in 12f..20f)
+        assertTrue("gap ${gap}px", gap in 14f..24f)
     }
 
     @Test

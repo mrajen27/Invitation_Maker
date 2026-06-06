@@ -28,7 +28,7 @@ internal object PhotoCardPlacement {
      * Taller portrait-friendly frame on the cream panel (~520×268).
      * Uses extra vertical space above bottom décor; text zone extended in [InvitationLayout].
      */
-    val tallFramedPhoto = RectF(280f, 268f, 800f, 531f)
+    val tallFramedPhoto = RectF(280f, 268f, 800f, 521f)
 
     val framedPhoto = tallFramedPhoto
 
