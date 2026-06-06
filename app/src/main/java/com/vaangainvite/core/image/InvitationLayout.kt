@@ -43,9 +43,9 @@ internal object InvitationLayout {
         right = 880f,
         topNoPhoto = 518f,
         topWithPhoto = 494f,
-        // Cream panel above bottom diyas/toran — text can sit lower on photo cards.
-        bottom = 1185f,
-        messageBottom = 1150f,
+        // Cream panel above bottom diyas/toran.
+        bottom = 1205f,
+        messageBottom = 1185f,
         photoTextGap = 14f,
         topInset = 4f
     )
@@ -66,8 +66,9 @@ internal object InvitationLayout {
             topNoPhoto = 415f,
             topWithPhoto = 528f,
             bottom = 1240f,
-            messageBottom = 1160f,
-            topInset = 10f
+            messageBottom = 1190f,
+            topInset = 10f,
+            photoTextGap = 10f
         ),
         "wedding_05" to TextZoneSpec(
             left = 200f,
@@ -76,8 +77,8 @@ internal object InvitationLayout {
             topNoPhoto = 328f,
             topWithPhoto = 496f,
             // Vase panel stays wide until ~y1160.
-            bottom = 1170f,
-            messageBottom = 1135f,
+            bottom = 1185f,
+            messageBottom = 1150f,
             topInset = 4f,
             photoTextGap = 6f
         ),
@@ -87,8 +88,9 @@ internal object InvitationLayout {
             topNoPhoto = 430f,
             topWithPhoto = 538f,
             bottom = 1240f,
-            messageBottom = 1160f,
-            topInset = 10f
+            messageBottom = 1195f,
+            topInset = 10f,
+            photoTextGap = 10f
         ),
         "housewarming_05" to TextZoneSpec(left = 220f, right = 860f, topNoPhoto = 292f, topWithPhoto = 492f),
         "puberty_01" to TextZoneSpec(
@@ -96,8 +98,8 @@ internal object InvitationLayout {
             right = 830f,
             topNoPhoto = 280f,
             topWithPhoto = 494f,
-            bottom = 1145f,
-            messageBottom = 1110f,
+            bottom = 1180f,
+            messageBottom = 1145f,
             photoTextGap = 12f
         ),
         // Engagement — continuous cream panel; text flows below photo (no divider line)
@@ -122,11 +124,11 @@ internal object InvitationLayout {
         // Lower/wider slot inside the temple arch cream panel.
         "wedding_02" to RectF(360f, 308f, 720f, 498f),
         // Below sacred-knot medallions on the thali motif card.
-        "wedding_04" to RectF(360f, 410f, 720f, 530f),
+        "wedding_04" to RectF(360f, 410f, 720f, 508f),
         // Narrow upper cream panel on the peacock crest card.
         "wedding_05" to RectF(420f, 360f, 660f, 490f),
         // Below mango-toran band on the gopuram doorway card.
-        "housewarming_03" to RectF(350f, 360f, 730f, 530f)
+        "housewarming_03" to RectF(350f, 360f, 730f, 492f)
     )
 
     /** Default compact slot for birthday, puberty, and most housewarming templates. */
@@ -138,6 +140,12 @@ internal object InvitationLayout {
     private val defaultPhotoFrameBase = compactDefaultPhotoFrame
     private var defaultPhotoFrameOverride: RectF? = null
     private val templatePhotoFrameOverrides = mutableMapOf<String, RectF>()
+
+    fun messageMaxBottomY(templateId: String, zone: RectF): Float {
+        val spec = templateTextZones[templateId]
+        val bottom = spec?.messageBottom ?: (zone.bottom - 20f)
+        return bottom - 4f
+    }
 
     fun photoAspectRatio(templateId: String): Float {
         val frame = photoFrame(templateId)
