@@ -57,6 +57,10 @@ class TemplateRepository {
         )
     )
 
+    private val templatesByCategory: Map<String, List<InvitationTemplate>> by lazy {
+        templates.groupBy { it.categoryId }
+    }
+
     private val templates: List<InvitationTemplate> = listOf(
         // Birthday
         photoTemplate(
@@ -376,9 +380,11 @@ class TemplateRepository {
         )
     }
 
-    fun templatesForCategory(categoryId: String): List<InvitationTemplate> {
-        return templates.filter { it.categoryId == categoryId }
-    }
+    fun templatesForCategory(categoryId: String): List<InvitationTemplate> =
+        templatesByCategory[categoryId].orEmpty()
+
+    fun previewResIdsForCategory(categoryId: String): List<Int> =
+        templatesForCategory(categoryId).map { it.previewResId() }
 
     fun categoryById(categoryId: String): InvitationCategory? {
         return categories.firstOrNull { it.id == categoryId }

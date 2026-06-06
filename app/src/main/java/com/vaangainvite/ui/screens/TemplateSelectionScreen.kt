@@ -23,17 +23,23 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vaangainvite.core.image.TemplatePreviewCache
 import com.vaangainvite.data.model.InvitationTemplate
 import com.vaangainvite.ui.components.SubsampledResourceImage
 import com.vaangainvite.ui.viewmodel.InviteViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,10 +48,26 @@ fun TemplateSelectionScreen(
     onBack: () -> Unit,
     onTemplateSelected: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val categoryTitle = state.selectedCategory?.title ?: "Templates"
+    val templates by viewModel.uiState
+        .map { it.templates }
+        .collectAsStateWithLifecycle(initialValue = emptyList())
+    val categoryTitle by viewModel.uiState
+        .map { it.selectedCategory?.title ?: "Templates" }
+        .collectAsStateWithLifecycle(initialValue = "Templates")
     val categorySubtitle =
         "Photo-style printable designs — pick a card, then your details are layered on top."
+    val context = LocalContext.current
+
+    LaunchedEffect(templates) {
+        if (templates.isNotEmpty()) {
+            withContext(Dispatchers.IO) {
+                TemplatePreviewCache.preload(
+                    context,
+                    templates.map { it.previewResId() }
+                )
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -71,7 +93,7 @@ fun TemplateSelectionScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
+            item(key = "intro") {
                 Text(
                     text = "Choose a card style",
                     style = MaterialTheme.typography.headlineSmall,
@@ -84,7 +106,11 @@ fun TemplateSelectionScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            items(state.templates) { template ->
+            items(
+                items = templates,
+                key = { it.id },
+                contentType = { "template" }
+            ) { template ->
                 TemplateCard(
                     template = template,
                     onClick = {
@@ -121,8 +147,7 @@ private fun TemplateCard(
                     .width(110.dp)
                     .aspectRatio(0.8f)
                     .clip(RoundedCornerShape(18.dp)),
-                contentScale = ContentScale.Crop,
-                maxDimension = 320
+                contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
